@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar QR Codes - Cardápio Digital Universal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .tabs {
+            display: flex;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab:hover:not(.active) {
+            background-color: #f1f1f1;
+        }
+        .content-section {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .content-section.active {
+            display: block;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-success {
+            background-color: #27ae60;
+        }
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+        }
+        .btn-warning:hover {
+            background-color: #d68910;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .qr-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background-color: #f8f9fa;
+            margin: 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #eee;
+        }
+        .table-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        .qr-url {
+            font-size: 12px;
+            color: #7f8c8d;
+            word-break: break-all;
+            background-color: #f8f9fa;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🖥️ Admin - Cardápio Digital Universal</div>
+            <div class="user-info">
+                <span id="adminName">Administrador</span>
+                <button class="btn btn-primary" onclick="window.location.href='admin.html'">Voltar</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showSection('dashboard')">Dashboard</div>
+            <div class="tab" onclick="showSection('menu')">Cardápio</div>
+            <div class="tab" onclick="showSection('tables')">Mesas & QR Codes</div>
+            <div class="tab" onclick="showSection('settings')">Configurações</div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <h2>Dashboard</h2>
+            <p>Visão geral do seu estabelecimento</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+                <div style="background-color: #e8f4fc; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3>Mesas Cadastradas</h3>
+                    <div style="font-size: 32px; font-weight: bold; color: #3498db;">12</div>
+                </div>
+                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3>QR Codes Gerados</h3>
+                    <div style="font-size: 32px; font-weight: bold; color: #27ae60;">12</div>
+                </div>
+                <div style="background-color: #fff5f5; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3>Pedidos Hoje</h3>
+                    <div style="font-size: 32px; font-weight: bold; color: #e74c3c;">24</div>
+                </div>
+            </div>
+            
+            <div style="background-color: #e8f4fc; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3>Sua URL Personalizada</h3>
+                <p><strong>https://cardapiodigital.com.br/restaurante-sabores</strong></p>
+                <button class="btn" onclick="copyToClipboard('https://cardapiodigital.com.br/restaurante-sabores')">Copiar URL</button>
+            </div>
+        </section>
+
+        <!-- Menu Section -->
+        <section id="menu" class="content-section">
+            <h2>Gerenciar Cardápio</h2>
+            <p>Adicione, edite ou remova itens do seu cardápio</p>
+            
+            <button class="btn btn-success" onclick="openAddItemModal()">+ Adicionar Item</button>
+            
+            <div style="margin-top: 20px;">
+                <h3>Categorias</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 15px 0;">
+                    <div style="background-color: #f8f9fa; padding: 10px 15px; border-radius: 20px;">Porções</div>
+                    <div style="background-color: #f8f9fa; padding: 10px 15px; border-radius: 20px;">Bebidas</div>
+                    <div style="background-color: #f8f9fa; padding: 10px 15px; border-radius: 20px;">Pratos Principais</div>
+                    <div style="background-color: #f8f9fa; padding: 10px 15px; border-radius: 20px;">Sobremesas</div>
+                    <div style="background-color: #3498db; color: white; padding: 10px 15px; border-radius: 20px; cursor: pointer;">+ Nova Categoria</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tables & QR Codes Section -->
+        <section id="tables" class="content-section">
+            <h2>QR Code do Estabelecimento</h2>
+            <p>Este é o QR code único para todo o seu estabelecimento. Imprima e posicione em todas as mesas.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="display: inline-block; padding: 30px; background-color: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3>QR Code Único</h3>
+                    <div style="width: 200px; height: 200px; background-color: #f8f9fa; margin: 20px auto; display: flex; align-items: center; justify-content: center; border: 2px solid #3498db;">
+                        <span style="font-size: 24px; font-weight: bold; color: #3498db;">QR CODE</span>
+                    </div>
+                    <p style="font-size: 14px; color: #7f8c8d;">
+                        https://cardapiodigital.com.br/restaurante-sabores
+                    </p>
+                    <button class="btn" onclick="copyToClipboard('https://cardapiodigital.com.br/restaurante-sabores')" style="margin: 10px;">
+                        Copiar URL
+                    </button>
+                    <button class="btn btn-warning" style="margin: 10px;">
+                        Imprimir QR Code
+                    </button>
+                </div>
+            </div>
+            
+            <div style="background-color: #fff5f5; padding: 20px; border-radius: 10px; border-left: 4px solid #e74c3c; margin: 30px 0;">
+                <h3>Importante</h3>
+                <p>Este é o <strong>único QR code</strong> necessário para todo o seu estabelecimento. Posicione cópias deste mesmo QR code em todas as mesas do seu restaurante.</p>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="content-section">
+            <h2>Personalização do Estabelecimento</h2>
+            <p>Customize a aparência do seu cardápio digital</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                <div>
+                    <div class="form-group">
+                        <label for="establishmentName">Nome do Estabelecimento</label>
+                        <input type="text" id="establishmentName" value="Restaurante Sabores" placeholder="Nome do seu estabelecimento">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="establishmentTagline">Slogan/Subtítulo</label>
+                        <input type="text" id="establishmentTagline" value="Cozinha Brasileira Autêntica" placeholder="Uma frase que represente seu estabelecimento">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="establishmentAddress">Endereço</label>
+                        <input type="text" id="establishmentAddress" value="Rua das Flores, 123 - Centro" placeholder="Endereço completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="establishmentPhone">Telefone</label>
+                        <input type="text" id="establishmentPhone" value="(11) 99999-9999" placeholder="(00) 00000-0000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="establishmentHours">Horário de Funcionamento</label>
+                        <input type="text" id="establishmentHours" value="Ter-Sex: 18h-23h | Sáb-Dom: 12h-23h" placeholder="Ex: Seg-Sex 18h-23h, Sáb-Dom 12h-23h">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="primaryColor">Cor Primária</label>
+                        <input type="color" id="primaryColor" value="#e74c3c">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="secondaryColor">Cor Secundária</label>
+                        <input type="color" id="secondaryColor" value="#3498db">
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="logoUpload">Logo do Estabelecimento</label>
+                        <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('logoUpload').click()">
+                            <p>Clique para fazer upload da logo</p>
+                            <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 200x200px)</p>
+                        </div>
+                        <input type="file" id="logoUpload" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="backgroundUpload">Imagem de Fundo</label>
+                        <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('backgroundUpload').click()">
+                            <p>Clique para fazer upload da imagem de fundo</p>
+                            <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 1920x1080px)</p>
+                        </div>
+                        <input type="file" id="backgroundUpload" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="facebook">Facebook</label>
+                        <input type="text" id="facebook" value="https://facebook.com/restaurantesabores" placeholder="Link completo do perfil">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="instagram">Instagram</label>
+                        <input type="text" id="instagram" value="https://instagram.com/restaurantesabores" placeholder="Link completo do perfil">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="whatsapp">WhatsApp</label>
+                        <input type="text" id="whatsapp" value="https://wa.me/5511999999999" placeholder="Link completo do WhatsApp">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-success" onclick="saveCustomization()">Salvar Personalizações</button>
+            <button class="btn" onclick="previewCustomization()" style="margin-left: 10px;">Visualizar</button>
+        </section>
+    </div>
+
+    <!-- Add Table Modal -->
+    <div id="addTableModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addTableModal')">&times;</span>
+            <h2>Adicionar Nova Mesa</h2>
+            <p>Informe o número da nova mesa:</p>
+            
+            <div class="form-group">
+                <label for="tableNumber">Número da Mesa</label>
+                <input type="number" id="tableNumber" min="1" placeholder="Ex: 5">
+            </div>
+            
+            <button class="btn btn-success" onclick="addTable()">Adicionar Mesa</button>
+            <button class="btn" onclick="closeModal('addTableModal')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addItemModal')">&times;</span>
+            <h2>Adicionar Item ao Cardápio</h2>
+            
+            <div class="form-group">
+                <label for="itemName">Nome do Item</label>
+                <input type="text" id="itemName" placeholder="Ex: Feijoada Completa">
+            </div>
+            
+            <div class="form-group">
+                <label for="itemCategory">Categoria</label>
+                <select id="itemCategory">
+                    <option value="main">Pratos Principais</option>
+                    <option value="appetizer">Porções</option>
+                    <option value="drink">Bebidas</option>
+                    <option value="dessert">Sobremesas</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="itemPrice">Preço (R$)</label>
+                <input type="number" id="itemPrice" step="0.01" placeholder="Ex: 29.90">
+            </div>
+            
+            <div class="form-group">
+                <label for="itemDescription">Descrição</label>
+                <textarea id="itemDescription" placeholder="Descrição do item" style="width: 100%; height: 80px;"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="itemImage">Imagem do Produto</label>
+                <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('itemImage').click()">
+                    <p>Clique para fazer upload da imagem do produto</p>
+                    <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 300x300px)</p>
+                </div>
+                <input type="file" id="itemImage" accept="image/*" style="display: none;">
+            </div>
+            
+            <button class="btn btn-success" onclick="addItem()">Adicionar Item</button>
+            <button class="btn" onclick="closeModal('addItemModal')">Cancelar</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Cardápio Digital Universal &copy; 2025 - Sistema de pedidos automatizado</p>
+    </footer>
+
+    <script>
+        // Load establishment data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if admin has proper access
+            const adminAccess = localStorage.getItem('adminAccess');
+            const establishmentData = localStorage.getItem('establishmentData');
+            
+            if (!adminAccess || !establishmentData) {
+                // Redirect to login page if no proper authentication
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const data = JSON.parse(establishmentData);
+            if (data && data.isAuthenticated) {
+                document.getElementById('adminName').textContent = 'Administrador - ' + data.establishmentName;
+            } else {
+                // Redirect to login page if not properly authenticated
+                window.location.href = 'login.html';
+            }
+            
+            const savedCustomizations = localStorage.getItem('establishmentCustomizations');
+            if (savedCustomizations) {
+                const customizations = JSON.parse(savedCustomizations);
+                
+                document.getElementById('establishmentName').value = customizations.establishmentName || '';
+                document.getElementById('establishmentTagline').value = customizations.establishmentTagline || '';
+                document.getElementById('establishmentAddress').value = customizations.establishmentAddress || '';
+                document.getElementById('establishmentPhone').value = customizations.establishmentPhone || '';
+                document.getElementById('establishmentHours').value = customizations.establishmentHours || '';
+                document.getElementById('primaryColor').value = customizations.primaryColor || '#e74c3c';
+                document.getElementById('secondaryColor').value = customizations.secondaryColor || '#3498db';
+                document.getElementById('facebook').value = customizations.facebook || '';
+                document.getElementById('instagram').value = customizations.instagram || '';
+                document.getElementById('whatsapp').value = customizations.whatsapp || '';
+            }
+        });
+        
+        // Tab navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update tab active state
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding tab
+            const tabs = document.querySelectorAll('.tab');
+            const sectionMap = {
+                'dashboard': 0,
+                'menu': 1,
+                'tables': 2,
+                'settings': 3
+            };
+            
+            if (sectionMap[sectionId] !== undefined && sectionMap[sectionId] < tabs.length) {
+                tabs[sectionMap[sectionId]].classList.add('active');
+            }
+        }
+        
+        // Modal functions
+        function openAddTableModal() {
+            document.getElementById('addTableModal').style.display = 'flex';
+        }
+        
+        function openAddItemModal() {
+            document.getElementById('addItemModal').style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Add table
+        function addTable() {
+            const tableNumber = document.getElementById('tableNumber').value;
+            if (!tableNumber) {
+                alert('Por favor, informe o número da mesa.');
+                return;
+            }
+            
+            // In a production environment, this would add the table to the system
+            alert(`Mesa ${tableNumber} adicionada com sucesso!`);
+            closeModal('addTableModal');
+            document.getElementById('tableNumber').value = '';
+        }
+        
+        // Add item
+        function addItem() {
+            const itemName = document.getElementById('itemName').value;
+            if (!itemName) {
+                alert('Por favor, informe o nome do item.');
+                return;
+            }
+            
+            // Get item data
+            const itemData = {
+                id: Date.now(), // Simple ID generation
+                name: itemName,
+                category: document.getElementById('itemCategory').value,
+                price: document.getElementById('itemPrice').value || 0,
+                description: document.getElementById('itemDescription').value,
+                image: null // Will be filled with image data if uploaded
+            };
+            
+            // Handle image upload
+            const imageInput = document.getElementById('itemImage');
+            if (imageInput.files.length > 0) {
+                const file = imageInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    itemData.image = event.target.result;
+                    saveItem(itemData);
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                saveItem(itemData);
+            }
+        }
+        
+        function saveItem(itemData) {
+            // Load existing items from localStorage
+            let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            
+            // Add new item
+            menuItems.push(itemData);
+            
+            // Save to localStorage
+            localStorage.setItem('menuItems', JSON.stringify(menuItems));
+            
+            alert(`Item "${itemData.name}" adicionado com sucesso ao cardápio!`);
+            closeModal('addItemModal');
+            
+            // Clear form
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemDescription').value = '';
+            document.getElementById('itemImage').value = '';
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            if (typeof text === 'string') {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Copiado para a área de transferência!');
+                });
+            } else {
+                // If text is an element ID
+                const element = document.getElementById(text) || { textContent: text };
+                navigator.clipboard.writeText(element.textContent).then(() => {
+                    alert('Copiado para a área de transferência!');
+                });
+            }
+        }
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Customization functions
+        function saveCustomization() {
+            // Save customizations to localStorage
+            const customizations = {
+                establishmentName: document.getElementById('establishmentName').value,
+                establishmentTagline: document.getElementById('establishmentTagline').value,
+                establishmentAddress: document.getElementById('establishmentAddress').value,
+                establishmentPhone: document.getElementById('establishmentPhone').value,
+                establishmentHours: document.getElementById('establishmentHours').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                facebook: document.getElementById('facebook').value,
+                instagram: document.getElementById('instagram').value,
+                whatsapp: document.getElementById('whatsapp').value
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
+            
+            alert(`Personalizações salvas com sucesso!\nEstabelecimento: ${customizations.establishmentName}\nCor Primária: ${customizations.primaryColor}\nCor Secundária: ${customizations.secondaryColor}`);
+        }
+        
+        function previewCustomization() {
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            
+            alert(`Visualização das cores:\nCor Primária: ${primaryColor}\nCor Secundária: ${secondaryColor}`);
+        }
+        
+        // Handle file uploads
+        document.getElementById('logoUpload').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                // Read the file and store as data URL
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    // Save to localStorage as data URL
+                    localStorage.setItem('establishmentLogo', event.target.result);
+                    alert('Logo carregado com sucesso!');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        document.getElementById('backgroundUpload').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                // Read the file and store as data URL
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    // Save to localStorage as data URL
+                    localStorage.setItem('establishmentBackground', event.target.result);
+                    alert('Imagem de fundo carregada com sucesso!');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

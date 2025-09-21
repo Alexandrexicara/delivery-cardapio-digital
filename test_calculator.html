@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste da Calculadora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .result {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste da Calculadora</h1>
+        <p>Esta página permite testar o funcionamento da calculadora de valores.</p>
+        
+        <div class="form-group">
+            <label for="valueInput">Valor a Adicionar:</label>
+            <input type="number" id="valueInput" step="0.01" placeholder="Digite um valor">
+        </div>
+        
+        <button class="btn" onclick="addValue()">Adicionar Valor</button>
+        <button class="btn btn-danger" onclick="clearCalculator()">Limpar Calculadora</button>
+        
+        <div class="result">
+            Total: R$ <span id="totalDisplay">0,00</span>
+        </div>
+        
+        <button class="btn" onclick="saveToLocalStorage()">Salvar no LocalStorage</button>
+        <button class="btn" onclick="loadFromLocalStorage()">Carregar do LocalStorage</button>
+        
+        <div style="margin-top: 20px;">
+            <h3>Instruções:</h3>
+            <ol>
+                <li>Digite um valor no campo acima</li>
+                <li>Clique em "Adicionar Valor" para somar ao total</li>
+                <li>Use "Limpar Calculadora" para zerar o total</li>
+                <li>Os valores são salvos automaticamente no LocalStorage</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let total = 0;
+        
+        // Function to add value to calculator
+        function addValue() {
+            const valueInput = document.getElementById('valueInput');
+            const value = parseFloat(valueInput.value);
+            
+            if (isNaN(value) || value <= 0) {
+                alert('Por favor, insira um valor válido.');
+                return;
+            }
+            
+            total += value;
+            updateDisplay();
+            valueInput.value = '';
+        }
+        
+        // Function to clear calculator
+        function clearCalculator() {
+            total = 0;
+            updateDisplay();
+        }
+        
+        // Function to update display
+        function updateDisplay() {
+            document.getElementById('totalDisplay').textContent = total.toFixed(2).replace('.', ',');
+        }
+        
+        // Function to save to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('calculatorTotal', total.toString());
+            alert('Valor salvo no LocalStorage: R$ ' + total.toFixed(2).replace('.', ','));
+        }
+        
+        // Function to load from localStorage
+        function loadFromLocalStorage() {
+            const savedTotal = localStorage.getItem('calculatorTotal');
+            if (savedTotal) {
+                total = parseFloat(savedTotal) || 0;
+                updateDisplay();
+                alert('Valor carregado do LocalStorage: R$ ' + total.toFixed(2).replace('.', ','));
+            } else {
+                alert('Nenhum valor salvo encontrado.');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTotal = localStorage.getItem('calculatorTotal');
+            if (savedTotal) {
+                total = parseFloat(savedTotal) || 0;
+                updateDisplay();
+            }
+        });
+    </script>
+</body>
+</html>

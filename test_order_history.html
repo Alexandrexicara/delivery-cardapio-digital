@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Histórico de Pedidos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #fafafa;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de Histórico de Pedidos</h1>
+        <p>Esta página permite testar o funcionamento do histórico de pedidos e o cálculo de valores.</p>
+        
+        <div>
+            <button class="btn" onclick="addSampleOrder()">Adicionar Pedido de Exemplo</button>
+            <button class="btn" onclick="viewOrders()">Ver Histórico de Pedidos</button>
+            <button class="btn btn-danger" onclick="clearAllOrders()">Limpar Todos os Pedidos</button>
+        </div>
+        
+        <div id="output" style="margin-top: 20px;">
+            <h3>Saída:</h3>
+            <div id="outputContent">
+                <p>Clique nos botões acima para testar as funcionalidades.</p>
+            </div>
+        </div>
+        
+        <div id="ordersDisplay" style="margin-top: 20px;">
+            <h3>Histórico de Pedidos:</h3>
+            <div id="ordersList">
+                <p>Nenhum pedido encontrado.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to add a sample order
+        function addSampleOrder() {
+            // Get existing orders
+            let userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+            
+            // Create sample order
+            const orderId = `#${Math.floor(Math.random() * 90) + 10}-${Date.now()}`;
+            const sampleOrder = {
+                id: orderId,
+                customer: {
+                    fullName: "Cliente de Teste",
+                    phone: "(11) 99999-9999",
+                    tableNumber: "5"
+                },
+                items: [
+                    { name: "Feijoada Completa", quantity: 1, price: 32.90 },
+                    { name: "Refrigerante", quantity: 2, price: 7.90 }
+                ],
+                subtotal: 48.70,
+                serviceFee: 4.87,
+                total: 53.57,
+                table: "Mesa 5",
+                status: "pending",
+                timestamp: new Date().toISOString()
+            };
+            
+            // Add to orders
+            userOrders.push(sampleOrder);
+            
+            // Save back to localStorage
+            localStorage.setItem('userOrders', JSON.stringify(userOrders));
+            
+            // Update output
+            document.getElementById('outputContent').innerHTML = `
+                <p>Pedido adicionado com sucesso!</p>
+                <p>ID do Pedido: ${orderId}</p>
+                <p>Total: R$ ${sampleOrder.total.toFixed(2).replace('.', ',')}</p>
+            `;
+        }
+        
+        // Function to view orders
+        function viewOrders() {
+            const userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+            
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = '';
+            
+            if (userOrders.length === 0) {
+                ordersList.innerHTML = '<p>Nenhum pedido encontrado.</p>';
+                return;
+            }
+            
+            // Sort orders by timestamp (newest first)
+            userOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Calculate total of all orders
+            let totalAllOrders = 0;
+            
+            userOrders.forEach(order => {
+                // Add to total
+                totalAllOrders += order.total || 0;
+                
+                const orderElement = document.createElement('div');
+                orderElement.className = 'order-card';
+                
+                // Format date
+                const orderDate = new Date(order.timestamp);
+                const formattedDate = orderDate.toLocaleDateString('pt-BR') + ' ' + orderDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                
+                orderElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div><strong>Pedido ${order.id || 'N/A'}</strong></div>
+                        <div>${formattedDate}</div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Status:</strong> ${order.status || 'N/A'}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Mesa:</strong> ${order.table || 'N/A'}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Itens:</strong>
+                        <div style="margin-top: 5px;">
+                            ${order.items ? order.items.map(item => 
+                                `<div style="display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #eee;">
+                                    <div>${item.name} <small>(x${item.quantity})</small></div>
+                                    <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
+                                </div>`
+                            ).join('') : 'Nenhum item'}
+                        </div>
+                    </div>
+                    <div style="text-align: right; font-weight: bold;">
+                        Total: R$ ${order.total ? order.total.toFixed(2).replace('.', ',') : '0,00'}
+                    </div>
+                    <div style="margin-top: 10px; text-align: center;">
+                        <button class="btn btn-danger" onclick="removeOrder('${order.id}')">Remover Pedido</button>
+                    </div>
+                `;
+                
+                ordersList.appendChild(orderElement);
+            });
+            
+            // Add summary of all orders
+            const summaryElement = document.createElement('div');
+            summaryElement.style.marginTop = '30px';
+            summaryElement.style.padding = '20px';
+            summaryElement.style.backgroundColor = '#f8f9fa';
+            summaryElement.style.borderRadius = '10px';
+            summaryElement.style.fontWeight = 'bold';
+            summaryElement.style.textAlign = 'right';
+            summaryElement.innerHTML = `
+                <div style="font-size: 18px;">
+                    Total de todos os pedidos: R$ ${totalAllOrders.toFixed(2).replace('.', ',')}
+                </div>
+            `;
+            ordersList.appendChild(summaryElement);
+            
+            document.getElementById('outputContent').innerHTML = `
+                <p>Total de pedidos: ${userOrders.length}</p>
+                <p>Valor total de todos os pedidos: R$ ${totalAllOrders.toFixed(2).replace('.', ',')}</p>
+            `;
+        }
+        
+        // Function to remove a specific order
+        function removeOrder(orderId) {
+            // Get existing user orders from localStorage
+            let userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+            
+            // Filter out the completed order
+            userOrders = userOrders.filter(order => order.id !== orderId);
+            
+            // Save back to localStorage
+            localStorage.setItem('userOrders', JSON.stringify(userOrders));
+            
+            // Show confirmation
+            document.getElementById('outputContent').innerHTML = `
+                <p>Pedido ${orderId} removido com sucesso!</p>
+            `;
+            
+            // Refresh the display
+            viewOrders();
+        }
+        
+        // Function to clear all orders
+        function clearAllOrders() {
+            localStorage.removeItem('userOrders');
+            document.getElementById('ordersList').innerHTML = '<p>Nenhum pedido encontrado.</p>';
+            document.getElementById('outputContent').innerHTML = '<p>Todos os pedidos foram removidos.</p>';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            viewOrders();
+        });
+    </script>
+</body>
+</html>

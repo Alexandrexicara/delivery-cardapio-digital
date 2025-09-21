@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Pedidos Combinados</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-success {
+            background-color: #27ae60;
+        }
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+        }
+        .btn-warning:hover {
+            background-color: #d68910;
+        }
+        .output {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste - Pedidos Combinados</h1>
+        
+        <div class="test-section">
+            <h2>Simulação de Pedidos</h2>
+            <p>Este teste simula a funcionalidade de pedidos combinados com cálculo automático.</p>
+            
+            <button class="btn" onclick="simulateOrders()">Simular Pedidos</button>
+            <button class="btn btn-success" onclick="testCombinedView()">Testar Visualização Combinada</button>
+            <button class="btn btn-warning" onclick="testPaymentProcessing()">Testar Processamento de Pagamentos</button>
+            
+            <div class="output" id="output">
+                Clique em um dos botões acima para iniciar o teste.
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Instruções</h2>
+            <ol>
+                <li>Clique em "Simular Pedidos" para gerar pedidos de teste</li>
+                <li>Clique em "Testar Visualização Combinada" para verificar a exibição de todos os pedidos em um único container</li>
+                <li>Clique em "Testar Processamento de Pagamentos" para verificar o cálculo automático e processamento em lote</li>
+            </ol>
+            <p>Verifique o console do navegador para mensagens detalhadas de depuração.</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample order data for testing
+        const sampleOrders = [
+            {
+                id: '#05-1001',
+                customer: { fullName: 'Carlos Silva', phone: '(11) 99999-9999' },
+                items: [
+                    { name: 'Feijoada Completa', quantity: 1, price: 32.90, category: 'main' },
+                    { name: 'Batata Frita', quantity: 1, price: 18.90, category: 'appetizer' }
+                ],
+                observations: 'Sem cebola na batata',
+                subtotal: 51.80,
+                serviceFee: 5.18,
+                total: 56.98,
+                table: 'Mesa 05',
+                status: 'pending',
+                paymentStatus: 'pending',
+                timestamp: new Date().toISOString()
+            },
+            {
+                id: '#03-1002',
+                customer: { fullName: 'Ana Oliveira', phone: '(11) 98888-8888' },
+                items: [
+                    { name: 'Pudim de Leite', quantity: 1, price: 12.90, category: 'dessert' },
+                    { name: 'Refrigerante', quantity: 1, price: 7.90, category: 'drink' }
+                ],
+                observations: '',
+                subtotal: 20.80,
+                serviceFee: 2.08,
+                total: 22.88,
+                table: 'Mesa 03',
+                status: 'preparing',
+                paymentStatus: 'pending',
+                timestamp: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+            },
+            {
+                id: '#07-1003',
+                customer: { fullName: 'Roberto Santos', phone: '(11) 97777-7777' },
+                items: [
+                    { name: 'Combo Executivo', quantity: 1, price: 28.90, category: 'main' }
+                ],
+                observations: 'Bem passado',
+                subtotal: 28.90,
+                serviceFee: 2.89,
+                total: 31.79,
+                table: 'Mesa 07',
+                status: 'ready',
+                paymentStatus: 'completed',
+                timestamp: new Date(Date.now() - 7200000).toISOString() // 2 hours ago
+            }
+        ];
+        
+        // Function to simulate orders
+        function simulateOrders() {
+            const output = document.getElementById('output');
+            output.textContent = 'Simulando pedidos...\n';
+            
+            // Store sample orders in localStorage to simulate server data
+            localStorage.setItem('testOrders', JSON.stringify(sampleOrders));
+            
+            output.textContent += 'Pedidos simulados armazenados com sucesso!\n';
+            output.textContent += 'Total de pedidos: ' + sampleOrders.length + '\n';
+            
+            // Display order details
+            sampleOrders.forEach((order, index) => {
+                output.textContent += `\nPedido ${index + 1}: ${order.id}\n`;
+                output.textContent += `  Cliente: ${order.customer.fullName}\n`;
+                output.textContent += `  Mesa: ${order.table}\n`;
+                output.textContent += `  Status: ${order.status}\n`;
+                output.textContent += `  Pagamento: ${order.paymentStatus}\n`;
+                output.textContent += `  Total: R$ ${order.total.toFixed(2).replace('.', ',')}\n`;
+            });
+        }
+        
+        // Function to test combined view
+        function testCombinedView() {
+            const output = document.getElementById('output');
+            output.textContent = 'Testando visualização combinada...\n';
+            
+            // Retrieve sample orders
+            const ordersData = JSON.parse(localStorage.getItem('testOrders') || '[]');
+            
+            if (ordersData.length === 0) {
+                output.textContent += 'Nenhum pedido encontrado. Por favor, simule pedidos primeiro.\n';
+                return;
+            }
+            
+            output.textContent += 'Pedidos carregados: ' + ordersData.length + '\n';
+            
+            // Calculate totals
+            let totalSubtotal = 0;
+            let totalServiceFee = 0;
+            let totalGeneral = 0;
+            let totalPaid = 0;
+            let totalPending = 0;
+            
+            ordersData.forEach(order => {
+                // Calculate item totals
+                order.items.forEach(item => {
+                    totalSubtotal += item.price * item.quantity;
+                });
+                
+                // Add to general totals
+                totalGeneral += order.total || 0;
+                if (order.paymentStatus === 'completed') {
+                    totalPaid += order.total || 0;
+                } else {
+                    totalPending += order.total || 0;
+                }
+            });
+            
+            // Calculate service fee (10% of subtotal)
+            totalServiceFee = totalSubtotal * 0.10;
+            
+            output.textContent += '\n--- Resumo Financeiro ---\n';
+            output.textContent += `Subtotal Geral: R$ ${totalSubtotal.toFixed(2).replace('.', ',')}\n`;
+            output.textContent += `Taxa de Serviço (10%): R$ ${totalServiceFee.toFixed(2).replace('.', ',')}\n`;
+            output.textContent += `Total Geral: R$ ${totalGeneral.toFixed(2).replace('.', ',')}\n`;
+            output.textContent += `Total Pago: R$ ${totalPaid.toFixed(2).replace('.', ',')}\n`;
+            output.textContent += `Total Pendente: R$ ${totalPending.toFixed(2).replace('.', ',')}\n`;
+            
+            output.textContent += '\n--- Pedidos Detalhados ---\n';
+            ordersData.forEach(order => {
+                output.textContent += `\nPedido: ${order.id}\n`;
+                output.textContent += `  Cliente: ${order.customer.fullName}\n`;
+                output.textContent += `  Mesa: ${order.table}\n`;
+                output.textContent += `  Status: ${order.status}\n`;
+                output.textContent += `  Pagamento: ${order.paymentStatus}\n`;
+                
+                order.items.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    output.textContent += `    - ${item.name} (x${item.quantity}): R$ ${itemTotal.toFixed(2).replace('.', ',')}\n`;
+                });
+                
+                output.textContent += `  Subtotal: R$ ${order.subtotal.toFixed(2).replace('.', ',')}\n`;
+                output.textContent += `  Taxa de Serviço: R$ ${order.serviceFee.toFixed(2).replace('.', ',')}\n`;
+                output.textContent += `  Total: R$ ${order.total.toFixed(2).replace('.', ',')}\n`;
+            });
+            
+            output.textContent += '\n✓ Teste de visualização combinada concluído com sucesso!\n';
+        }
+        
+        // Function to test payment processing
+        function testPaymentProcessing() {
+            const output = document.getElementById('output');
+            output.textContent = 'Testando processamento de pagamentos...\n';
+            
+            // Retrieve sample orders
+            const ordersData = JSON.parse(localStorage.getItem('testOrders') || '[]');
+            
+            if (ordersData.length === 0) {
+                output.textContent += 'Nenhum pedido encontrado. Por favor, simule pedidos primeiro.\n';
+                return;
+            }
+            
+            // Filter pending orders
+            const pendingOrders = ordersData.filter(order => order.paymentStatus !== 'completed');
+            
+            output.textContent += 'Pedidos pendentes encontrados: ' + pendingOrders.length + '\n';
+            
+            if (pendingOrders.length === 0) {
+                output.textContent += 'Não há pedidos pendentes para processar.\n';
+                return;
+            }
+            
+            // Process each pending order
+            pendingOrders.forEach(order => {
+                output.textContent += `Processando pagamento do pedido ${order.id}...\n`;
+                
+                // Simulate payment confirmation
+                order.paymentStatus = 'completed';
+                output.textContent += `  ✓ Pagamento do pedido ${order.id} confirmado!\n`;
+            });
+            
+            // Update localStorage with processed orders
+            localStorage.setItem('testOrders', JSON.stringify(ordersData));
+            
+            // Recalculate totals after payment processing
+            let totalPaid = 0;
+            let totalPending = 0;
+            
+            ordersData.forEach(order => {
+                if (order.paymentStatus === 'completed') {
+                    totalPaid += order.total || 0;
+                } else {
+                    totalPending += order.total || 0;
+                }
+            });
+            
+            output.textContent += '\n--- Resumo Após Processamento ---\n';
+            output.textContent += `Total Pago: R$ ${totalPaid.toFixed(2).replace('.', ',')}\n`;
+            output.textContent += `Total Pendente: R$ ${totalPending.toFixed(2).replace('.', ',')}\n`;
+            
+            output.textContent += '\n✓ Teste de processamento de pagamentos concluído com sucesso!\n';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+[
+  {
+    "id": "#80-1757769097862",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:11:37.936Z"
+  },
+  {
+    "id": "#43-1757769118077",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 2,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 912,
+    "serviceFee": 91.2,
+    "total": 1003.2,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:11:58.167Z"
+  },
+  {
+    "id": "#45-1757769147334",
+    "customer": {
+      "fullName": "Paulo Barbosa",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 13",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:12:27.396Z"
+  },
+  {
+    "id": "#29-1757769209776",
+    "customer": {
+      "fullName": "Pedro Oliveira",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "03"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 03",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:13:29.857Z"
+  },
+  {
+    "id": "#28-1757769774978",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:22:55.087Z"
+  },
+  {
+    "id": "#14-1000",
+    "customer": {
+      "fullName": "John Doe",
+      "phone": "123456789",
+      "cpf": "123.456.789-00",
+      "tableNumber": "10"
+    },
+    "items": [
+      {
+        "name": "Test Item",
+        "quantity": 2,
+        "price": 10.5,
+        "category": "main"
+      }
+    ],
+    "observations": "No onions please",
+    "subtotal": 21,
+    "serviceFee": 2.1,
+    "total": 23.1,
+    "table": "Mesa 10",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:30:14.707Z"
+  },
+  {
+    "id": "#26-1757771836012",
+    "customer": {
+      "fullName": "Fernanda Almeida",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "06"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 2,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 912,
+    "serviceFee": 91.2,
+    "total": 1003.2,
+    "table": "Mesa 06",
+    "status": "pending",
+    "timestamp": "2025-09-13T13:57:16.098Z"
+  },
+  {
+    "id": "#93-1757772528097",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T14:08:48.179Z"
+  },
+  {
+    "id": "#17-1757772945111",
+    "customer": {
+      "fullName": "Juliana Gomes",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "08"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 08",
+    "status": "pending",
+    "timestamp": "2025-09-13T14:15:45.280Z"
+  },
+  {
+    "id": "#57-1757773093669",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T14:18:13.750Z"
+  },
+  {
+    "id": "#92-1757773128644",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 2,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 912,
+    "serviceFee": 91.2,
+    "total": 1003.2,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T14:18:48.724Z"
+  },
+  {
+    "id": "#63-1757773351499",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T14:22:31.718Z"
+  },
+  {
+    "id": "#17-1757773423381",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "timestamp": "2025-09-13T14:23:43.610Z"
+  },
+  {
+    "id": "#54-1757774059242",
+    "customer": {
+      "fullName": "Isabela Rocha",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "20"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 20",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T14:34:19.314Z"
+  },
+  {
+    "id": "#87-1757774160526",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T14:36:00.608Z"
+  },
+  {
+    "id": "#13-1757774567890",
+    "customer": {
+      "fullName": "Test Customer",
+      "phone": "123456789",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "Test Item 1",
+        "quantity": 2,
+        "price": 15.5,
+        "category": "main"
+      },
+      {
+        "name": "Test Item 2",
+        "quantity": 1,
+        "price": 8.75,
+        "category": "drink"
+      }
+    ],
+    "observations": "No special requests",
+    "subtotal": 39.75,
+    "serviceFee": 3.98,
+    "total": 43.73,
+    "table": "Mesa 05",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-13T14:39:58.731Z"
+  },
+  {
+    "id": "#94-1757774861973",
+    "customer": {
+      "fullName": "João Silva",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "01"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 01",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T14:47:42.038Z"
+  },
+  {
+    "id": "#96-1757775581667",
+    "customer": {
+      "fullName": "Renata Monteiro",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "18"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 18",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T14:59:41.749Z"
+  },
+  {
+    "id": "#17-1757775834514",
+    "customer": {
+      "fullName": "Cliente de Teste",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "03"
+    },
+    "items": [
+      {
+        "name": "Carne com Mandioca",
+        "quantity": 2,
+        "price": 45.6,
+        "category": "main"
+      },
+      {
+        "name": "Refrigerante",
+        "quantity": 1,
+        "price": 7.9,
+        "category": "drink"
+      }
+    ],
+    "observations": "Sem cebola",
+    "subtotal": 99.1,
+    "serviceFee": 9.91,
+    "total": 109.01,
+    "table": "Mesa 03",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T15:03:54.514Z"
+  },
+  {
+    "id": "#25-1757776708480",
+    "customer": {
+      "fullName": "Cliente da Mesa 05",
+      "phone": "11999999999",
+      "cpf": "123.456.789-00",
+      "tableNumber": "05"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T15:18:28.575Z"
+  },
+  {
+    "id": "#72-1757777329524",
+    "customer": {
+      "fullName": "Cliente da Mesa 07",
+      "phone": "11912345678",
+      "cpf": "987.654.321-00",
+      "tableNumber": "07"
+    },
+    "items": [
+      {
+        "name": "Prato Principal Teste",
+        "quantity": 1,
+        "price": 45.5,
+        "category": "main"
+      },
+      {
+        "name": "Bebida Teste",
+        "quantity": 2,
+        "price": 8.9,
+        "category": "drink"
+      }
+    ],
+    "observations": "Sem cebola, por favor",
+    "subtotal": 63.3,
+    "serviceFee": 6.33,
+    "total": 69.63,
+    "table": "Mesa 07",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T15:28:49.524Z"
+  },
+  {
+    "id": "#71-1757777631244",
+    "customer": {
+      "fullName": "Renata Monteiro",
+      "phone": "819510004130",
+      "cpf": "523.004.087-00",
+      "tableNumber": "18"
+    },
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 18",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T15:33:51.297Z"
+  },
+  {
+    "id": "#14-1757778142518",
+    "customer": {
+      "fullName": "Cliente Teste Servidor",
+      "phone": "11987654321",
+      "cpf": "123.456.789-00",
+      "tableNumber": "09"
+    },
+    "items": [
+      {
+        "name": "Produto Servidor",
+        "quantity": 1,
+        "price": 35.75,
+        "category": "main"
+      }
+    ],
+    "observations": "Teste via servidor",
+    "subtotal": 35.75,
+    "serviceFee": 3.575,
+    "total": 39.325,
+    "table": "Mesa 09",
+    "status": "pending",
+    "timestamp": "2025-09-13T15:42:22.518Z"
+  },
+  {
+    "id": "#43-1757779777328",
+    "customer": {},
+    "items": [
+      {
+        "name": "carne com mandioca",
+        "quantity": 1,
+        "price": 456,
+        "category": "unknown"
+      }
+    ],
+    "observations": "",
+    "subtotal": 456,
+    "serviceFee": 45.6,
+    "total": 501.6,
+    "table": "Mesa 05",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T16:09:37.419Z"
+  },
+  {
+    "id": "#77-1757787743933",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T18:22:24.029Z"
+  },
+  {
+    "id": "#54-1757787899641",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-13T18:24:59.733Z"
+  },
+  {
+    "id": "#89-1757788782615",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 2,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 120,
+    "serviceFee": 12,
+    "total": 132,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T18:39:42.734Z"
+  },
+  {
+    "id": "#72-1757788842632",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T18:40:42.763Z"
+  },
+  {
+    "id": "#18-1757789354135",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T18:49:14.238Z"
+  },
+  {
+    "id": "#21-1757789381289",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 3,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 180,
+    "serviceFee": 18,
+    "total": 198,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T18:49:41.387Z"
+  },
+  {
+    "id": "#67-1757790389361",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 2,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 120,
+    "serviceFee": 12,
+    "total": 132,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T19:06:29.467Z"
+  },
+  {
+    "id": "#49-1757790408385",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-13T19:06:48.487Z"
+  },
+  {
+    "id": "#90-1757955871266",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 3,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 180,
+    "serviceFee": 18,
+    "total": 198,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-15T17:04:31.330Z"
+  },
+  {
+    "id": "#35-1757955910377",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "delivered",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-15T17:05:10.490Z"
+  },
+  {
+    "id": "#92-1757964336675",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-15T19:25:36.771Z"
+  },
+  {
+    "id": "#39-1757964420371",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 3,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 180,
+    "serviceFee": 18,
+    "total": 198,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-15T19:27:00.464Z"
+  },
+  {
+    "id": "#81-1757964502205",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 5,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 300,
+    "serviceFee": 30,
+    "total": 330,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-15T19:28:22.340Z"
+  },
+  {
+    "id": "#80-1757964571879",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 3,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 180,
+    "serviceFee": 18,
+    "total": 198,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-15T19:29:31.990Z"
+  },
+  {
+    "id": "#76-1757964590632",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-15T19:29:50.715Z"
+  },
+  {
+    "id": "#23-1757967557508",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-15T20:19:17.612Z"
+  },
+  {
+    "id": "#13-1757967611629",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "completed",
+    "timestamp": "2025-09-15T20:20:11.717Z"
+  },
+  {
+    "id": "#73-1757967726304",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 1,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 60,
+    "serviceFee": 6,
+    "total": 66,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-15T20:22:06.386Z"
+  },
+  {
+    "id": "#73-1757967738625",
+    "customer": {
+      "fullName": "celio",
+      "phone": "(38) 9 8828-3318",
+      "cpf": "048.691.976-51",
+      "tableNumber": "13"
+    },
+    "items": [
+      {
+        "name": "carne de sol com batata",
+        "quantity": 3,
+        "price": 60,
+        "category": "appetizer"
+      }
+    ],
+    "observations": "",
+    "subtotal": 180,
+    "serviceFee": 18,
+    "total": 198,
+    "table": "Mesa 13",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "timestamp": "2025-09-15T20:22:18.711Z"
+  }
+]

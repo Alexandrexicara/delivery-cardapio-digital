@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cardápio Digital Universal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .login-header p {
+            color: #7f8c8d;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.3s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdf2f2;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Cardápio Digital Universal</h1>
+            <p>Área Administrativa</p>
+        </div>
+        
+        <div id="errorMessage" class="error-message">
+            <!-- Error messages will be displayed here -->
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+            </div>
+            
+            <button type="submit" class="btn">Entrar</button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#" onclick="showForgotPassword()">Esqueceu sua senha?</a>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminAccess = localStorage.getItem('adminAccess');
+            const establishmentData = localStorage.getItem('establishmentData');
+            
+            if (adminAccess && establishmentData) {
+                // User is already logged in, redirect to admin panel
+                window.location.href = 'admin.html';
+            }
+        });
+        
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Simple validation
+            if (!email || !password) {
+                showError('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            // Check if establishment data exists
+            const establishmentData = localStorage.getItem('establishmentData');
+            if (!establishmentData) {
+                showError('Nenhum estabelecimento registrado. Por favor, adquira o sistema primeiro.');
+                return;
+            }
+            
+            // Parse establishment data
+            const data = JSON.parse(establishmentData);
+            
+            // Validate credentials
+            // Check if email matches stored email and password matches stored password
+            if (email === data.email && password === data.adminPassword) {
+                // Successful login
+                localStorage.setItem('adminAccess', 'true');
+                
+                // Redirect to admin panel
+                window.location.href = 'admin.html';
+            } else {
+                showError('E-mail ou senha inválidos.');
+            }
+        });
+        
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Hide error after 5 seconds
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show forgot password message
+        function showForgotPassword() {
+            alert('Para recuperar sua senha, entre em contato com o suporte técnico.');
+        }
+    </script>
+</body>
+</html>

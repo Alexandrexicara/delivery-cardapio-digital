@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Cálculo Automático</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        .product {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #fafafa;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .quantity-btn {
+            background-color: #ddd;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .quantity {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .cart-summary {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .result {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de Cálculo Automático</h1>
+        <p>Esta página demonstra como o sistema calcula automaticamente os valores dos pedidos.</p>
+        
+        <h2>Produtos</h2>
+        <div class="product">
+            <h3>Feijoada Completa</h3>
+            <p>Feijoada tradicional com arroz, couve, laranja e torresmo</p>
+            <p>Preço: R$ 32,90</p>
+            <div class="quantity-control">
+                <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                <span class="quantity">0</span>
+                <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+            </div>
+        </div>
+        
+        <div class="product">
+            <h3>Batata Frita</h3>
+            <p>Batata frita crocante com temperos especiais</p>
+            <p>Preço: R$ 18,90</p>
+            <div class="quantity-control">
+                <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                <span class="quantity">0</span>
+                <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+            </div>
+        </div>
+        
+        <div class="product">
+            <h3>Refrigerante</h3>
+            <p>Refrigerante lata 350ml</p>
+            <p>Preço: R$ 7,90</p>
+            <div class="quantity-control">
+                <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                <span class="quantity">0</span>
+                <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+            </div>
+        </div>
+        
+        <h2>Carrinho</h2>
+        <div id="cartItemsContainer">
+            <p>Seu carrinho está vazio.</p>
+        </div>
+        
+        <div class="cart-summary">
+            <div class="cart-item">
+                <div>Subtotal</div>
+                <div id="subtotal">R$ 0,00</div>
+            </div>
+            <div class="cart-item">
+                <div>Taxa de Serviço (10%)</div>
+                <div id="serviceFee">R$ 0,00</div>
+            </div>
+            <div class="cart-item" style="font-weight: bold; font-size: 18px;">
+                <div>Total</div>
+                <div id="total">R$ 0,00</div>
+            </div>
+        </div>
+        
+        <div class="result">
+            Total Automático: <span id="autoTotal">R$ 0,00</span>
+        </div>
+        
+        <button class="btn" onclick="calculateTotal()">Calcular Total</button>
+        <button class="btn btn-danger" onclick="clearCart()">Limpar Carrinho</button>
+    </div>
+
+    <script>
+        // Product prices
+        const prices = {
+            'Feijoada Completa': 32.90,
+            'Batata Frita': 18.90,
+            'Refrigerante': 7.90
+        };
+        
+        // Increase quantity
+        function increaseQuantity(button) {
+            const quantityElement = button.parentElement.querySelector('.quantity');
+            let quantity = parseInt(quantityElement.textContent);
+            quantity++;
+            quantityElement.textContent = quantity;
+            
+            // Update cart automatically
+            updateCart();
+        }
+        
+        // Decrease quantity
+        function decreaseQuantity(button) {
+            const quantityElement = button.parentElement.querySelector('.quantity');
+            let quantity = parseInt(quantityElement.textContent);
+            if (quantity > 0) {
+                quantity--;
+                quantityElement.textContent = quantity;
+                
+                // Update cart automatically
+                updateCart();
+            }
+        }
+        
+        // Update cart automatically
+        function updateCart() {
+            let subtotal = 0;
+            const cartItemsContainer = document.getElementById('cartItemsContainer');
+            
+            // Clear existing cart items
+            cartItemsContainer.innerHTML = '';
+            
+            // Get all products
+            const products = document.querySelectorAll('.product');
+            let hasItems = false;
+            
+            products.forEach(product => {
+                const name = product.querySelector('h3').textContent;
+                const quantityElement = product.querySelector('.quantity');
+                const quantity = parseInt(quantityElement.textContent);
+                
+                if (quantity > 0) {
+                    hasItems = true;
+                    const price = prices[name];
+                    const total = price * quantity;
+                    subtotal += total;
+                    
+                    const cartItemElement = document.createElement('div');
+                    cartItemElement.className = 'cart-item';
+                    cartItemElement.innerHTML = `
+                        <div>
+                            <div>${name}</div>
+                            <small>Quantidade: ${quantity}</small>
+                        </div>
+                        <div>R$ ${total.toFixed(2).replace('.', ',')}</div>
+                    `;
+                    cartItemsContainer.appendChild(cartItemElement);
+                }
+            });
+            
+            if (!hasItems) {
+                cartItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
+            }
+            
+            // Calculate service fee (10%)
+            const serviceFee = subtotal * 0.10;
+            const total = subtotal + serviceFee;
+            
+            // Update summary
+            document.getElementById('subtotal').textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('serviceFee').textContent = `R$ ${serviceFee.toFixed(2).replace('.', ',')}`;
+            document.getElementById('total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('autoTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+        
+        // Calculate total manually (for testing)
+        function calculateTotal() {
+            updateCart();
+            alert('Cálculo automático atualizado!');
+        }
+        
+        // Clear cart
+        function clearCart() {
+            const quantities = document.querySelectorAll('.quantity');
+            quantities.forEach(quantity => {
+                quantity.textContent = '0';
+            });
+            updateCart();
+        }
+        
+        // Initialize automatic updates
+        setInterval(updateCart, 1000);
+    </script>
+</body>
+</html>

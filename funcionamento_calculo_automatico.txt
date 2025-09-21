@@ -1,0 +1,45 @@
+FUNCIONAMENTO DO CÁLCULO AUTOMÁTICO
+
+O sistema agora calcula automaticamente todos os valores sem intervenção manual do cliente:
+
+1. FUNCIONAMENTO AUTOMÁTICO:
+   - Quando o cliente adiciona ou remove itens do carrinho, o cálculo é feito automaticamente
+   - Não é necessário clicar em nenhum botão para calcular
+   - O total é atualizado em tempo real conforme o cliente interage com os itens
+
+2. COMPONENTES DO CÁLCULO:
+   - Subtotal: Soma de (preço do item × quantidade) para todos os itens
+   - Taxa de Serviço: 10% sobre o subtotal
+   - Total: Subtotal + Taxa de Serviço
+
+3. PROCESSO DE CÁLCULO:
+   - Ao clicar nos botões + ou - nos itens, a quantidade é atualizada imediatamente
+   - A função updateCartDisplay() é chamada automaticamente após cada alteração
+   - Todos os valores (subtotal, taxa de serviço e total) são recalculados
+   - O valor total é automaticamente preenchido na seção de pagamento
+
+4. INTEGRAÇÃO COM PAGAMENTO:
+   - Quando o cliente vai para a seção de pagamento, o valor total já está calculado
+   - O valor do PIX é preenchido automaticamente com o total calculado
+   - Não há necessidade de calcular manualmente
+
+5. VANTAGENS DO SISTEMA AUTOMÁTICO:
+   - Cliente não precisa fazer nenhum cálculo manual
+   - Redução de erros de cálculo
+   - Processo mais rápido e intuitivo
+   - Valores sempre atualizados em tempo real
+
+6. VERIFICAÇÃO:
+   - O arquivo test_automatic_calculation.html demonstra o funcionamento
+   - O sistema funciona exatamente como o cardápio digital principal
+   - Todos os cálculos são feitos automaticamente sem intervenção do cliente
+
+7. FLUXO COMPLETO:
+   1. Cliente seleciona itens no cardápio
+   2. Sistema calcula automaticamente subtotal, taxa e total
+   3. Cliente vai para o carrinho (valores já calculados)
+   4. Cliente envia o pedido
+   5. Sistema redireciona para pagamento com valores já preenchidos
+   6. Cliente escolhe forma de pagamento e conclui
+
+O sistema agora funciona exatamente como solicitado: cálculo automático sem intervenção manual do cliente.

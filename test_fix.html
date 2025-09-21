@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testar Correção</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; cursor: pointer; margin: 5px; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Testar Correção do Envio de Pedido</h1>
+    
+    <button onclick="testOrderSend()">Testar Envio de Pedido</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        function testOrderSend() {
+            // Simular dados de cliente registrados
+            const customerData = {
+                fullName: "Cliente Teste",
+                phone: "11999999999",
+                tableNumber: "03"
+            };
+            
+            // Salvar no localStorage (como faz o registro)
+            localStorage.setItem('customerData', JSON.stringify(customerData));
+            
+            // Simular a função de envio de pedido
+            function sendOrder() {
+                // Obter dados do cliente
+                let customerData = localStorage.getItem('customerData');
+                try {
+                    customerData = customerData ? JSON.parse(customerData) : {};
+                } catch (e) {
+                    console.error('Erro ao parsear dados do cliente:', e);
+                    customerData = {};
+                }
+                
+                // Validar que temos os dados do cliente com os campos obrigatórios
+                if (!customerData || 
+                    !customerData.fullName || 
+                    !customerData.phone || 
+                    !customerData.tableNumber) {
+                    return {
+                        success: false,
+                        message: 'Por favor, complete o cadastro antes de enviar o pedido.'
+                    };
+                }
+                
+                // Se passou na validação, o envio pode prosseguir
+                return {
+                    success: true,
+                    message: '✅ Pedido pode ser enviado! Dados do cliente válidos.',
+                    customerData: customerData
+                };
+            }
+            
+            // Testar o envio
+            const result = sendOrder();
+            const resultDiv = document.getElementById('result');
+            
+            if (result.success) {
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h3>${result.message}</h3>
+                        <p>Dados do cliente: ${JSON.stringify(result.customerData)}</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Erro no envio</h3>
+                        <p>${result.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

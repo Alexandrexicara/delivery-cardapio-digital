@@ -1,0 +1,82 @@
+// Script para debugar os dados reais do cliente e pedidos
+
+console.log('=== Debugando dados reais do cliente ===');
+
+// Verificar dados do cliente no localStorage
+const customerData = localStorage.getItem('customerData');
+console.log('Dados do cliente no localStorage:', customerData);
+
+if (customerData) {
+  try {
+    const parsedData = JSON.parse(customerData);
+    console.log('Dados do cliente parseados:', parsedData);
+    
+    if (parsedData.tableNumber) {
+      console.log('Número da mesa:', parsedData.tableNumber);
+      console.log('Mesa formatada:', `Mesa ${parsedData.tableNumber}`);
+    } else {
+      console.log('Número da mesa não encontrado nos dados do cliente');
+    }
+  } catch (error) {
+    console.error('Erro ao parsear dados do cliente:', error);
+  }
+} else {
+  console.log('Nenhum dado de cliente encontrado no localStorage');
+}
+
+// Verificar pedidos salvos localmente
+const userOrders = localStorage.getItem('userOrders');
+console.log('\n=== Pedidos do usuário ===');
+if (userOrders) {
+  try {
+    const parsedOrders = JSON.parse(userOrders);
+    console.log(`Encontrados ${parsedOrders.length} pedidos:`);
+    parsedOrders.forEach((order, index) => {
+      console.log(`Pedido ${index + 1}:`, {
+        id: order.id,
+        table: order.table,
+        customer: order.customer,
+        timestamp: order.timestamp
+      });
+    });
+  } catch (error) {
+    console.error('Erro ao parsear pedidos do usuário:', error);
+  }
+} else {
+  console.log('Nenhum pedido encontrado no localStorage');
+}
+
+// Testar criação de um novo pedido com dados reais
+console.log('\n=== Testando criação de pedido ===');
+const testData = {
+  fullName: "Cliente Teste Real",
+  phone: "11987654321",
+  cpf: "123.456.789-00",
+  tableNumber: "07"
+};
+
+console.log('Dados de teste:', testData);
+console.log('Mesa formatada:', `Mesa ${testData.tableNumber}`);
+
+// Simular criação de pedido
+const testOrder = {
+  id: `#${Math.floor(Math.random() * 90) + 10}-${Date.now()}`,
+  customer: testData,
+  items: [
+    {
+      name: "Produto Teste",
+      quantity: 1,
+      price: 25.50,
+      category: "main"
+    }
+  ],
+  observations: "Sem observações",
+  subtotal: 25.50,
+  serviceFee: 2.55,
+  total: 28.05,
+  table: `Mesa ${testData.tableNumber}`,
+  status: "pending",
+  timestamp: new Date().toISOString()
+};
+
+console.log('Pedido de teste criado:', testOrder);

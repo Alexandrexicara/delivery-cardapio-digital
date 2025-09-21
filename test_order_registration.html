@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Registro de Pedido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Registro de Pedido</h1>
+    
+    <div class="test-section">
+        <h2>Registro de Cliente</h2>
+        <div>
+            <label>Número da Mesa: 
+                <select id="tableNumber">
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                </select>
+            </label>
+        </div>
+        <div>
+            <label>Nome Completo: <input type="text" id="fullName" value="Cliente de Teste"></label>
+        </div>
+        <div>
+            <label>Telefone: <input type="text" id="phone" value="11999999999"></label>
+        </div>
+        <div>
+            <label>CPF: <input type="text" id="cpf" value="123.456.789-00"></label>
+        </div>
+        <button onclick="registerCustomer()">Registrar Cliente</button>
+        <div id="registrationResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Criar Pedido</h2>
+        <button onclick="createOrder()">Criar Pedido de Teste</button>
+        <div id="orderResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Verificar Pedidos</h2>
+        <button onclick="checkOrders()">Verificar Últimos Pedidos</button>
+        <div id="ordersResult"></div>
+    </div>
+
+    <script>
+        let ws;
+        
+        // Initialize WebSocket connection
+        function initWebSocket() {
+            ws = new WebSocket('ws://127.0.0.1:3000');
+            
+            ws.onopen = function() {
+                console.log('Conectado ao servidor WebSocket');
+            };
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log('Mensagem recebida:', data);
+            };
+            
+            ws.onclose = function() {
+                console.log('Conexão WebSocket fechada');
+            };
+        }
+        
+        // Register customer
+        function registerCustomer() {
+            const customerData = {
+                tableNumber: document.getElementById('tableNumber').value,
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                cpf: document.getElementById('cpf').value
+            };
+            
+            localStorage.setItem('customerData', JSON.stringify(customerData));
+            
+            const resultDiv = document.getElementById('registrationResult');
+            resultDiv.innerHTML = `
+                <div class="result success">
+                    Cliente registrado com sucesso!<br>
+                    Mesa: ${customerData.tableNumber}<br>
+                    Nome: ${customerData.fullName}
+                </div>
+            `;
+        }
+        
+        // Create test order
+        function createOrder() {
+            const customerData = JSON.parse(localStorage.getItem('customerData'));
+            if (!customerData) {
+                document.getElementById('orderResult').innerHTML = `
+                    <div class="result error">
+                        Por favor, registre um cliente primeiro!
+                    </div>
+                `;
+                return;
+            }
+            
+            const order = {
+                items: [
+                    {
+                        name: "Teste de Prato",
+                        quantity: 1,
+                        price: 25.90,
+                        category: "main"
+                    }
+                ],
+                observations: "Pedido de teste para verificar mesa",
+                subtotal: 25.90,
+                serviceFee: 2.59,
+                total: 28.49
+            };
+            
+            fetch('http://127.0.0.1:3000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(order)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('orderResult');
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            Pedido criado com sucesso!<br>
+                            ID: ${data.order.id}<br>
+                            Mesa: ${data.order.table}<br>
+                            Status: ${data.order.status}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            Erro ao criar pedido: ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('orderResult').innerHTML = `
+                    <div class="result error">
+                        Erro de conexão: ${error.message}
+                    </div>
+                `;
+            });
+        }
+        
+        // Check recent orders
+        function checkOrders() {
+            fetch('http://127.0.0.1:3000/api/orders')
+            .then(response => response.json())
+            .then(orders => {
+                // Get last 3 orders
+                const recentOrders = orders.slice(-3);
+                
+                let html = '<div class="result success"><h3>Últimos Pedidos:</h3>';
+                recentOrders.forEach(order => {
+                    html += `
+                        <p>
+                            <strong>ID:</strong> ${order.id}<br>
+                            <strong>Mesa:</strong> ${order.table}<br>
+                            <strong>Status:</strong> ${order.status}<br>
+                            <strong>Data:</strong> ${new Date(order.timestamp).toLocaleString('pt-BR')}
+                        </p>
+                    `;
+                });
+                html += '</div>';
+                
+                document.getElementById('ordersResult').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('ordersResult').innerHTML = `
+                    <div class="result error">
+                        Erro ao buscar pedidos: ${error.message}
+                    </div>
+                `;
+            });
+        }
+        
+        // Initialize when page loads
+        window.onload = function() {
+            initWebSocket();
+        };
+    </script>
+</body>
+</html>

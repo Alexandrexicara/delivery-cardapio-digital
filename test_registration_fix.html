@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Correção de Registro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Correção de Registro</h1>
+    
+    <form id="testForm">
+        <div class="form-group">
+            <label for="fullName">Nome Completo *</label>
+            <input type="text" id="fullName" required placeholder="Seu nome completo" value="Cliente Teste">
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Telefone *</label>
+            <input type="tel" id="phone" required placeholder="(00) 00000-0000" value="11999999999">
+        </div>
+        
+        <div class="form-group">
+            <label for="tableNumber">Número da Mesa *</label>
+            <select id="tableNumber" required>
+                <option value="">Selecione sua mesa</option>
+                <option value="1">Mesa 01</option>
+                <option value="2">Mesa 02</option>
+                <option value="3" selected>Mesa 03</option>
+                <option value="4">Mesa 04</option>
+                <option value="5">Mesa 05</option>
+                <option value="6">Mesa 06</option>
+                <option value="7">Mesa 07</option>
+                <option value="8">Mesa 08</option>
+                <option value="9">Mesa 09</option>
+                <option value="10">Mesa 10</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="cpf">CPF (Opcional)</label>
+            <input type="text" id="cpf" placeholder="000.000.000-00" value="123.456.789-00">
+        </div>
+        
+        <button type="submit">Testar Registro</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <h2>Dados no localStorage</h2>
+    <button onclick="checkLocalStorage()">Verificar localStorage</button>
+    <div id="localStorageData"></div>
+    
+    <script>
+        // Registration completion function (same as in usuario.html)
+        function completeRegistration() {
+            const name = document.getElementById('fullName').value;
+            const phone = document.getElementById('phone').value;
+            const tableNumber = document.getElementById('tableNumber').value;
+            const cpf = document.getElementById('cpf').value;
+            
+            if (!name || !phone || !tableNumber) {
+                showResult('Por favor, preencha todos os campos obrigatórios.', 'error');
+                return false;
+            }
+            
+            // Save customer data to localStorage
+            const customerData = {
+                fullName: name,
+                phone: phone,
+                cpf: cpf,
+                tableNumber: tableNumber
+            };
+            
+            localStorage.setItem('customerData', JSON.stringify(customerData));
+            
+            showResult(`Cadastro realizado com sucesso!<br>Dados salvos: ${JSON.stringify(customerData, null, 2)}`, 'success');
+            return true;
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="result ${type}">
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        function checkLocalStorage() {
+            const customerData = localStorage.getItem('customerData');
+            const localStorageDiv = document.getElementById('localStorageData');
+            
+            if (customerData) {
+                try {
+                    const parsedData = JSON.parse(customerData);
+                    localStorageDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>Dados do Cliente Encontrados:</h3>
+                            <pre>${JSON.stringify(parsedData, null, 2)}</pre>
+                        </div>
+                    `;
+                } catch (error) {
+                    localStorageDiv.innerHTML = `
+                        <div class="result error">
+                            Erro ao ler dados do cliente: ${error.message}
+                        </div>
+                    `;
+                }
+            } else {
+                localStorageDiv.innerHTML = `
+                    <div class="result error">
+                        Nenhum dado de cliente encontrado no localStorage.
+                    </div>
+                `;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('testForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            completeRegistration(); // Call our custom registration function
+        });
+        
+        // Initialize when page loads
+        window.onload = function() {
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>

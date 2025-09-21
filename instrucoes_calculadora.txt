@@ -1,0 +1,34 @@
+INSTRUÇÕES PARA USAR A CALCULADORA DE VALORES
+
+1. COMO ACESSAR A CALCULADORA:
+   - Na página do cardápio, vá até a seção "Carrinho"
+   - Clique no botão "Abrir Calculadora"
+
+2. COMO USAR A CALCULADORA:
+   - Digite um valor no campo de entrada
+   - Clique no botão "Adicionar" para somar ao total
+   - O valor total será exibido abaixo
+
+3. COMO ENVIAR PARA PAGAMENTO:
+   - Após adicionar todos os valores desejados
+   - Clique no botão "Enviar para Pagamento"
+   - Você será redirecionado para a seção de pagamento
+   - O valor total será automaticamente preenchido
+
+4. FUNCIONALIDADES:
+   - Os valores são salvos automaticamente no LocalStorage
+   - A calculadora mantém o total mesmo se você sair e voltar
+   - Você pode fechar a calculadora a qualquer momento clicando no mesmo botão
+
+5. LIMPAR A CALCULADORA:
+   - Para zerar o total, você precisa fazer um pedido
+   - Após enviar para pagamento, a calculadora é automaticamente zerada
+
+6. REQUISITOS:
+   - É necessário estar cadastrado (nome, telefone e mesa)
+   - O sistema funciona mesmo sem conexão com o servidor
+   - Os pedidos são salvos localmente e enviados quando a conexão for restabelecida
+
+7. SUPORTE:
+   - Em caso de problemas, recarregue a página
+   - Verifique se o JavaScript está habilitado no seu navegador

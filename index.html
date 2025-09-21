@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio Digital Universal - Sistema para Estabelecimentos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        .hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.9)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%233498db"/><path d="M20,20 Q50,5 80,20 T80,80 Q50,95 20,80 T20,20" fill="none" stroke="%232c3e50" stroke-width="0.5"/></svg>');
+            background-size: cover;
+            border-radius: 15px;
+            padding: 60px 30px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        .price-tag {
+            background-color: #27ae60;
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            margin: 20px 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .btn-secondary {
+            background-color: #3498db;
+        }
+        .btn-secondary:hover {
+            background-color: #2980b9;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        .feature-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .how-it-works {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 50px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        .step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 20px;
+        }
+        .step-number {
+            background-color: #3498db;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        .purchase-form {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 50px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: 50px auto;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .testimonials {
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 15px;
+            padding: 50px;
+            margin: 50px 0;
+            text-align: center;
+        }
+        .testimonial {
+            max-width: 800px;
+            margin: 30px auto;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+        .testimonial-author {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #3498db;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            margin-top: 50px;
+        }
+        .hidden {
+            display: none;
+        }
+        .success-message {
+            background-color: #27ae60;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">📱 CARDÁPIO DIGITAL UNIVERSAL</div>
+            <div class="tagline">A solução completa para digitalizar seu estabelecimento e melhorar a experiência dos seus clientes</div>
+        </header>
+
+        <div class="hero">
+            <h1>Cardápio Digital Universal</h1>
+            <p>O sistema completo de pedidos automatizados para restaurantes e estabelecimentos comerciais</p>
+            <div class="price-tag">R$ 500,00</div>
+            <p>Investimento único com acesso vitalício</p>
+            <button class="btn" onclick="showPurchaseForm()">Adquirir Sistema</button>
+            <button class="btn btn-secondary" onclick="window.location.href='login.html'">Login Administrativo</button>
+        </div>
+
+        <section id="features" class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Cardápio Digital</h3>
+                <p>Interface moderna e intuitiva para seus clientes acessarem seu cardápio</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Sem Aplicativo</h3>
+                <p>Seus clientes acessam diretamente pelo navegador, sem precisar baixar nada</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Pagamento via PIX</h3>
+                <p>Receba pagamentos instantâneos com validação automática de comprovantes</p>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🕒</div>
+                <h3>Tempo Real</h3>
+                <p>Atualizações instantâneas do status do pedido para clientes e equipe</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Relatórios</h3>
+                <p>Análise completa de vendas, produtos e desempenho do seu estabelecimento</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h3>Fácil de Usar</h3>
+                <p>Sistema intuitivo que sua equipe aprenderá em minutos</p>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2 style="text-align: center; color: #2c3e50;">Como Funciona?</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Adquira o Sistema</h3>
+                    <p>Faça o pagamento único de R$ 500,00</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Configure seu Estabelecimento</h3>
+                    <p>Personalize seu cardápio, adicione logo, redes sociais e horário de funcionamento</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Receba seu QR Code Único</h3>
+                    <p>Obtenha um único QR code para todo seu estabelecimento</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Coloque em Prática</h3>
+                    <p>Imprima e posicione o mesmo QR code em todas as mesas</p>
+                </div>
+            </div>
+        </section>
+
+        <div id="purchaseForm" class="purchase-form hidden">
+            <h2 style="text-align: center; color: #2c3e50;">Adquirir Cardápio Digital Universal</h2>
+            <p style="text-align: center; font-size: 1.2em; color: #e74c3c;">Investimento único: <strong>R$ 500,00</strong></p>
+            
+            <form id="purchaseFormElement">
+                <div class="form-group">
+                    <label for="establishmentName">Nome do Estabelecimento *</label>
+                    <input type="text" id="establishmentName" required placeholder="Ex: Restaurante Sabores">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminName">Nome do Responsável *</label>
+                    <input type="text" id="adminName" required placeholder="Seu nome completo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" required placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Telefone *</label>
+                    <input type="tel" id="phone" required placeholder="(00) 00000-0000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cnpj">CNPJ do Estabelecimento *</label>
+                    <input type="text" id="cnpj" required placeholder="00.000.000/0000-00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword">Senha de Acesso *</label>
+                    <input type="password" id="adminPassword" required placeholder="Crie uma senha para acessar a área administrativa">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmAdminPassword">Confirmar Senha *</label>
+                    <input type="password" id="confirmAdminPassword" required placeholder="Digite a senha novamente">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Forma de Pagamento *</label>
+                    <select id="paymentMethod" required>
+                        <option value="">Selecione uma forma de pagamento</option>
+                        <option value="pix">PIX</option>
+                        <option value="bank_transfer">Transferência Bancária</option>
+                        <option value="credit_card">Cartão de Crédito</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn" onclick="processPurchase()" style="width: 100%; padding: 15px; font-size: 1.2em;">Finalizar Compra</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelPurchase()" style="width: 100%; padding: 15px; font-size: 1.2em; margin-top: 10px;">Cancelar</button>
+            </form>
+        </div>
+
+        <div id="successMessage" class="purchase-form hidden">
+                <h2>✅ Compra Realizada com Sucesso!</h2>
+                <p>Obrigado por adquirir o Cardápio Digital Universal!</p>
+                <p>Seu acesso foi liberado e está pronto para uso.</p>
+                <h3>Próximos passos:</h3>
+                <ol>
+                    <li>Verifique seu e-mail para instruções de acesso</li>
+                    <li>Acesse sua área administrativa para personalizar seu cardápio</li>
+                    <li>Adicione seu logo, redes sociais e horário de funcionamento</li>
+                    <li>Receba seu QR code único para todo o estabelecimento</li>
+                    <li>Imprima e posicione o mesmo QR code em todas as mesas</li>
+                </ol>
+                <button class="btn" onclick="goToAdmin()" style="background-color: #2c3e50; margin-right: 10px;">Acessar Área Administrativa</button>
+                <button class="btn btn-secondary" onclick="window.location.href='login.html'" style="margin-left: 10px;">Login</button>
+            </div>
+
+        <section class="testimonials">
+            <h2>O que nossos clientes dizem</h2>
+            <div class="testimonial">
+                "O Cardápio Digital Universal transformou nosso restaurante. Reduzimos 40% o tempo de atendimento e aumentamos a satisfação dos clientes."
+                <div class="testimonial-author">- Carlos Silva, Restaurante Sabores</div>
+            </div>
+            <div class="testimonial">
+                "Implementamos o sistema há 3 meses e já recuperamos o investimento. A praticidade para os clientes e a eficiência para nossa equipe são impressionantes."
+                <div class="testimonial-author">- Ana Oliveira, Pizzaria Bella Napoli</div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Cardápio Digital Universal &copy; 2025</p>
+            <p>Sistema de pedidos automatizado para restaurantes e estabelecimentos comerciais</p>
+            <p>Contato: suporte@cardapiodigital.com.br | (11) 99999-9999</p>
+        </footer>
+    </div>
+
+    <script>
+        // Show purchase form
+        function showPurchaseForm() {
+            document.getElementById('purchaseForm').classList.remove('hidden');
+            document.querySelector('.hero').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Cancel purchase
+        function cancelPurchase() {
+            document.getElementById('purchaseForm').classList.add('hidden');
+        }
+        
+        // Process purchase
+        function processPurchase() {
+            const establishmentName = document.getElementById('establishmentName').value;
+            const adminName = document.getElementById('adminName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const cnpj = document.getElementById('cnpj').value;
+            const adminPassword = document.getElementById('adminPassword').value;
+            const confirmAdminPassword = document.getElementById('confirmAdminPassword').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            if (!establishmentName || !adminName || !email || !phone || !cnpj || !adminPassword || !confirmAdminPassword || !paymentMethod) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Validate password confirmation
+            if (adminPassword !== confirmAdminPassword) {
+                alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
+                return;
+            }
+            
+            // Validate password strength (minimum 6 characters)
+            if (adminPassword.length < 6) {
+                alert('A senha deve ter pelo menos 6 caracteres.');
+                return;
+            }
+            
+            // Save establishment data to localStorage
+            const establishmentData = {
+                establishmentName: establishmentName,
+                adminName: adminName,
+                email: email,
+                phone: phone,
+                cnpj: cnpj,
+                adminPassword: adminPassword, // Store the password
+                paymentMethod: paymentMethod,
+                purchaseDate: new Date().toISOString(),
+                isAuthenticated: true
+            };
+            
+            localStorage.setItem('establishmentData', JSON.stringify(establishmentData));
+            
+            // Hide form and show success message
+            document.getElementById('purchaseForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.remove('hidden');
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Go to admin
+        function goToAdmin() {
+            // Check if user has admin access
+            const adminAccess = localStorage.getItem('adminAccess');
+            const establishmentData = localStorage.getItem('establishmentData');
+            
+            if (adminAccess && establishmentData) {
+                // User has admin access, redirect to admin panel
+                window.location.href = 'admin.html';
+            } else {
+                // User doesn't have admin access, redirect to login page
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

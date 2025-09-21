@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Test</title>
+</head>
+<body>
+    <h1>Teste Rápido de Registro</h1>
+    <button onclick="testRegistration()">Testar Registro</button>
+    <div id="result"></div>
+
+    <script>
+        function testRegistration() {
+            // Simular dados de registro
+            const customerData = {
+                fullName: "Cliente Teste",
+                phone: "11999999999",
+                cpf: "123.456.789-00",
+                tableNumber: "03"
+            };
+            
+            // Salvar no localStorage
+            localStorage.setItem('customerData', JSON.stringify(customerData));
+            
+            // Verificar se foi salvo corretamente
+            const savedData = localStorage.getItem('customerData');
+            const resultDiv = document.getElementById('result');
+            
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    resultDiv.innerHTML = `
+                        <h2>Sucesso!</h2>
+                        <p>Dados salvos corretamente:</p>
+                        <pre>${JSON.stringify(parsedData, null, 2)}</pre>
+                    `;
+                } catch (error) {
+                    resultDiv.innerHTML = `<p>Erro ao parsear dados: ${error.message}</p>`;
+                }
+            } else {
+                resultDiv.innerHTML = '<p>Falha ao salvar dados</p>';
+            }
+        }
+    </script>
+</body>
+</html>

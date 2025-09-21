@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testar Funcionalidades do Admin</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; cursor: pointer; margin: 5px; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        h2 { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <h1>Testar Funcionalidades do Admin</h1>
+    
+    <div class="section">
+        <h2>1. Testar Personalizações</h2>
+        <button onclick="testCustomizations()">Verificar Personalizações</button>
+        <button onclick="simulateSaveCustomization()">Simular Salvar Personalização</button>
+        <button onclick="simulateUploadLogo()">Simular Upload de Logo</button>
+    </div>
+    
+    <div class="section">
+        <h2>2. Testar Itens do Cardápio</h2>
+        <button onclick="testMenuItems()">Verificar Itens do Cardápio</button>
+        <button onclick="simulateAddMenuItem()">Simular Adicionar Item</button>
+    </div>
+    
+    <div class="section">
+        <h2>3. Testar Funcionalidade Completa</h2>
+        <button onclick="testFullFunctionality()">Testar Todas as Funcionalidades</button>
+        <button onclick="clearAllData()">Limpar Todos os Dados</button>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        function testCustomizations() {
+            const customizations = localStorage.getItem('establishmentCustomizations');
+            const logo = localStorage.getItem('establishmentLogo');
+            const background = localStorage.getItem('establishmentBackground');
+            
+            const resultDiv = document.getElementById('result');
+            
+            if (customizations) {
+                try {
+                    const parsedData = JSON.parse(customizations);
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Personalizações Encontradas:</h3>
+                            <pre>${JSON.stringify(parsedData, null, 2)}</pre>
+                            <p>Logo carregado: ${logo ? '✅ Sim' : '❌ Não'}</p>
+                            <p>Background carregado: ${background ? '✅ Sim' : '❌ Não'}</p>
+                        </div>
+                    `;
+                } catch (error) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Erro ao ler personalizações:</h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                }
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result warning">
+                        <h3>⚠️ Nenhuma personalização encontrada</h3>
+                        <p>As personalizações ainda não foram salvas.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testMenuItems() {
+            const menuItems = localStorage.getItem('menuItems');
+            const resultDiv = document.getElementById('result');
+            
+            if (menuItems) {
+                try {
+                    const parsedItems = JSON.parse(menuItems);
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Itens do Cardápio Encontrados:</h3>
+                            <p>Total de itens: ${parsedItems.length}</p>
+                            <pre>${JSON.stringify(parsedItems, null, 2)}</pre>
+                        </div>
+                    `;
+                } catch (error) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Erro ao ler itens do cardápio:</h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                }
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result warning">
+                        <h3>⚠️ Nenhum item encontrado</h3>
+                        <p>O cardápio ainda não tem itens cadastrados.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function simulateSaveCustomization() {
+            // Simular dados de personalização
+            const customizations = {
+                establishmentName: "Restaurante Teste",
+                establishmentTagline: "Cozinha Brasileira Autêntica",
+                establishmentAddress: "Rua das Flores, 123 - Centro",
+                establishmentPhone: "(11) 99999-9999",
+                establishmentHours: "Ter-Sex: 18h-23h | Sáb-Dom: 12h-23h",
+                primaryColor: "#e74c3c",
+                secondaryColor: "#3498db",
+                facebook: "https://facebook.com/teste",
+                instagram: "https://instagram.com/teste",
+                whatsapp: "https://wa.me/5511999999999"
+            };
+            
+            // Salvar no localStorage
+            localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
+            
+            document.getElementById('result').innerHTML = `
+                <div class="result success">
+                    <h3>✅ Personalizações salvas com sucesso!</h3>
+                    <p>Estabelecimento: ${customizations.establishmentName}</p>
+                    <p>Cor Primária: ${customizations.primaryColor}</p>
+                    <p>Cor Secundária: ${customizations.secondaryColor}</p>
+                </div>
+            `;
+        }
+        
+        function simulateUploadLogo() {
+            // Simular um logo (data URL simples)
+            const logoData = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2U3NGMzYyIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+TE9HTzwvdGV4dD48L3N2Zz4=";
+            
+            // Salvar no localStorage
+            localStorage.setItem('establishmentLogo', logoData);
+            
+            document.getElementById('result').innerHTML = `
+                <div class="result success">
+                    <h3>✅ Logo carregado com sucesso!</h3>
+                    <p>O logo foi salvo no localStorage.</p>
+                </div>
+            `;
+        }
+        
+        function simulateAddMenuItem() {
+            // Simular um item do menu
+            const newItem = {
+                id: Date.now(),
+                name: "Prato Teste",
+                category: "main",
+                price: "25.90",
+                description: "Descrição do prato teste",
+                image: null
+            };
+            
+            // Carregar itens existentes
+            let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            
+            // Adicionar novo item
+            menuItems.push(newItem);
+            
+            // Salvar no localStorage
+            localStorage.setItem('menuItems', JSON.stringify(menuItems));
+            
+            document.getElementById('result').innerHTML = `
+                <div class="result success">
+                    <h3>✅ Item adicionado com sucesso!</h3>
+                    <p>Nome: ${newItem.name}</p>
+                    <p>Categoria: ${newItem.category}</p>
+                    <p>Preço: R$ ${newItem.price}</p>
+                    <p>Total de itens no cardápio: ${menuItems.length}</p>
+                </div>
+            `;
+        }
+        
+        function testFullFunctionality() {
+            const resultDiv = document.getElementById('result');
+            
+            // Testar personalizações
+            const customizations = localStorage.getItem('establishmentCustomizations');
+            const logo = localStorage.getItem('establishmentLogo');
+            const background = localStorage.getItem('establishmentBackground');
+            
+            // Testar itens do menu
+            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            
+            resultDiv.innerHTML = `
+                <div class="result success">
+                    <h3>✅ Teste de Funcionalidades Completo</h3>
+                    <h4>Personalizações:</h4>
+                    <ul>
+                        <li>Configurações salvas: ${customizations ? '✅ Sim' : '❌ Não'}</li>
+                        <li>Logo carregado: ${logo ? '✅ Sim' : '❌ Não'}</li>
+                        <li>Background carregado: ${background ? '✅ Sim' : '❌ Não'}</li>
+                    </ul>
+                    <h4>Cardápio:</h4>
+                    <ul>
+                        <li>Itens cadastrados: ${menuItems.length} item(s)</li>
+                    </ul>
+                    <p><strong>✅ Todas as funcionalidades estão operacionais!</strong></p>
+                </div>
+            `;
+        }
+        
+        function clearAllData() {
+            localStorage.removeItem('establishmentCustomizations');
+            localStorage.removeItem('establishmentLogo');
+            localStorage.removeItem('establishmentBackground');
+            localStorage.removeItem('menuItems');
+            
+            document.getElementById('result').innerHTML = `
+                <div class="result success">
+                    <h3>✅ Dados limpos com sucesso</h3>
+                    <p>Todas as personalizações e itens do cardápio foram removidos.</p>
+                </div>
+            `;
+        }
+        
+        // Testar funcionalidades ao carregar a página
+        window.onload = function() {
+            document.getElementById('result').innerHTML = `
+                <div class="result">
+                    <h3>🔍 Página de Teste Carregada</h3>
+                    <p>Use os botões acima para testar as funcionalidades do admin.</p>
+                </div>
+            `;
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Customer Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Customer Data</h1>
+    
+    <button onclick="checkCustomerData()">Verificar Dados do Cliente</button>
+    <button onclick="clearCustomerData()">Limpar Dados do Cliente</button>
+    
+    <div id="result"></div>
+    
+    <h2>Dados do localStorage</h2>
+    <div id="localStorageData"></div>
+    
+    <script>
+        function checkCustomerData() {
+            try {
+                const customerData = localStorage.getItem('customerData');
+                const resultDiv = document.getElementById('result');
+                
+                if (customerData) {
+                    const parsedData = JSON.parse(customerData);
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>Dados do Cliente Encontrados:</h3>
+                            <pre>${JSON.stringify(parsedData, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            Nenhum dado de cliente encontrado no localStorage.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="result error">
+                        Erro ao ler dados do cliente: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function clearCustomerData() {
+            localStorage.removeItem('customerData');
+            document.getElementById('result').innerHTML = `
+                <div class="result success">
+                    Dados do cliente removidos do localStorage.
+                </div>
+            `;
+        }
+        
+        function displayLocalStorage() {
+            const localStorageDiv = document.getElementById('localStorageData');
+            let html = '<pre>';
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                html += `${key}: ${value}\n`;
+            }
+            
+            html += '</pre>';
+            localStorageDiv.innerHTML = html;
+        }
+        
+        // Initialize when page loads
+        window.onload = function() {
+            checkCustomerData();
+            displayLocalStorage();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demonstração - Pedidos Combinados</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .demo-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .order-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .order-id {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .order-table {
+            background-color: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .order-items {
+            margin: 10px 0;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .order-total {
+            font-weight: bold;
+            text-align: right;
+            margin: 10px 0;
+        }
+        .financial-summary {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .summary-total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #219653;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hotéis Combinados - Demonstração</h1>
+        
+        <div class="demo-section">
+            <h2>Todos os Pedidos em um Único Container</h2>
+            <p>Esta demonstração mostra como todos os pedidos são exibidos juntos em um único container com cálculo automático.</p>
+            
+            <div id="ordersContainer">
+                <!-- Orders will be added here dynamically -->
+            </div>
+            
+            <div class="financial-summary">
+                <h3>Resumo Financeiro</h3>
+                <div class="summary-item">
+                    <div>Subtotal Geral</div>
+                    <div id="subtotal">R$ 0,00</div>
+                </div>
+                <div class="summary-item">
+                    <div>Taxa de Serviço (10%)</div>
+                    <div id="serviceFee">R$ 0,00</div>
+                </div>
+                <div class="summary-item summary-total">
+                    <div>Total Geral</div>
+                    <div id="total">R$ 0,00</div>
+                </div>
+                <div class="summary-item" style="color: #27ae60;">
+                    <div>Total Pago</div>
+                    <div id="paidTotal">R$ 0,00</div>
+                </div>
+                <div class="summary-item" style="color: #f39c12;">
+                    <div>Total Pendente</div>
+                    <div id="pendingTotal">R$ 0,00</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="processAllPayments()">Processar Todos os Pagamentos</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample orders data
+        const sampleOrders = [
+            {
+                id: '#01-001',
+                table: 'Mesa 01',
+                customer: {
+                    fullName: 'João Silva',
+                    phone: '(11) 99999-9999'
+                },
+                items: [
+                    { name: 'Feijoada Completa', quantity: 1, price: 32.90 },
+                    { name: 'Refrigerante', quantity: 2, price: 7.90 }
+                ],
+                subtotal: 48.70,
+                serviceFee: 4.87,
+                total: 53.57,
+                status: 'pending',
+                paymentStatus: 'pending'
+            },
+            {
+                id: '#02-002',
+                table: 'Mesa 02',
+                customer: {
+                    fullName: 'Maria Oliveira',
+                    phone: '(11) 88888-8888'
+                },
+                items: [
+                    { name: 'Pudim de Leite', quantity: 1, price: 12.90 },
+                    { name: 'Suco de Laranja', quantity: 1, price: 8.90 }
+                ],
+                subtotal: 21.80,
+                serviceFee: 2.18,
+                total: 23.98,
+                status: 'preparing',
+                paymentStatus: 'pending'
+            },
+            {
+                id: '#03-003',
+                table: 'Mesa 03',
+                customer: {
+                    fullName: 'Carlos Santos',
+                    phone: '(11) 77777-7777'
+                },
+                items: [
+                    { name: 'Bife à Parmegiana', quantity: 1, price: 28.90 },
+                    { name: 'Arroz e Feijão', quantity: 1, price: 6.90 }
+                ],
+                subtotal: 35.80,
+                serviceFee: 3.58,
+                total: 39.38,
+                status: 'ready',
+                paymentStatus: 'completed'
+            }
+        ];
+
+        // Display orders
+        function displayOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '';
+
+            // Calculate totals
+            let totalSubtotal = 0;
+            let totalServiceFee = 0;
+            let totalGeneral = 0;
+            let totalPaid = 0;
+            let totalPending = 0;
+
+            sampleOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                
+                // Format items
+                let itemsHTML = '';
+                order.items.forEach(item => {
+                    const itemTotal = item.quantity * item.price;
+                    itemsHTML += `
+                        <div class="order-item">
+                            <span>${item.name} (x${item.quantity})</span>
+                            <span>R$ ${itemTotal.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                    `;
+                });
+
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-table">${order.table}</div>
+                    </div>
+                    <div>Cliente: ${order.customer.fullName} - ${order.customer.phone}</div>
+                    <div class="order-items">
+                        ${itemsHTML}
+                    </div>
+                    <div class="order-total">
+                        <div>Subtotal: R$ ${order.subtotal.toFixed(2).replace('.', ',')}</div>
+                        <div>Taxa de Serviço (10%): R$ ${order.serviceFee.toFixed(2).replace('.', ',')}</div>
+                        <div style="font-weight: bold;">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
+                    </div>
+                    <div style="margin: 10px 0; padding: 5px; background-color: #f8f9fa; border-radius: 5px;">
+                        Status: <strong style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</strong>
+                    </div>
+                    <div style="margin: 10px 0; padding: 5px; background-color: #f8f9fa; border-radius: 5px;">
+                        Pagamento: <strong style="color: ${getPaymentStatusColor(order.paymentStatus)};">${getPaymentStatusText(order.paymentStatus)}</strong>
+                    </div>
+                `;
+
+                container.appendChild(orderCard);
+
+                // Add to totals
+                totalSubtotal += order.subtotal;
+                totalServiceFee += order.serviceFee;
+                totalGeneral += order.total;
+                
+                if (order.paymentStatus === 'completed') {
+                    totalPaid += order.total;
+                } else {
+                    totalPending += order.total;
+                }
+            });
+
+            // Update financial summary
+            document.getElementById('subtotal').textContent = `R$ ${totalSubtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('serviceFee').textContent = `R$ ${totalServiceFee.toFixed(2).replace('.', ',')}`;
+            document.getElementById('total').textContent = `R$ ${totalGeneral.toFixed(2).replace('.', ',')}`;
+            document.getElementById('paidTotal').textContent = `R$ ${totalPaid.toFixed(2).replace('.', ',')}`;
+            document.getElementById('pendingTotal').textContent = `R$ ${totalPending.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Get status color
+        function getStatusColor(status) {
+            switch (status) {
+                case 'pending': return '#f39c12';
+                case 'preparing': return '#3498db';
+                case 'ready': return '#27ae60';
+                case 'delivered': return '#9b59b6';
+                default: return '#7f8c8d';
+            }
+        }
+
+        // Get status text
+        function getStatusText(status) {
+            switch (status) {
+                case 'pending': return 'Pendente';
+                case 'preparing': return 'Em Preparo';
+                case 'ready': return 'Pronto';
+                case 'delivered': return 'Entregue';
+                default: return status;
+            }
+        }
+
+        // Get payment status color
+        function getPaymentStatusColor(paymentStatus) {
+            switch (paymentStatus) {
+                case 'pending': return '#f39c12';
+                case 'completed': return '#27ae60';
+                default: return '#7f8c8d';
+            }
+        }
+
+        // Get payment status text
+        function getPaymentStatusText(paymentStatus) {
+            switch (paymentStatus) {
+                case 'pending': return 'Pendente';
+                case 'completed': return 'Pago';
+                default: return paymentStatus;
+            }
+        }
+
+        // Process all payments
+        function processAllPayments() {
+            const pendingOrders = sampleOrders.filter(order => order.paymentStatus !== 'completed');
+            
+            if (pendingOrders.length === 0) {
+                alert('Não há pedidos pendentes para processar.');
+                return;
+            }
+            
+            if (confirm(`Tem certeza que deseja confirmar o pagamento de ${pendingOrders.length} pedidos pendentes?`)) {
+                // Update payment status for pending orders
+                pendingOrders.forEach(order => {
+                    order.paymentStatus = 'completed';
+                });
+                
+                // Refresh display
+                displayOrders();
+                
+                alert(`${pendingOrders.length} pagamentos processados com sucesso!`);
+            }
+        }
+
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', function() {
+            displayOrders();
+        });
+    </script>
+</body>
+</html>
