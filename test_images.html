@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Imagens - Cardápio Digital</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .image-test {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 10px 0;
+        }
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Imagens do Cardápio</h1>
+    
+    <div class="test-section">
+        <h2>1. Verificar Customizações Salvas</h2>
+        <button onclick="testCustomizations()">Verificar Customizações</button>
+        <div id="customizationsResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Testar Imagens na Pasta Uploads</h2>
+        <div id="uploadsTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Testar Logo no Cardápio</h2>
+        <div id="logoTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Testar Background no Cardápio</h2>
+        <div id="backgroundTest"></div>
+    </div>
+
+    <script>
+        function testCustomizations() {
+            const customizations = localStorage.getItem('establishmentCustomizations');
+            const resultDiv = document.getElementById('customizationsResult');
+            
+            if (customizations) {
+                const parsed = JSON.parse(customizations);
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Customizações encontradas:</div>
+                    <pre>${JSON.stringify(parsed, null, 2)}</pre>
+                `;
+                
+                // Test logo
+                if (parsed.logo) {
+                    document.getElementById('logoTest').innerHTML = `
+                        <div class="success">✅ Logo configurado: ${parsed.logo}</div>
+                        <div class="image-test">
+                            <img src="${parsed.logo}" alt="Logo" class="image-preview" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=error>❌ Erro ao carregar logo</div>';">
+                            <div>
+                                <strong>Logo:</strong><br>
+                                URL: ${parsed.logo}<br>
+                                <button onclick="testImage('${parsed.logo}')">Testar Logo</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('logoTest').innerHTML = '<div class="error">❌ Logo não configurado</div>';
+                }
+                
+                // Test background
+                if (parsed.background) {
+                    document.getElementById('backgroundTest').innerHTML = `
+                        <div class="success">✅ Background configurado: ${parsed.background}</div>
+                        <div style="height: 200px; background-image: url(${parsed.background}); background-size: cover; border-radius: 10px; margin: 10px 0;" onerror="this.onerror=null; this.style.backgroundColor='red'; this.innerHTML='<div class=error>❌ Erro ao carregar background</div>';">
+                        </div>
+                        <button onclick="testImage('${parsed.background}')">Testar Background</button>
+                    `;
+                } else {
+                    document.getElementById('backgroundTest').innerHTML = '<div class="error">❌ Background não configurado</div>';
+                }
+                
+            } else {
+                resultDiv.innerHTML = '<div class="error">❌ Nenhuma customização encontrada</div>';
+            }
+        }
+
+        function testImage(url) {
+            const img = new Image();
+            img.onload = () => alert('✅ Imagem carregada com sucesso!');
+            img.onerror = () => alert('❌ Erro ao carregar imagem: ' + url);
+            img.src = url;
+        }
+
+        // Test uploads folder
+        fetch('http://localhost:3002/uploads/')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const links = Array.from(doc.querySelectorAll('a')).map(a => a.textContent).filter(text => text.endsWith('.png') || text.endsWith('.jpg'));
+                
+                const uploadsDiv = document.getElementById('uploadsTest');
+                if (links.length > 0) {
+                    uploadsDiv.innerHTML = '<div class="success">✅ Arquivos encontrados na pasta uploads:</div>';
+                    links.forEach(file => {
+                        uploadsDiv.innerHTML += `
+                            <div class="image-test">
+                                <img src="http://localhost:3002/uploads/${file}" alt="${file}" class="image-preview" onerror="this.onerror=null; this.style.display='none';">
+                                <div>
+                                    <strong>${file}</strong><br>
+                                    <button onclick="testImage('http://localhost:3002/uploads/${file}')">Testar</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    uploadsDiv.innerHTML = '<div class="error">❌ Nenhum arquivo de imagem encontrado na pasta uploads</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('uploadsTest').innerHTML = '<div class="error">❌ Erro ao acessar pasta uploads: ' + error.message + '</div>';
+            });
+
+        // Auto-test on load
+        window.onload = testCustomizations;
+    </script>
+</body>
+</html>

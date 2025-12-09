@@ -395,6 +395,14 @@
             </div>
             
             <div class="form-group">
+                <label for="itemSector">Setor de Preparo</label>
+                <select id="itemSector">
+                    <option value="kitchen">Cozinha</option>
+                    <option value="counter">Balcão</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
                 <label for="itemPrice">Preço (R$)</label>
                 <input type="number" id="itemPrice" step="0.01" placeholder="Ex: 29.90">
             </div>
@@ -529,6 +537,7 @@
                 id: Date.now(), // Simple ID generation
                 name: itemName,
                 category: document.getElementById('itemCategory').value,
+                sector: document.getElementById('itemSector').value,
                 price: document.getElementById('itemPrice').value || 0,
                 description: document.getElementById('itemDescription').value,
                 image: null // Will be filled with image data if uploaded
@@ -616,42 +625,49 @@
         }
         
         function previewCustomization() {
-            const primaryColor = document.getElementById('primaryColor').value;
-            const secondaryColor = document.getElementById('secondaryColor').value;
+            // Save current customizations first
+            saveCustomization();
             
-            alert(`Visualização das cores:\nCor Primária: ${primaryColor}\nCor Secundária: ${secondaryColor}`);
+            // Open usuario.html in a new tab to preview
+            window.open('usuario.html?admin=true', '_blank');
+        }
+        
+        function uploadImage(file, type) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            const serverUrl = window.location.origin;
+            fetch(`${serverUrl}/upload/${type}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+                    customizations[type] = data.imageUrl;
+                    localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
+                    alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! Salve as personalizações para aplicar.`);
+                } else {
+                    alert('Erro ao fazer upload: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao fazer upload. Tente novamente.');
+            });
         }
         
         // Handle file uploads
         document.getElementById('logoUpload').addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
-                // Read the file and store as data URL
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(event) {
-                    // Save to localStorage as data URL
-                    localStorage.setItem('establishmentLogo', event.target.result);
-                    alert('Logo carregado com sucesso!');
-                };
-                
-                reader.readAsDataURL(file);
+                uploadImage(e.target.files[0], 'logo');
             }
         });
-        
+
         document.getElementById('backgroundUpload').addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
-                // Read the file and store as data URL
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(event) {
-                    // Save to localStorage as data URL
-                    localStorage.setItem('establishmentBackground', event.target.result);
-                    alert('Imagem de fundo carregada com sucesso!');
-                };
-                
-                reader.readAsDataURL(file);
+                uploadImage(e.target.files[0], 'background');
             }
         });
     </script>

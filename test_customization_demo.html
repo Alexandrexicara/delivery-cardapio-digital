@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo de Personalização</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .demo-header {
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .logo-placeholder {
+            height: 50px;
+            background-color: #eee;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .color-preview {
+            width: 50px;
+            height: 30px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demonstração de Personalização</h1>
+        
+        <div class="demo-header" id="demoHeader" style="background: linear-gradient(135deg, #e74c3c, #3498db);">
+            <div class="logo-placeholder" id="logoPlaceholder">
+                LOGO DO ESTABELECIMENTO
+            </div>
+            <h2 id="establishmentName">Restaurante Modelo</h2>
+            <p id="establishmentTagline">Cozinha Brasileira Autêntica</p>
+        </div>
+        
+        <div class="section">
+            <h3>Personalização de Cores</h3>
+            <div class="form-group">
+                <label for="primaryColor">
+                    Cor Primária: 
+                    <div class="color-preview" id="primaryColorPreview" style="background-color: #e74c3c;"></div>
+                </label>
+                <input type="color" id="primaryColor" value="#e74c3c" onchange="updateColorPreview('primary')">
+            </div>
+            
+            <div class="form-group">
+                <label for="secondaryColor">
+                    Cor Secundária: 
+                    <div class="color-preview" id="secondaryColorPreview" style="background-color: #3498db;"></div>
+                </label>
+                <input type="color" id="secondaryColor" value="#3498db" onchange="updateColorPreview('secondary')">
+            </div>
+            
+            <button class="btn" onclick="applyColors()">Aplicar Cores</button>
+        </div>
+        
+        <div class="section">
+            <h3>Informações do Estabelecimento</h3>
+            <div class="form-group">
+                <label for="demoEstablishmentName">Nome do Estabelecimento</label>
+                <input type="text" id="demoEstablishmentName" value="Restaurante Modelo" oninput="updateText('establishmentName', this.value)">
+            </div>
+            
+            <div class="form-group">
+                <label for="demoEstablishmentTagline">Slogan/Subtítulo</label>
+                <input type="text" id="demoEstablishmentTagline" value="Cozinha Brasileira Autêntica" oninput="updateText('establishmentTagline', this.value)">
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Instruções de Uso</h3>
+            <ol>
+                <li>Use os seletores de cor acima para escolher as cores do seu estabelecimento</li>
+                <li>Clique em "Aplicar Cores" para ver como o cabeçalho ficará</li>
+                <li>Atualize o nome e slogan do estabelecimento nos campos acima</li>
+                <li>No sistema real, você também poderá fazer upload de logo e imagem de fundo</li>
+                <li>Para acessar estas opções no sistema real:
+                    <ul>
+                        <li>Vá para a área administrativa</li>
+                        <li>Clique em "Mesas & QR Codes"</li>
+                        <li>Clique na aba "Configurações"</li>
+                        <li>Preencha as informações e clique em "Salvar Personalizações"</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function updateColorPreview(type) {
+            const color = document.getElementById(type + 'Color').value;
+            document.getElementById(type + 'ColorPreview').style.backgroundColor = color;
+        }
+        
+        function applyColors() {
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            
+            document.getElementById('demoHeader').style.background = 
+                'linear-gradient(135deg, ' + primaryColor + ', ' + secondaryColor + ')';
+            
+            alert('Cores aplicadas! No sistema real, estas personalizações seriam salvas e aplicadas ao cardápio dos clientes.');
+        }
+        
+        function updateText(elementId, value) {
+            document.getElementById(elementId).textContent = value;
+        }
+    </script>
+</body>
+</html>

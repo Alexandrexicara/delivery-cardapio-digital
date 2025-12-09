@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,22 @@
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
+            background-image: url('/uploads/1758641231853-802575236.png');
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
             color: #333;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(245, 245, 245, 0.85);
+            z-index: -1;
         }
         .container {
             max-width: 1200px;
@@ -40,16 +55,20 @@
             display: flex;
             background-color: white;
             border-radius: 10px;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
         }
         .tab {
-            flex: 1;
+            flex: 1 1 auto;
+            min-width: 120px;
             text-align: center;
             padding: 15px;
             cursor: pointer;
             transition: background-color 0.3s;
+            white-space: nowrap;
         }
         .tab.active {
             background-color: #3498db;
@@ -86,18 +105,10 @@
             font-weight: bold;
             margin: 10px 0;
         }
-        .stat-pending {
-            color: #f39c12;
-        }
-        .stat-preparing {
-            color: #3498db;
-        }
-        .stat-ready {
-            color: #27ae60;
-        }
-        .stat-delivered {
-            color: #9b59b6;
-        }
+        .stat-pending { color: #f39c12; }
+        .stat-preparing { color: #3498db; }
+        .stat-ready { color: #27ae60; }
+        .stat-delivered { color: #9b59b6; }
         .orders-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -161,6 +172,8 @@
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 5px;
         }
         .btn {
             padding: 8px 15px;
@@ -168,6 +181,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            white-space: nowrap;
         }
         .btn-primary {
             background-color: #3498db;
@@ -197,6 +211,27 @@
         .btn-info:hover {
             background-color: #8e44ad;
         }
+        .btn-pix {
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-pix:hover {
+            background-color: #1da851;
+        }
+        .btn-cash {
+            background-color: #FF9800;
+            color: white;
+        }
+        .btn-cash:hover {
+            background-color: #e68a00;
+        }
+        .btn-card {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-card:hover {
+            background-color: #2980b9;
+        }
         .filters {
             display: flex;
             gap: 15px;
@@ -208,6 +243,10 @@
             flex-direction: column;
             flex: 1;
             min-width: 200px;
+        }
+        .centered-button-container {
+            margin-top: 20px;
+            text-align: center;
         }
         label {
             font-weight: bold;
@@ -271,6 +310,25 @@
         .summary-pending { color: #f39c12; }
         .summary-completed { color: #27ae60; }
         .summary-total { color: #3498db; }
+        
+        /* Customization section styles */
+        .customization-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .url-display-box {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 5px;
+        }
+        
+        .copy-url-button {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -286,12 +344,53 @@
         <div class="tabs">
             <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
             <div class="tab" onclick="showTab('orders')">Pedidos</div>
-            <div class="tab" onclick="showTab('kitchen')">Cozinha</div>
-            <div class="tab" onclick="showTab('counter')">Balcão</div>
+            <div class="tab" onclick="showTab('waiters')">Garçons</div>
+            <div class="tab" onclick="window.open('garcom.html', '_blank')">Área do Garçom</div>
+            <div class="tab" onclick="viewMenuAsCustomer()">Ver Cardápio</div>
             <div class="tab" onclick="showTab('payments')">Pagamentos</div>
+            <div class="tab" onclick="showTab('reports')">Relatórios</div>
+            <div class="tab" onclick="window.location.href='qr-management.html'">Mesas & QR Codes</div>
+            <div class="tab" onclick="showTab('inventory')">Estoque</div>
+            <div class="tab" onclick="showTab('notifications')">Notificações</div>
             <div class="tab" onclick="showTab('history')">Histórico</div>
             <div class="tab" onclick="showTab('combined')">Pedidos Combinados</div>
+            <!-- Botões com acesso direto aos HTMLs da cozinha e balcão -->
+            <div class="tab" onclick="window.open('cozinha.html', '_blank')">Cozinha HTML</div>
+            <div class="tab" onclick="window.open('balcao.html', '_blank')">Balcão HTML</div>
         </div>
+        <!-- Waiters Section -->
+        <section id="waiters" class="content-section">
+            <h2>Garçons Cadastrados</h2>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="waiterStatusFilter">Status:</label>
+                    <select id="waiterStatusFilter" onchange="filterWaiters()">
+                        <option value="">Todos</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div>Total de Garçons</div>
+                    <div class="stat-value" id="totalWaitersCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Garçons Online</div>
+                    <div class="stat-value stat-ready" id="onlineWaitersCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Garçons Offline</div>
+                    <div class="stat-value stat-pending" id="offlineWaitersCount">0</div>
+                </div>
+            </div>
+            
+            <div id="waitersList">
+                <p>Carregando lista de garçons...</p>
+            </div>
+        </section>
 
         <section id="dashboard" class="content-section active">
             <h2>Dashboard</h2>
@@ -333,6 +432,17 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Customization and QR Code Section -->
+            <div class="customization-section">
+                <h3>Personalização & QR Code</h3>
+                <p>Gerencie a aparência do seu estabelecimento e o QR code do cardápio.</p>
+                <button class="btn btn-primary" onclick="window.location.href='qr-management.html'">Acessar Personalização</button>
+                <div class="url-display-box">
+                    <p><strong>URL do Cardápio:</strong> <span id="menuUrl">Carregando...</span></p>
+                    <button class="btn btn-success copy-url-button" onclick="copyMenuUrl()">Copiar URL</button>
+                </div>
+            </div>
         </section>
 
         <section id="orders" class="content-section">
@@ -363,10 +473,88 @@
             </div>
         </section>
 
+        <section id="settings" class="content-section">
+            <h2>Configurações do Estabelecimento</h2>
+            <p>Configure os detalhes do seu estabelecimento aqui.</p>
+        </section>
+
         <section id="history" class="content-section">
             <h2>Histórico de Ações</h2>
             <div class="order-history" id="historyList">
                 <p>Carregando histórico...</p>
+            </div>
+        </section>
+
+        <!-- Payments API Configuration Section -->
+        <section id="payments-api" class="content-section">
+            <h2>Configuração da API de Pagamentos</h2>
+            <p>Configure sua API de pagamentos para aceitar pagamentos automáticos</p>
+            
+            <div class="form-group">
+                <label for="paymentProvider">Provedor de Pagamento:</label>
+                <select id="paymentProvider" onchange="togglePaymentFields()">
+                    <option value="">Selecione um provedor</option>
+                    <option value="mercadopago">Mercado Pago</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="stripe">Stripe</option>
+                    <option value="pagseguro">PagSeguro</option>
+                </select>
+            </div>
+            
+            <div id="mercadopagoFields" class="payment-fields" style="display: none;">
+                <h3>Credenciais do Mercado Pago</h3>
+                <div class="form-group">
+                    <label for="mpPublicKey">Public Key:</label>
+                    <input type="text" id="mpPublicKey" placeholder="Sua Public Key do Mercado Pago">
+                </div>
+                <div class="form-group">
+                    <label for="mpAccessToken">Access Token:</label>
+                    <input type="password" id="mpAccessToken" placeholder="Seu Access Token do Mercado Pago">
+                </div>
+            </div>
+            
+            <div id="paypalFields" class="payment-fields" style="display: none;">
+                <h3>Credenciais do PayPal</h3>
+                <div class="form-group">
+                    <label for="paypalClientId">Client ID:</label>
+                    <input type="text" id="paypalClientId" placeholder="Seu Client ID do PayPal">
+                </div>
+                <div class="form-group">
+                    <label for="paypalSecret">Secret:</label>
+                    <input type="password" id="paypalSecret" placeholder="Seu Secret do PayPal">
+                </div>
+            </div>
+            
+            <div id="stripeFields" class="payment-fields" style="display: none;">
+                <h3>Credenciais do Stripe</h3>
+                <div class="form-group">
+                    <label for="stripePublicKey">Public Key:</label>
+                    <input type="text" id="stripePublicKey" placeholder="Sua Public Key do Stripe">
+                </div>
+                <div class="form-group">
+                    <label for="stripeSecretKey">Secret Key:</label>
+                    <input type="password" id="stripeSecretKey" placeholder="Sua Secret Key do Stripe">
+                </div>
+            </div>
+            
+            <div id="pagseguroFields" class="payment-fields" style="display: none;">
+                <h3>Credenciais do PagSeguro</h3>
+                <div class="form-group">
+                    <label for="pagseguroToken">Token:</label>
+                    <input type="password" id="pagseguroToken" placeholder="Seu Token do PagSeguro">
+                </div>
+                <div class="form-group">
+                    <label for="pagseguroEmail">Email:</label>
+                    <input type="email" id="pagseguroEmail" placeholder="Seu email do PagSeguro">
+                </div>
+            </div>
+            
+            <button class="btn btn-success" onclick="savePaymentCredentials()">Salvar Credenciais</button>
+            <button class="btn" onclick="testPaymentConnection()">Testar Conexão</button>
+            
+            <div id="paymentTestResult" class="form-group" style="margin-top: 20px; display: none;">
+                <h3>Resultado do Teste:</h3>
+                <div id="testResultContent"></div>
             </div>
         </section>
 
@@ -428,7 +616,7 @@
                 <p>Carregando pedidos combinados...</p>
             </div>
             
-            <div style="margin-top: 20px; text-align: center;">
+            <div class="centered-button-container">
                 <button class="btn btn-success" onclick="processAllPayments()">Processar Todos os Pagamentos</button>
             </div>
         </section>
@@ -437,6 +625,9 @@
     <div class="notification" id="notification">
         Nova notificação
     </div>
+
+    <!-- Sistema de Customizações -->
+    <script src="customizations.js"></script>
 
     <script>
         // DOM Ready
@@ -449,7 +640,37 @@
             
             // Load admin name
             loadAdminName();
+            
+            // Display menu URL
+            displayMenuUrl();
+            
+            loadPaymentConfiguration();
         });
+
+        // Display menu URL
+        function displayMenuUrl() {
+            // Get establishment data to build the URL
+            const establishmentData = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            
+            // Use establishment name or default
+            const establishmentName = customizations.establishmentName || establishmentData.establishmentName || 'meu-restaurante';
+            
+            // Create a URL-friendly version of the name
+            const urlName = establishmentName
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove accents
+                .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+                .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+            
+            const menuUrl = `https://cardapiodigital.com.br/${urlName}`;
+            const menuUrlElement = document.getElementById('menuUrl');
+            
+            if (menuUrlElement) {
+                menuUrlElement.textContent = menuUrl;
+            }
+        }
 
         // Check if user is authenticated
         function checkAuthentication() {
@@ -479,33 +700,95 @@
             }
         }
 
-        // Show tab
-        function showTab(tabName) {
-            // Hide all content sections
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
+        // View menu as customer
+        function viewMenuAsCustomer() {
+            // Check if there are menu items
+            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
             
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-            
-            // Load data for the selected tab if needed
-            if (tabName === 'combined') {
-                loadCombinedOrders();
-            } else if (tabName === 'history') {
-                loadOrderHistory();
+            if (menuItems.length === 0) {
+                const isConfirmed = confirm('O cardápio ainda não possui itens cadastrados. Deseja ir para a página de gerenciamento de cardápio primeiro?');
+                if (isConfirmed) {
+                    window.location.href = 'qr-management.html#menu';
+                    return;
+                }
             }
+            
+            // Open usuario.html in a new tab/window
+            window.open('usuario.html?admin=true', '_blank');
         }
 
-        // Get status text
+        // Copy menu URL to clipboard
+        function copyMenuUrl() {
+            // Get establishment data to build the URL
+            const establishmentData = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            
+            // Use establishment name or default
+            const establishmentName = customizations.establishmentName || establishmentData.establishmentName || 'meu-restaurante';
+            
+            // Create a URL-friendly version of the name
+            const urlName = establishmentName
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove accents
+                .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+                .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+            
+            const menuUrl = `https://cardapiodigital.com.br/${urlName}`;
+            
+            navigator.clipboard.writeText(menuUrl).then(() => {
+                alert('URL copiada para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar URL: ', err);
+                // Fallback: show URL in alert
+                alert('URL do cardápio: ' + menuUrl);
+            });
+        }
+
+        // Show tab
+        function showTab(tabName) {
+            try {
+                // Hide all content sections
+                const sections = document.querySelectorAll('.content-section');
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Remove active class from all tabs
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show selected tab
+                const targetSection = document.getElementById(tabName);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                } else {
+                    console.error('Section not found:', tabName);
+                    // Fallback to dashboard
+                    document.getElementById('dashboard').classList.add('active');
+                    return;
+                }
+                
+                // Load data for the selected tab if needed
+                if (tabName === 'combined') {
+                    loadCombinedOrders();
+                } else if (tabName === 'history') {
+                    loadOrderHistory();
+                } else if (tabName === 'kitchen') {
+                    loadKitchenOrders();
+                } else if (tabName === 'counter') {
+                    loadCounterOrders();
+                } else if (tabName === 'waiters') {
+                    loadWaiters();
+                }
+            } catch (error) {
+                console.error('Error showing tab:', tabName, error);
+                // Fallback to dashboard in case of error
+                document.getElementById('dashboard').classList.add('active');
+            }
+        }        // Get status text
         function getStatusText(status) {
             switch (status) {
                 case 'pending': return 'Pendente';
@@ -537,7 +820,100 @@
                 default: return paymentStatus;
             }
         }
-
+        
+        // Load waiters
+        function loadWaiters() {
+            // In a real implementation, this would fetch waiter data from the server
+            // For now, we'll simulate with localStorage data
+            
+            // Get all waiter registrations from localStorage
+            const waiterRegistrations = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('waiterData_')) {
+                    try {
+                        const waiterData = JSON.parse(localStorage.getItem(key));
+                        waiterRegistrations.push({
+                            id: key.replace('waiterData_', ''),
+                            ...waiterData
+                        });
+                    } catch (e) {
+                        console.error('Error parsing waiter data:', e);
+                    }
+                }
+            }
+            
+            // Update stats
+            document.getElementById('totalWaitersCount').textContent = waiterRegistrations.length;
+            // In a real implementation, we would track online/offline status
+            document.getElementById('onlineWaitersCount').textContent = '0';
+            document.getElementById('offlineWaitersCount').textContent = waiterRegistrations.length;
+            
+            // Display waiter list
+            const waitersList = document.getElementById('waitersList');
+            if (waiterRegistrations.length === 0) {
+                waitersList.innerHTML = '<p>Nenhum garçom cadastrado ainda.</p>';
+                return;
+            }
+            
+            let html = '<div class="orders-container" style="grid-template-columns: 1fr;">';
+            html += '<div class="orders-column"><div class="column-header"><h3>Lista de Garçons</h3></div>';
+            
+            waiterRegistrations.forEach(waiter => {
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-id">Cód: ${waiter.code || 'N/A'}</div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Nome:</strong> ${waiter.fullName || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Telefone:</strong> ${waiter.phone || 'N/A'}
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Mesas:</strong> Todas as mesas
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Cadastrado em:</strong> ${waiter.registeredAt ? new Date(waiter.registeredAt).toLocaleDateString('pt-BR') : 'N/A'}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div>
+                                <strong>Status:</strong> 
+                                <span style="color: #f39c12;">Offline</span>
+                            </div>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn-warning" onclick="editWaiter('${waiter.id}')">Editar</button>
+                            <button class="btn btn-danger" onclick="deleteWaiter('${waiter.id}')">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            waitersList.innerHTML = html;
+        }
+        
+        // Edit waiter (placeholder)
+        function editWaiter(waiterId) {
+            alert('Função de edição de garçom não implementada neste exemplo.');
+        }
+        
+        // Delete waiter (placeholder)
+        function deleteWaiter(waiterId) {
+            if (confirm('Tem certeza que deseja excluir este garçom?')) {
+                localStorage.removeItem(`waiterData_${waiterId}`);
+                loadWaiters();
+            }
+        }
+        
+        // Filter waiters
+        function filterWaiters() {
+            // In a real implementation, this would filter the waiter list
+            // For now, we'll just reload the list
+            loadWaiters();
+        }
         // Initialize WebSocket connection
         function initWebSocket() {
             // Check if we're already connected
@@ -546,12 +922,29 @@
                 return;
             }
             
-            // Connect to port 3002
-            const ws = new WebSocket('ws://localhost:3002');
+            // If there's an existing connection that's not open, close it
+            if (window.ws) {
+                window.ws.close();
+            }
+            
+            // Connect using dynamic URL
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.hostname;
+            const port = window.location.port || '3002';
+            const wsUrl = `${protocol}//${host}:${port}`;
+            
+            const ws = new WebSocket(wsUrl);
             
             ws.onopen = function() {
                 console.log('Conectado ao servidor WebSocket');
                 window.ws = ws;
+                
+                // Send admin login message to identify this connection as admin
+                if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                    window.ws.send(JSON.stringify({
+                        type: 'adminLogin'
+                    }));
+                }
                 
                 // Request existing orders when connection is established
                 if (window.ws && window.ws.readyState === WebSocket.OPEN) {
@@ -564,7 +957,9 @@
             ws.onmessage = function(event) {
                 const data = JSON.parse(event.data);
                 
-                if (data.type === 'existingOrders') {
+                if (data.type === 'adminLoginSuccess') {
+                    console.log('Admin login successful');
+                } else if (data.type === 'existingOrders') {
                     // Store orders data for combined view
                     window.ordersData = data.orders || [];
                     
@@ -663,6 +1058,48 @@
                     if (notificationMessage) {
                         alert(notificationMessage);
                     }
+                } else if (data.type === 'callWaiter') {
+                    const message = `A Mesa ${data.table} está chamando o garçom para pagamento com ${data.paymentMethod}.`;
+                    alert(message);
+                    addNotificationToDashboard(message, null); // No orderId needed for this notification
+
+                    // Record action in history
+                    const action = {
+                        type: 'callWaiter',
+                        table: data.table,
+                        paymentMethod: data.paymentMethod,
+                        timestamp: new Date().toISOString()
+                    };
+                    saveOrderAction(action);
+                } else if (data.type === 'orderRemoved') {
+                    // Remove the order card from all relevant sections in the UI
+                    console.log(`Removing order ${data.orderId} from UI`);
+                    const orderId = data.orderId;
+
+                    // Remove elements with a direct ID
+                    const elementsToRemoveById = [
+                        document.getElementById(`order-${orderId}`),
+                        document.getElementById(`kitchen-${orderId}`),
+                        document.getElementById(`counter-${orderId}`),
+                        document.getElementById(`payment-${orderId}`)
+                    ];
+
+                    elementsToRemoveById.forEach(el => {
+                        if (el) el.remove();
+                    });
+
+                    // Special handling for the 'latestOrders' section which has no unique IDs on cards
+                    const latestOrdersContainer = document.getElementById('latestOrders');
+                    if (latestOrdersContainer) {
+                        const cards = latestOrdersContainer.querySelectorAll('.order-card');
+                        cards.forEach(card => {
+                            const idElement = card.querySelector('.order-id');
+                            if (idElement && idElement.textContent.trim() === orderId) {
+                                card.remove();
+                            }
+                        });
+                    }
+                    updateDashboardCounts(); // Recalculate dashboard stats
                 } else if (data.type === 'paymentStatusUpdate') {
                     // Update payment status in payments section
                     updatePaymentStatusUI(data.orderId, data.paymentStatus);
@@ -701,6 +1138,18 @@
                     if (notificationMessage) {
                         alert(notificationMessage);
                     }
+                } else if (data.type === 'messageSent') {
+                    alert(data.message || 'Mensagem enviada com sucesso!');
+                    // Clear the input field for the current order
+                    const currentOrderId = getCurrentOrderId();
+                    if (currentOrderId) {
+                        const messageInput = document.getElementById(`message-${currentOrderId}`);
+                        if (messageInput) {
+                            messageInput.value = '';
+                        }
+                    }
+                } else if (data.type === 'messageError') {
+                    alert('Erro ao enviar mensagem: ' + data.message);
                 }
             };
             
@@ -712,6 +1161,8 @@
             
             ws.onerror = function(error) {
                 console.error('Erro na conexão WebSocket:', error);
+                // Try to reconnect after 5 seconds
+                setTimeout(initWebSocket, 5000);
             };
         }
         
@@ -736,6 +1187,57 @@
             displayOrderHistory(orderActions);
         }
         
+        // Load kitchen orders
+        function loadKitchenOrders() {
+            // In a real implementation, this would fetch kitchen orders from the server
+            // For now, we'll use the existing orders data
+            if (window.ordersData) {
+                const kitchenOrdersContainer = document.getElementById('kitchenOrders');
+                kitchenOrdersContainer.innerHTML = '';
+                
+                // Filter orders for kitchen (pending or preparing status with kitchen items)
+                const kitchenOrders = window.ordersData.filter(order => {
+                    return (order.status === 'pending' || order.status === 'preparing') && 
+                           order.items.some(item => item.sector === 'kitchen');
+                });
+                
+                if (kitchenOrders.length === 0) {
+                    kitchenOrdersContainer.innerHTML = '<p>Nenhum pedido encontrado para a cozinha.</p>';
+                    return;
+                }
+                
+                kitchenOrders.forEach(order => {
+                    const orderElement = createOrderCardHTML(order);
+                    kitchenOrdersContainer.innerHTML += orderElement;
+                });
+            }
+        }
+        
+        // Load counter orders
+        function loadCounterOrders() {
+            // In a real implementation, this would fetch counter orders from the server
+            // For now, we'll use the existing orders data
+            if (window.ordersData) {
+                const counterOrdersContainer = document.getElementById('counterOrders');
+                counterOrdersContainer.innerHTML = '';
+                
+                // Filter orders for counter (ready status with counter items)
+                const counterOrders = window.ordersData.filter(order => {
+                    return order.status === 'ready' && 
+                           order.items.some(item => item.sector === 'counter');
+                });
+                
+                if (counterOrders.length === 0) {
+                    counterOrdersContainer.innerHTML = '<p>Nenhum pedido encontrado para o balcão.</p>';
+                    return;
+                }
+                
+                counterOrders.forEach(order => {
+                    const orderElement = createOrderCardHTML(order);
+                    counterOrdersContainer.innerHTML += orderElement;
+                });
+            }
+        }        
         // Display order history
         function displayOrderHistory(actions) {
             const historyContainer = document.getElementById('historyList');
@@ -762,15 +1264,23 @@
                 const formattedDate = actionDate.toLocaleDateString('pt-BR') + ' ' + actionDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
                 
                 let actionDescription = '';
+                let actionTitle = 'Ação';
+
                 switch (action.type) {
                     case 'updateStatus':
+                        actionTitle = 'Atualização de Status';
                         actionDescription = `Status do pedido ${action.orderId} atualizado para "${getStatusText(action.status)}"`;
                         if (action.sector && action.sector !== 'admin') {
                             actionDescription += ` por ${action.sector}`;
                         }
                         break;
                     case 'repeatOrder':
+                        actionTitle = 'Repetição de Pedido';
                         actionDescription = `Pedido ${action.orderId} repetido`;
+                        break;
+                    case 'callWaiter':
+                        actionTitle = 'Chamada de Garçom';
+                        actionDescription = `Cliente da Mesa ${action.table} chamou o garçom para pagamento com ${action.paymentMethod}.`;
                         break;
                     default:
                         actionDescription = `Ação desconhecida: ${action.type}`;
@@ -778,7 +1288,7 @@
                 
                 actionElement.innerHTML = `
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <div><strong>${action.type === 'updateStatus' ? 'Atualização de Status' : action.type === 'repeatOrder' ? 'Repetição de Pedido' : 'Ação'}</strong></div>
+                        <div><strong>${actionTitle}</strong></div>
                         <div>${formattedDate}</div>
                     </div>
                     <div>${actionDescription}</div>
@@ -818,26 +1328,92 @@
             // Update financial summary
             updateFinancialSummary(filteredOrders);
             
-            // Group orders by table
-            const ordersByTable = {};
+            // Group orders by table AND combine items from same table
+            const combinedOrdersByTable = {};
             filteredOrders.forEach(order => {
-                if (!ordersByTable[order.table]) {
-                    ordersByTable[order.table] = [];
+                if (!combinedOrdersByTable[order.table]) {
+                    // Create a new combined order for this table
+                    combinedOrdersByTable[order.table] = {
+                        table: order.table,
+                        orders: [],
+                        totalItems: 0,
+                        totalPrice: 0,
+                        customerNames: []
+                    };
                 }
-                ordersByTable[order.table].push(order);
+                
+                // Add order to the table's combined order
+                combinedOrdersByTable[order.table].orders.push(order);
+                combinedOrdersByTable[order.table].totalPrice += order.total;
+                combinedOrdersByTable[order.table].totalItems += order.items.reduce((sum, item) => sum + item.quantity, 0);
+                
+                // Add customer name if not already added
+                if (!combinedOrdersByTable[order.table].customerNames.includes(order.customer.fullName)) {
+                    combinedOrdersByTable[order.table].customerNames.push(order.customer.fullName);
+                }
             });
             
-            // Generate HTML for each table
+            // Generate HTML for each table with combined orders
             let html = '';
-            for (const table in ordersByTable) {
+            for (const table in combinedOrdersByTable) {
+                const combinedOrder = combinedOrdersByTable[table];
                 html += `
                     <div class="orders-column" style="margin-bottom: 30px;">
                         <div class="column-header">
-                            <h3>${table}</h3>
+                            <h3>${table} - Pedidos Combinados</h3>
+                            <div>Total: R$ ${combinedOrder.totalPrice.toFixed(2).replace('.', ',')} | Itens: ${combinedOrder.totalItems}</div>
+                        </div>
+                        <div class="order-card">
+                            <div><strong>Clientes:</strong> ${combinedOrder.customerNames.join(', ')}</div>
+                            <div style="margin: 15px 0;">
+                                <strong>Itens Pedidos:</strong>
+                                <div class="order-items">
+                `;
+                
+                // Combine items from all orders of this table
+                const combinedItems = {};
+                combinedOrder.orders.forEach(order => {
+                    order.items.forEach(item => {
+                        const key = `${item.name}-${item.price}`;
+                        if (!combinedItems[key]) {
+                            combinedItems[key] = {
+                                name: item.name,
+                                price: item.price,
+                                totalQuantity: 0,
+                                totalPrice: 0
+                            };
+                        }
+                        combinedItems[key].totalQuantity += item.quantity;
+                        combinedItems[key].totalPrice += item.price * item.quantity;
+                    });
+                });
+                
+                // Display combined items
+                for (const key in combinedItems) {
+                    const item = combinedItems[key];
+                    html += `
+                        <div class="order-item">
+                            <div>${item.totalQuantity}x ${item.name}</div>
+                            <div>R$ ${item.totalPrice.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                                </div>
+                            </div>
+                            <div class="order-total">
+                                Total: R$ ${combinedOrder.totalPrice.toFixed(2).replace('.', ',')}
+                            </div>
+                            <div class="order-actions">
+                                <button class="btn btn-success" onclick="processTablePayment('${table}')">Processar Pagamento</button>
+                            </div>
                         </div>
                 `;
                 
-                ordersByTable[table].forEach(order => {
+                // Show individual orders for reference
+                html += '<div style="margin-top: 20px;"><strong>Pedidos Individuais:</strong></div>';
+                combinedOrder.orders.forEach(order => {
                     html += createOrderCardHTML(order, true);
                 });
                 
@@ -947,27 +1523,117 @@
         
         // Update payment status UI
         function updatePaymentStatusUI(orderId, paymentStatus) {
-            const orderCards = document.querySelectorAll('.order-card');
-            orderCards.forEach(card => {
-                const orderIdElement = card.querySelector('.order-id');
-                if (orderIdElement && orderIdElement.textContent === orderId) {
-                    const paymentStatusElement = card.querySelector('.payment-status');
+            const paymentCard = document.getElementById(`payment-${orderId}`);
+            if (paymentCard) {
+                if (paymentStatus === 'completed') {
+                    paymentCard.remove(); // Remove from pending payments
+                } else {
+                    const paymentStatusElement = paymentCard.querySelector('.payment-status');
                     if (paymentStatusElement) {
-                        paymentStatusElement.innerHTML = `
-                            <strong>Pagamento:</strong> 
-                            <span class="${paymentStatus === 'completed' ? 'payment-completed' : 'payment-pending'}">
-                                ${getPaymentStatusText(paymentStatus)}
-                            </span>
-                        `;
-                    }
-                    
-                    // Hide payment button if payment is completed
-                    const payButton = card.querySelector('.pay-button');
-                    if (payButton) {
-                        payButton.style.display = paymentStatus === 'completed' ? 'none' : 'inline-block';
+                        paymentStatusElement.textContent = `Pagamento: ${getPaymentStatusText(paymentStatus)}`;
+                        paymentStatusElement.className = `payment-status payment-${paymentStatus}`;
                     }
                 }
-            });
+            }
+            updateDashboardCounts();
+        }
+
+        // Confirm payment and notify user to clear history
+        function confirmPayment(orderId) {
+            if (!orderId) return;
+
+            if (confirm(`Confirmar o pagamento para o pedido ${orderId}? Esta ação limpará o histórico do cliente.`)) {
+                if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                    // Notify server to clear user history
+                    window.ws.send(JSON.stringify({ 
+                        type: 'paymentConfirmed', 
+                        orderId: orderId 
+                    }));
+
+                    // Update payment status locally
+                    updatePaymentStatusUI(orderId, 'completed');
+
+                    // Optionally update the main order data
+                    if (window.ordersData) {
+                        const order = window.ordersData.find(o => o.id === orderId);
+                        if (order) {
+                            order.paymentStatus = 'completed';
+                        }
+                    }
+                }
+                alert(`Pagamento para o pedido ${orderId} confirmado.`);
+            }
+        }
+
+        // Processar pagamento PIX
+        function processPixPayment(orderId, section) {
+            if (confirm('Confirmar pagamento via PIX para o pedido ' + orderId + '?')) {
+                updatePaymentStatus(orderId, 'completed', section);
+            }
+        }
+        
+        // Processar pagamento por mesa (novidade)
+        function processTablePayment(table) {
+            // Find all orders for this table
+            const tableOrders = window.ordersData.filter(order => order.table === table);
+            
+            if (tableOrders.length === 0) {
+                alert('Nenhum pedido encontrado para a mesa ' + table);
+                return;
+            }
+            
+            // Calculate total for the table
+            const total = tableOrders.reduce((sum, order) => sum + order.total, 0);
+            
+            if (confirm(`Confirmar pagamento via PIX para a mesa ${table}? Valor total: R$ ${total.toFixed(2).replace('.', ',')}`)) {
+                // Update payment status for all orders in this table
+                tableOrders.forEach(order => {
+                    updatePaymentStatus(order.id, 'completed', 'combined');
+                });
+                
+                alert('Pagamento confirmado para a mesa ' + table);
+            }
+        }
+        
+        // Processar pagamento em dinheiro
+        function processCashPayment(orderId, section) {
+            const order = window.ordersData.find(o => o.id === orderId);
+            if (!order) {
+                alert('Pedido não encontrado!');
+                return;
+            }
+
+            const amountPaidStr = prompt(`Valor total do pedido: R$ ${order.total.toFixed(2)}. Digite o valor pago pelo cliente:`);
+
+            if (amountPaidStr) {
+                const paid = parseFloat(amountPaidStr.replace(',', '.'));
+                if (isNaN(paid) || paid < order.total) {
+                    alert('Valor inválido ou insuficiente. O pagamento não foi processado.');
+                    return;
+                }
+
+                const change = paid - order.total;
+                const confirmation = confirm(`Troco a ser devolvido: R$ ${change.toFixed(2).replace('.', ',')}.\n\nDeseja confirmar o pagamento?`);
+
+                if (confirmation) {
+                    updatePaymentStatus(orderId, 'completed', section);
+                    alert('Pagamento confirmado e status atualizado!');
+                } else {
+                    alert('Pagamento cancelado pelo administrador.');
+                }
+            }
+        }
+
+        // Processar pagamento com cartão
+        function processCardPayment(orderId, section) {
+            const cardType = prompt('Qual a bandeira do cartão? (Crédito ou Débito)');
+            if (cardType && (cardType.toLowerCase() === 'crédito' || cardType.toLowerCase() === 'debito' || cardType.toLowerCase() === 'credito' || cardType.toLowerCase() === 'débito')) {
+                if (confirm(`Confirmar pagamento com cartão de ${cardType} para o pedido ${orderId}?`)) {
+                    updatePaymentStatus(orderId, 'completed', section);
+                }
+            } else if (cardType !== null) {
+                alert('Tipo de cartão inválido. Por favor, insira Crédito ou Débito.');
+            }
         }
         
         // Add notification to dashboard
@@ -1038,16 +1704,12 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
             
             const orderElement = document.createElement('div');
             orderElement.className = 'order-card';
-            orderElement.style.marginBottom = '10px';
             orderElement.innerHTML = `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <div class="order-header">
                     <div class="order-id">${order.id}</div>
                     <div class="order-table">${order.table}</div>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <div class="order-status"><strong>Status:</strong> <span style="color: ${getStatusColor(order.status)}">${getStatusText(order.status)}</span></div>
-                    <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
-                </div>
+                <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
             `;
             latestOrdersContainer.prepend(orderElement);
         }
@@ -1098,8 +1760,22 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 paymentsList.innerHTML = '';
             }
             
-            const orderElement = createOrderCardHTML(order);
-            paymentsList.innerHTML += orderElement;
+            const paymentCard = document.createElement('div');
+            paymentCard.className = 'order-card';
+            paymentCard.id = `payment-${order.id}`;
+            paymentCard.setAttribute('data-order-id', order.id); // Add data attribute for easy selection
+            paymentCard.innerHTML = `
+                <div class="order-header">
+                    <div class="order-id">${order.id}</div>
+                    <div class="order-table">${order.table}</div>
+                </div>
+                <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
+                <div class="payment-status payment-${order.paymentStatus}">Pagamento: ${getPaymentStatusText(order.paymentStatus)}</div>
+                <div class="order-actions">
+                     <button class="btn btn-success" onclick="confirmPayment('${order.id}')">Confirmar Pagamento</button>
+                </div>
+            `;
+            paymentsList.appendChild(paymentCard);
         }
         
         // Create order card HTML
@@ -1144,11 +1820,11 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                         </div>
                     </div>
                     <div class="order-actions">
-                        ${order.status === 'pending' ? `<button class="btn btn-primary" onclick="updateOrderStatus('${order.id}', 'preparing', '${isCombined ? 'combined' : 'orders'}')">Iniciar Preparação</button>` : ''}
-                        ${order.status === 'preparing' ? `<button class="btn btn-warning" onclick="updateOrderStatus('${order.id}', 'ready', '${isCombined ? 'combined' : 'kitchen'}')">Marcar como Pronto</button>` : ''}
-                        ${order.status === 'ready' ? `<button class="btn btn-info" onclick="updateOrderStatus('${order.id}', 'delivered', '${isCombined ? 'combined' : 'counter'}')">Marcar como Entregue</button>` : ''}
-                        ${order.status === 'delivered' ? `<button class="btn btn-success" onclick="updateOrderStatus('${order.id}', 'completed', '${isCombined ? 'combined' : 'counter'}')">Marcar como Concluído</button>` : ''}
-                        ${order.paymentStatus === 'pending' ? `<button class="btn btn-success pay-button" onclick="updatePaymentStatus('${order.id}', 'completed', '${isCombined ? 'combined' : 'payments'}')">Processar Pagamento</button>` : ''}
+                        ${order.paymentStatus === 'pending' ? `
+                            <button class="btn btn-pix" onclick="processPixPayment('${order.id}', '${isCombined ? 'combined' : 'payments'}')">PIX</button>
+                            <button class="btn btn-cash" onclick="processCashPayment('${order.id}', '${isCombined ? 'combined' : 'payments'}')">Dinheiro</button>
+                            <button class="btn btn-card" onclick="processCardPayment('${order.id}', '${isCombined ? 'combined' : 'payments'}')">Cartão</button>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -1214,12 +1890,215 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
             localStorage.setItem('orderActions', JSON.stringify(filteredActions));
         }
         
+        // Send message to client
+        function sendMessageToClient(orderId) {
+            const messageInput = document.getElementById(`message-${orderId}`);
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                alert('Por favor, digite uma mensagem.');
+                return;
+            }
+            
+            // Store the current order ID in a global variable for later use
+            window.currentOrderId = orderId;
+            
+            // Send message to server
+            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                window.ws.send(JSON.stringify({
+                    type: 'sendMessageToClient',
+                    orderId: orderId,
+                    message: message
+                }));
+            } else {
+                alert('Erro de conexão. Não foi possível enviar a mensagem.');
+            }
+        }
+        
+        // Get current order ID from context
+        function getCurrentOrderId() {
+            // Return the stored order ID
+            return window.currentOrderId || null;
+        }
+        
         // Update dashboard stats
         function updateDashboardStats() {
             // In a real implementation, you would calculate these values from the actual orders
             // For now, we'll just increment the counters
             const pendingCount = parseInt(document.getElementById('pendingCount').textContent) + 1;
             document.getElementById('pendingCount').textContent = pendingCount;
+        }
+        
+        // Copy menu URL to clipboard
+        function copyMenuUrl() {
+            // Get establishment data to build the URL
+            const establishmentData = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            
+            // Use establishment name or default
+            const establishmentName = customizations.establishmentName || establishmentData.establishmentName || 'meu-restaurante';
+            
+            // Create a URL-friendly version of the name
+            const urlName = establishmentName
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove accents
+                .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+                .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+            
+            const menuUrl = `https://cardapiodigital.com.br/${urlName}`;
+            
+            navigator.clipboard.writeText(menuUrl).then(() => {
+                alert('URL copiada para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar URL: ', err);
+                // Fallback: show URL in alert
+                alert('URL do cardápio: ' + menuUrl);
+            });
+        }
+        
+        // Toggle payment fields based on provider selection
+        function togglePaymentFields() {
+            // Hide all payment fields
+            document.querySelectorAll('.payment-fields').forEach(field => {
+                field.style.display = 'none';
+            });
+            
+            // Show selected provider fields
+            const provider = document.getElementById('paymentProvider').value;
+            if (provider) {
+                document.getElementById(provider + 'Fields').style.display = 'block';
+            }
+        }
+        
+        // Save payment credentials to localStorage
+        function savePaymentCredentials() {
+            const provider = document.getElementById('paymentProvider').value;
+            if (!provider) {
+                alert('Por favor, selecione um provedor de pagamento.');
+                return;
+            }
+            
+            const credentials = {};
+            
+            switch(provider) {
+                case 'mercadopago':
+                    credentials.publicKey = document.getElementById('mpPublicKey').value;
+                    credentials.accessToken = document.getElementById('mpAccessToken').value;
+                    break;
+                case 'paypal':
+                    credentials.clientId = document.getElementById('paypalClientId').value;
+                    credentials.secret = document.getElementById('paypalSecret').value;
+                    break;
+                case 'stripe':
+                    credentials.publicKey = document.getElementById('stripePublicKey').value;
+                    credentials.secretKey = document.getElementById('stripeSecretKey').value;
+                    break;
+                case 'pagseguro':
+                    credentials.token = document.getElementById('pagseguroToken').value;
+                    credentials.email = document.getElementById('pagseguroEmail').value;
+                    break;
+            }
+            
+            // Save to localStorage
+            const paymentConfig = {
+                provider: provider,
+                credentials: credentials,
+                updatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('paymentConfiguration', JSON.stringify(paymentConfig));
+            alert('Credenciais salvas com sucesso!');
+        }
+        
+        // Test payment connection
+        function testPaymentConnection() {
+            const config = JSON.parse(localStorage.getItem('paymentConfiguration') || '{}');
+            if (!config.provider || !config.credentials) {
+                alert('Nenhuma configuração de pagamento encontrada. Por favor, salve suas credenciais primeiro.');
+                return;
+            }
+            
+            const testResult = document.getElementById('paymentTestResult');
+            const resultContent = document.getElementById('testResultContent');
+            
+            // Simulate connection test (in a real implementation, this would make an actual API call)
+            testResult.style.display = 'block';
+            
+            // Show success message with provider details
+            resultContent.innerHTML = `
+                <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; border: 1px solid #c3e6cb;">
+                    <h4>✅ Conexão bem-sucedida!</h4>
+                    <p><strong>Provedor:</strong> ${config.provider.toUpperCase()}</p>
+                    <p><strong>Status:</strong> Conectado e pronto para processar pagamentos</p>
+                    <p><strong>Última atualização:</strong> ${new Date(config.updatedAt).toLocaleString('pt-BR')}</p>
+                </div>
+            `;
+        }
+        
+        // Load saved payment configuration on page load
+        function loadPaymentConfiguration() {
+            const config = JSON.parse(localStorage.getItem('paymentConfiguration') || '{}');
+            if (config.provider) {
+                document.getElementById('paymentProvider').value = config.provider;
+                togglePaymentFields();
+                
+                // Load credentials
+                const credentials = config.credentials || {};
+                switch(config.provider) {
+                    case 'mercadopago':
+                        document.getElementById('mpPublicKey').value = credentials.publicKey || '';
+                        document.getElementById('mpAccessToken').value = credentials.accessToken || '';
+                        break;
+                    case 'paypal':
+                        document.getElementById('paypalClientId').value = credentials.clientId || '';
+                        document.getElementById('paypalSecret').value = credentials.secret || '';
+                        break;
+                    case 'stripe':
+                        document.getElementById('stripePublicKey').value = credentials.publicKey || '';
+                        document.getElementById('stripeSecretKey').value = credentials.secretKey || '';
+                        break;
+                    case 'pagseguro':
+                        document.getElementById('pagseguroToken').value = credentials.token || '';
+                        document.getElementById('pagseguroEmail').value = credentials.email || '';
+                        break;
+                }
+            }
+        }
+        
+        // Call loadPaymentConfiguration when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPaymentConfiguration();
+        });
+        
+        // Send preparation message
+        function sendPreparationMessage(orderId) {
+            // Send message to server
+            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                window.ws.send(JSON.stringify({
+                    type: 'sendMessageToClient',
+                    orderId: orderId,
+                    message: 'Preparando em andamento'
+                }));
+                alert('Mensagem "Preparando em andamento" enviada com sucesso!');
+            } else {
+                alert('Erro de conexão. Não foi possível enviar a mensagem.');
+            }
+        }
+        
+        // Send on the way message
+        function sendOnTheWayMessage(orderId) {
+            // Send message to server
+            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                window.ws.send(JSON.stringify({
+                    type: 'sendMessageToClient',
+                    orderId: orderId,
+                    message: 'Pedido a caminho'
+                }));
+                alert('Mensagem "Pedido a caminho" enviada com sucesso!');
+            } else {
+                alert('Erro de conexão. Não foi possível enviar a mensagem.');
+            }
         }
     </script>
 </body>

@@ -148,8 +148,33 @@
             // Check if establishment data exists
             const establishmentData = localStorage.getItem('establishmentData');
             if (!establishmentData) {
-                showError('Nenhum estabelecimento registrado. Por favor, adquira o sistema primeiro.');
-                return;
+                // Create default admin account if none exists
+                const defaultAdminData = {
+                    establishmentName: "Restaurante Admin",
+                    adminName: "Administrador",
+                    email: "admin@admin.com",
+                    phone: "(11) 99999-9999",
+                    cnpj: "00.000.000/0000-00",
+                    adminPassword: "admin123", // <<< SUA SENHA ADMIN É: admin123
+                    paymentMethod: "pix",
+                    purchaseDate: new Date().toISOString(),
+                    isAuthenticated: true
+                };
+                
+                localStorage.setItem('establishmentData', JSON.stringify(defaultAdminData));
+                
+                // Check credentials against default account
+                if (email === defaultAdminData.email && password === defaultAdminData.adminPassword) {
+                    // Successful login
+                    localStorage.setItem('adminAccess', 'true');
+                    
+                    // Redirect to admin panel
+                    window.location.href = 'admin.html';
+                    return;
+                } else {
+                    showError('E-mail ou senha inválidos.');
+                    return;
+                }
             }
             
             // Parse establishment data

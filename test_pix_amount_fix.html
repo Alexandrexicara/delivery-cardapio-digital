@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Correção do Valor PIX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        pre {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Correção do Valor PIX</h1>
+    
+    <div class="test-section">
+        <h2>Simular Adição de Itens ao Carrinho</h2>
+        <button onclick="addItemToCart('Feijoada', 32.90, 1)">Adicionar Feijoada (R$ 32,90)</button>
+        <button onclick="addItemToCart('Refrigerante', 7.90, 2)">Adicionar 2 Refrigerantes (R$ 7,90 cada)</button>
+        <button onclick="addItemToCart('Pudim', 12.90, 1)">Adicionar Pudim (R$ 12,90)</button>
+        <button onclick="clearCart()">Limpar Carrinho</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Testar Atualização do Valor PIX</h2>
+        <button onclick="testShowPayment()">Testar Função showPayment()</button>
+        <button onclick="testSelectPaymentPix()">Testar Seleção de PIX</button>
+        <button onclick="testUpdatePixAmount()">Testar Função updatePixAmount()</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Verificar Valores</h2>
+        <button onclick="checkCartTotal()">Verificar Total do Carrinho</button>
+        <button onclick="checkPixAmount()">Verificar Valor PIX</button>
+        <div id="results"></div>
+    </div>
+    
+    <script>
+        // Mock functions to simulate the usuario.html environment
+        let cartItems = [];
+        
+        // Simulate localStorage
+        const localStorage = {
+            _data: {},
+            setItem: function(key, value) {
+                this._data[key] = value;
+            },
+            getItem: function(key) {
+                return this._data[key];
+            }
+        };
+        
+        // Mock DOM elements
+        const mockElements = {
+            'pixAmount': { textContent: 'R$ 0,00' },
+            'pixPayment': { style: { display: 'none' } },
+            'otherPayment': { style: { display: 'none' } }
+        };
+        
+        // Mock document.getElementById
+        const originalGetElementById = document.getElementById;
+        document.getElementById = function(id) {
+            return mockElements[id] || originalGetElementById.call(this, id);
+        };
+        
+        // Mock querySelectorAll for payment options
+        const originalQuerySelectorAll = document.querySelectorAll;
+        document.querySelectorAll = function(selector) {
+            if (selector === '.payment-option') {
+                return []; // Return empty array for payment options
+            }
+            return originalQuerySelectorAll.call(this, selector);
+        };
+        
+        // Mock functions from usuario.html
+        function calculateCartTotal() {
+            let subtotal = 0;
+            cartItems.forEach(item => {
+                subtotal += item.price * item.quantity;
+            });
+            
+            const serviceFee = subtotal * 0.10;
+            const total = subtotal + serviceFee;
+            
+            return { subtotal, serviceFee, total, cartItems };
+        }
+        
+        function showSection(sectionId) {
+            console.log('Showing section:', sectionId);
+            // Mock implementation
+        }
+        
+        // Updated functions from usuario.html
+        function showPayment() {
+            // First update the cart display to ensure we have the latest total
+            updateCartDisplay();
+            
+            // Show the payment section
+            showSection('payment');
+            
+            // Update PIX amount when showing payment section
+            updatePixAmount();
+            
+            showResult('Função showPayment() executada com sucesso!', 'success');
+        }
+        
+        function updatePixAmount() {
+            // Calculate cart total
+            const { total } = calculateCartTotal();
+            
+            // Update PIX amount display
+            document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            
+            showResult(`Valor PIX atualizado: R$ ${total.toFixed(2).replace('.', ',')}`, 'success');
+            console.log('Valor do PIX atualizado:', total);
+        }
+        
+        function selectPayment(method) {
+            // Reset selection
+            document.querySelectorAll('.payment-option').forEach(option => {
+                // Mock implementation
+            });
+            
+            // Show appropriate payment method
+            document.getElementById('pixPayment').style.display = (method === 'pix') ? 'block' : 'none';
+            document.getElementById('otherPayment').style.display = (method !== 'pix') ? 'block' : 'none';
+            
+            // Update PIX amount if PIX is selected
+            if (method === 'pix') {
+                const { total } = calculateCartTotal();
+                document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+                showResult(`PIX selecionado. Valor: R$ ${total.toFixed(2).replace('.', ',')}`, 'success');
+            } else {
+                showResult(`${method.toUpperCase()} selecionado.`, 'success');
+            }
+        }
+        
+        function updateCartDisplay() {
+            const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
+            
+            // Update PIX payment amount if visible
+            if (document.getElementById('pixPayment').style.display !== 'none') {
+                document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+                console.log('Valor PIX atualizado via updateCartDisplay():', total);
+            }
+            
+            // Automatically update payment amount when in payment section
+            // This is the key fix - we check if the payment section is active
+            const paymentSection = { classList: { contains: function(cls) { return cls === 'active'; } } }; // Mock
+            if (paymentSection.classList.contains('active')) {
+                document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+                console.log('Valor PIX atualizado via updateCartDisplay() - payment section active:', total);
+            }
+        }
+        
+        // Test helper functions
+        function addItemToCart(name, price, quantity) {
+            cartItems.push({ name, price, quantity });
+            showResult(`Adicionado ao carrinho: ${quantity}x ${name} (R$ ${price.toFixed(2)} cada)`, 'success');
+        }
+        
+        function clearCart() {
+            cartItems = [];
+            showResult('Carrinho limpo!', 'success');
+        }
+        
+        function testShowPayment() {
+            showPayment();
+        }
+        
+        function testSelectPaymentPix() {
+            selectPayment('pix');
+        }
+        
+        function testUpdatePixAmount() {
+            updatePixAmount();
+        }
+        
+        function checkCartTotal() {
+            const { subtotal, serviceFee, total } = calculateCartTotal();
+            showResult(`Total do carrinho:<br>
+                Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}<br>
+                Taxa de serviço (10%): R$ ${serviceFee.toFixed(2).replace('.', ',')}<br>
+                <strong>Total: R$ ${total.toFixed(2).replace('.', ',')}</strong>`, 'success');
+        }
+        
+        function checkPixAmount() {
+            const pixAmountElement = document.getElementById('pixAmount');
+            if (pixAmountElement) {
+                showResult(`Valor atual do PIX: ${pixAmountElement.textContent}`, 'success');
+            } else {
+                showResult('Elemento do valor PIX não encontrado!', 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="result ${type}">
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        // Initialize
+        window.onload = function() {
+            showResult('Teste de correção do valor PIX carregado. Adicione itens ao carrinho e teste as funções.', 'success');
+        };
+    </script>
+</body>
+</html>

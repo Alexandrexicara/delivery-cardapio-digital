@@ -104,6 +104,27 @@
         .btn-success:hover {
             background-color: #219653;
         }
+        .btn-pix {
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-pix:hover {
+            background-color: #1da851;
+        }
+        .btn-cash {
+            background-color: #FF9800;
+            color: white;
+        }
+        .btn-cash:hover {
+            background-color: #e68a00;
+        }
+        .btn-card {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-card:hover {
+            background-color: #2980b9;
+        }
         .menu-categories {
             display: flex;
             flex-wrap: wrap;
@@ -214,63 +235,187 @@
             justify-content: center;
             font-size: 40px;
         }
-        .status-pending {
-            background-color: #f39c12;
-            color: white;
+        .establishment-tagline {
+            font-size: 16px;
+            font-weight: normal;
+            margin-top: 5px;
         }
-        .status-preparing {
-            background-color: #3498db;
-            color: white;
+        .establishment-hours {
+            font-size: 12px;
+            margin-top: 5px;
         }
-        .status-ready {
-            background-color: #27ae60;
-            color: white;
+        .admin-view-indicator {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #ffcc00;
+            font-weight: bold;
+            display: none;
         }
-        .status-delivered {
-            background-color: #9b59b6;
-            color: white;
+        .social-media-link {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 24px;
+        }
+        .cart-total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .pix-key-input {
+            font-weight: bold;
+            text-align: center;
+        }
+        .margin-top-30 {
+            margin-top: 30px;
+        }
+        .margin-top-10 {
+            margin-top: 10px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .display-none {
+            display: none;
+        }
+        /* New CSS classes to replace inline styles */
+        .cart-total-bold {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .pix-payment-hidden {
+            display: none;
+        }
+        .centered-margin-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .delivery-section {
+            display: none;
+            margin: 30px 0;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .rating-container {
+            margin: 30px 0;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .rating-stars {
+            font-size: 30px;
+            margin: 10px 0;
+        }
+        .star-default {
+            cursor: pointer;
+            color: #ddd;
+        }
+        .review-textarea {
+            width: 100%;
+            max-width: 400px;
+            height: 80px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .thank-you-section {
+            margin: 30px 0;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .complaint-section {
+            background-color: #fff5f5;
+            border: 2px dashed #e74c3c;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .centered-section {
+            text-align: center;
+        }
+        .new-order-button {
+            margin-left: 10px;
+        }
+        .item-image-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .order-items-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .order-status-margin {
+            margin-bottom: 10px;
+        }
+        .order-status-color-pending {
+            color: #f39c12;
+        }
+        .order-status-color-preparing {
+            color: #3498db;
+        }
+        .order-status-color-ready {
+            color: #27ae60;
+        }
+        .order-status-color-delivered {
+            color: #9b59b6;
+        }
+        .order-items-margin {
+            margin-bottom: 15px;
+        }
+        .order-items-details {
+            margin-top: 5px;
+        }
+        .order-total-right {
+            text-align: right;
+            font-weight: bold;
+        }
+        .order-item-element {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .order-summary-element {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: right;
+        }
+        .order-summary-text {
+            font-size: 18px;
         }
         .payment-options {
             display: flex;
-            justify-content: center;
+            flex-wrap: wrap;
             gap: 20px;
-            margin: 30px 0;
+            margin: 20px 0;
         }
         .payment-option {
-            border: 2px solid #eee;
+            flex: 1;
+            min-width: 200px;
+            background-color: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            width: 200px;
-            transition: all 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid #eee;
         }
-        .payment-option:hover, .payment-option.selected {
+        .payment-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .payment-option.selected {
             border-color: #e74c3c;
             background-color: #fff5f5;
-        }
-        .pix-instructions {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .pix-qr {
-            width: 200px;
-            height: 200px;
-            background-color: #eee;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .establishment-details {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
         }
         footer {
             text-align: center;
@@ -288,14 +433,17 @@
             <div class="logo" id="establishmentLogo">
                 <!-- Logo will be inserted here by JavaScript -->
                 <div id="establishmentName">Restaurante Sabores</div>
-                <div id="establishmentTagline" style="font-size: 16px; font-weight: normal; margin-top: 5px;">
+                <div id="establishmentTagline" class="establishment-tagline">
                    Cozinha Brasileira Autêntica
                 </div>
             </div>
             <div class="establishment-info">
                 <div id="establishmentAddress">Rua das Flores, 123 - Centro</div>
-                <div id="establishmentHours" style="font-size: 12px; margin-top: 5px;">
+                <div id="establishmentHours" class="establishment-hours">
                    Ter-Sex: 18h-23h | Sáb-Dom: 12h-23h
+                </div>
+                <div id="adminViewIndicator" class="admin-view-indicator">
+                   VISUALIZANDO COMO ADMINISTRADOR
                 </div>
             </div>
         </header>
@@ -304,9 +452,9 @@
             <p id="establishmentContact">(11) 99999-9999</p>
             <p id="socialMediaLinks">
                 <!-- Social media icons will be inserted here by JavaScript -->
-                <a href="#" id="facebookLink" style="color: #3498db; text-decoration: none; margin: 0 10px; font-size: 24px;" title="Facebook">📱</a>
-                <a href="#" id="instagramLink" style="color: #3498db; text-decoration: none; margin: 0 10px; font-size: 24px;" title="Instagram">📱</a>
-                <a href="#" id="whatsappLink" style="color: #3498db; text-decoration: none; margin: 0 10px; font-size: 24px;" title="WhatsApp">📱</a>
+                <a href="#" id="facebookLink" class="social-media-link" title="Facebook">📱</a>
+                <a href="#" id="instagramLink" class="social-media-link" title="Instagram">📱</a>
+                <a href="#" id="whatsappLink" class="social-media-link" title="WhatsApp">📱</a>
             </p>
         </div>
 
@@ -391,14 +539,13 @@
                 <div class="category" onclick="filterMenu('dessert')">
                     <h3>Sobremesas</h3>
                     <p>Pudins, sorvetes e doces</p>
-                </div>
-            </div>
+                </div>            </div>
             
             <div class="menu-items">
                 <!-- Menu items will be loaded dynamically -->
             </div>
             
-            <button class="btn" onclick="showCart()" style="margin-top: 30px;">Ver Carrinho</button>
+            <button class="btn margin-top-30" onclick="showCart()">Ver Carrinho</button>
         </section>
 
         <!-- Cart Section -->
@@ -419,7 +566,7 @@
                     <div>Taxa de Serviço (10%)</div>
                     <div>R$ 0,00</div>
                 </div>
-                <div class="cart-item" style="font-weight: bold; font-size: 18px;">
+                <div class="cart-item cart-total-bold">
                     <div>Total</div>
                     <div>R$ 0,00</div>
                 </div>
@@ -439,50 +586,66 @@
             <p>Escolha sua forma de pagamento</p>
             
             <div class="payment-options">
-                <div class="payment-option" onclick="selectPayment('pix')">
+                <div class="payment-option" onclick="selectPayment('pix', event)">
                     <h3>PIX</h3>
                     <p>Pagamento imediato via PIX</p>
                 </div>
-                <div class="payment-option" onclick="selectPayment('card')">
+                <div class="payment-option" onclick="selectPayment('card', event)">
                     <h3>Cartão</h3>
                     <p>Cartão de crédito/débito</p>
                 </div>
-                <div class="payment-option" onclick="selectPayment('cash')">
+                <div class="payment-option" onclick="selectPayment('cash', event)">
                     <h3>Dinheiro</h3>
                     <p>Pagamento em dinheiro no local</p>
                 </div>
             </div>
             
-            <div id="pixPayment" style="display: none;">
+            <div id="pixPayment" class="pix-payment-hidden">
                 <div class="pix-instructions">
                     <h3>Pagamento via PIX</h3>
-                    <p>Escaneie o QR Code abaixo ou copie a chave PIX para pagar</p>
-                    
-                    <div class="pix-qr">
-                        <span>QR CODE PIX</span>
+                    <div id="pixQrContainer">
+                        <p>Escaneie o QR Code abaixo ou copie a chave PIX para pagar</p>
+                        
+                        <div class="pix-qr" id="pixQrCode">
+                            <span>QR CODE PIX SERÁ GERADO AQUI</span>
+                        </div>
+                        
+                        <p>Valor a pagar: <strong id="pixAmount">R$ 0,00</strong></p>
+                        
+                        <div class="form-group">
+                            <label for="pixKey">Chave PIX para copiar:</label>
+                            <input type="text" id="pixKey" value="" readonly class="pix-key-input">
+                            <button class="btn margin-top-10" onclick="copyPixKey()">Copiar Chave PIX</button>
+                        </div>
                     </div>
                     
-                    <p>Valor a pagar: <strong id="pixAmount">R$ 0,00</strong></p>
-                    
-                    <div class="form-group">
-                        <label for="pixKey">Chave PIX para copiar:</label>
-                        <input type="text" id="pixKey" value="restaurante-sabores@pix.com.br" readonly style="font-weight: bold; text-align: center;">
-                        <button class="btn" onclick="copyPixKey()" style="margin-top: 10px;">Copiar Chave PIX</button>
+                    <div id="pixManualPayment" style="display: none;">
+                        <div class="form-group">
+                            <label for="receipt">Comprovante de Pagamento</label>
+                            <input type="file" id="receipt">
+                        </div>
+                        
+                        <button class="btn btn-success" onclick="submitPayment()">Enviar Comprovante</button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="receipt">Comprovante de Pagamento</label>
-                        <input type="file" id="receipt">
-                    </div>
-                    
-                    <button class="btn btn-success" onclick="submitPayment()">Enviar Comprovante</button>
                 </div>
             </div>
             
-            <div id="otherPayment" style="display: none; text-align: center;">
-                <h3>Pagamento Confirmado</h3>
-                <p>Seu pedido foi registrado com sucesso!</p>
-                <button class="btn" onclick="showSection('status')">Acompanhar Pedido</button>
+            <div id="cardPayment" class="display-none text-center">
+                <h3>Pagamento com Cartão</h3>
+                <p>O garçom virá até sua mesa com a maquininha.</p>
+                <div style="margin: 20px 0;">
+                    <button class="btn btn-card" onclick="callWaiterForPayment('cartão')" style="margin: 5px;">Chamar Garçom para Pagamento</button>
+                </div>
+                <p><small>O pagamento será processado na sua mesa.</small></p>
+            </div>
+            
+            <div id="cashPayment" class="display-none text-center">
+                <h3>Pagamento em Dinheiro</h3>
+                <p>O garçom virá até sua mesa para receber o pagamento.</p>
+                <div style="margin: 20px 0;">
+                    <button class="btn btn-cash" onclick="callWaiterForPayment('dinheiro')" style="margin: 5px;">Chamar Garçom para Pagamento</button>
+                </div>
+                <p><small>O pagamento será processado na sua mesa.</small></p>
             </div>
         </section>
 
@@ -498,65 +661,66 @@
                 <p>Número do pedido: <strong id="orderIdDisplay">#00-0000</strong></p>
             </div>
             
-            <div style="margin: 30px 0; text-align: center;">
+            <div class="centered-margin-section">
                 <h3>Itens do Pedido</h3>
                 <div id="orderItemsStatus">
-                    <!-- Order items will be populated here -->
                 </div>
             </div>
             
-            <div id="deliverySection" style="display: none; margin: 30px 0; text-align: center; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-                <h3>Pedido Entregue</h3>
-                <p>Seu pedido foi entregue pelo garçom</p>
-                <button class="btn btn-success" onclick="confirmDelivery()">Confirmar Recebimento</button>
-            </div>
-            
-            <div style="margin: 30px 0; text-align: center; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-                <h3>Avalie seu Atendimento</h3>
-                <p>Sua opinião é muito importante para nós</p>
-                <div style="font-size: 30px; margin: 10px 0;">
-                    <span style="cursor: pointer; color: #ddd;" onclick="rate(1)">★</span>
-                    <span style="cursor: pointer; color: #ddd;" onclick="rate(2)">★</span>
-                    <span style="cursor: pointer; color: #ddd;" onclick="rate(3)">★</span>
-                    <span style="cursor: pointer; color: #ddd;" onclick="rate(4)">★</span>
-                    <span style="cursor: pointer; color: #ddd;" onclick="rate(5)">★</span>
-                </div>
-                <textarea id="review" placeholder="Deixe seu comentário sobre nosso atendimento" style="width: 100%; max-width: 400px; height: 80px; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
-                <br><br>
-                <button class="btn" onclick="submitReview()">Enviar Avaliação</button>
-            </div>
-            
-            <div style="margin: 30px 0; text-align: center; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-                <h3>Promoção Relâmpago</h3>
-                <div style="background-color: #fff5f5; border: 2px dashed #e74c3c; border-radius: 10px; padding: 15px; margin: 15px 0;">
-                    <h4>Happy Hour - 20% de Desconto</h4>
-                    <p>Válido das 17h às 19h</p>
-                    <p><strong>Tempo restante:</strong> <span id="happyHourTimer">15:32</span></p>
+            <div id="deliverySection" class="delivery-section">
+                <h3>Avalie seu Pedido</h3>
+                <p>Como você avalia sua experiência hoje?</p>
+                
+                <div class="rating-container">
+                    <div class="rating-stars">
+                        <span class="star-default" onclick="rate(1)">★</span>
+                        <span class="star-default" onclick="rate(2)">★</span>
+                        <span class="star-default" onclick="rate(3)">★</span>
+                        <span class="star-default" onclick="rate(4)">★</span>
+                        <span class="star-default" onclick="rate(5)">★</span>
+                    </div>
+                    
+                    <textarea id="review" placeholder="Deixe seu comentário sobre nosso atendimento" class="review-textarea"></textarea>
+                    
+                    <div class="centered-margin-section">
+                        <button class="btn" onclick="submitReview()">Enviar Avaliação</button>
+                        <button class="btn new-order-button" onclick="showSection('orderHistory')">Histórico de Pedidos</button>
+                    </div>
                 </div>
             </div>
             
-            <div style="text-align: center;">
-                <button class="btn" onclick="repeatOrder()">Pedir Novamente</button>
-                <button class="btn" onclick="location.reload()" style="margin-left: 10px;">Novo Pedido</button>
+            <div class="thank-you-section">
+                <h3>Obrigado pela sua avaliação!</h3>
+                <p>Sua opinião é muito importante para nós.</p>
+                <button class="btn new-order-button" onclick="location.reload()">Novo Pedido</button>
+            </div>
+            
+            <div class="complaint-section">
+                <h3>Tem alguma reclamação?</h3>
+                <p>Entre em contato conosco:</p>
+                <p>Email: contato@restaurantesabores.com.br</p>
+                <p>Telefone: (11) 99999-9999</p>
             </div>
         </section>
 
         <!-- Order History Section -->
         <section id="orderHistory" class="content-section">
             <h2>Meus Pedidos</h2>
-            <p>Veja o histórico dos seus pedidos</p>
+            <p>Veja o histórico dos seus pedidos anteriores</p>
             
-            <div id="userOrdersList">
-                <!-- Orders will be loaded here dynamically -->
+            <div id="orderHistoryList">
+                <!-- Order history will be loaded here dynamically -->
             </div>
         </section>
     </div>
 
     <footer>
-        <p>Restaurante Sabores &copy; 2025 - Todos os direitos reservados</p>
+        <p>&copy; 2023 Restaurante Sabores. Todos os direitos reservados.</p>
+        <p id="establishmentFooterInfo">Rua das Flores, 123 - Centro | Ter-Sex: 18h-23h | Sáb-Dom: 12h-23h</p>
     </footer>
 
-    <!-- Audio elements for sound notifications -->
+    <!-- Sistema de Customizações -->
+    <script src="customizations.js"></script>
     <audio id="fryingSound" preload="auto">
         <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/mpeg">
     </audio>
@@ -568,907 +732,492 @@
     </audio>
 
     <script>
-        // Apply establishment customizations
-        function applyEstablishmentCustomizations() {
-            // Check if we're in developer mode
-            const urlParams = new URLSearchParams(window.location.search);
-            const isDeveloper = urlParams.get('developer') === 'true';
-            
-            // Load customizations from localStorage
-            const savedCustomizations = localStorage.getItem('establishmentCustomizations');
-            
-            if (savedCustomizations) {
-                const customizations = JSON.parse(savedCustomizations);
-                
-                // Apply the customizations to the page elements
-                document.getElementById('establishmentHeader').style.background = 
-                    'linear-gradient(135deg, ' + customizations.primaryColor + ', ' + customizations.secondaryColor + ')';
-                
-                // Update establishment info (but preserve element IDs)
-                if (document.getElementById('establishmentName')) {
-                    document.getElementById('establishmentName').textContent = customizations.establishmentName;
-                }
-                if (document.getElementById('establishmentTagline')) {
-                    document.getElementById('establishmentTagline').textContent = customizations.establishmentTagline;
-                }
-                document.getElementById('establishmentAddress').textContent = customizations.establishmentAddress;
-                document.getElementById('establishmentHours').textContent = customizations.establishmentHours;
-                document.getElementById('establishmentContact').textContent = customizations.establishmentPhone;
-                
-                // Update social media icons
-                if (customizations.facebook) {
-                    document.getElementById('facebookLink').href = customizations.facebook;
-                    document.getElementById('facebookLink').innerHTML = '📱';
-                    document.getElementById('facebookLink').title = 'Facebook';
-                    document.getElementById('facebookLink').style.display = 'inline';
-                } else {
-                    document.getElementById('facebookLink').style.display = 'none';
-                }
-                
-                if (customizations.instagram) {
-                    document.getElementById('instagramLink').href = customizations.instagram;
-                    document.getElementById('instagramLink').innerHTML = '📱';
-                    document.getElementById('instagramLink').title = 'Instagram';
-                    document.getElementById('instagramLink').style.display = 'inline';
-                } else {
-                    document.getElementById('instagramLink').style.display = 'none';
-                }
-                
-                if (customizations.whatsapp) {
-                    document.getElementById('whatsappLink').href = customizations.whatsapp;
-                    document.getElementById('whatsappLink').innerHTML = '📱';
-                    document.getElementById('whatsappLink').title = 'WhatsApp';
-                    document.getElementById('whatsappLink').style.display = 'inline';
-                } else {
-                    document.getElementById('whatsappLink').style.display = 'none';
-                }
-                
-                // Load logo if available (without replacing the entire element)
-                const logoData = localStorage.getItem('establishmentLogo');
-                if (logoData) {
-                    // Create or update logo image element
-                    let logoImg = document.getElementById('establishmentLogoImg');
-                    if (!logoImg) {
-                        logoImg = document.createElement('img');
-                        logoImg.id = 'establishmentLogoImg';
-                        logoImg.style.maxHeight = '50px';
-                        logoImg.style.display = 'block';
-                        logoImg.style.marginBottom = '10px';
-                        document.getElementById('establishmentLogo').insertBefore(logoImg, document.getElementById('establishmentLogo').firstChild);
-                    }
-                    logoImg.src = logoData;
-                    logoImg.alt = 'Logo';
-                }
-                
-                // Load background image if available
-                const backgroundData = localStorage.getItem('establishmentBackground');
-                if (backgroundData) {
-                    document.body.style.backgroundImage = 'url(' + backgroundData + ')';
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundAttachment = 'fixed';
-                }
-            } else if (isDeveloper) {
-                // Developer mode with no customizations - apply default styles
-                document.getElementById('establishmentHeader').style.background = 'linear-gradient(135deg, #e74c3c, #3498db)';
-                if (document.getElementById('establishmentName')) {
-                    document.getElementById('establishmentName').textContent = 'Restaurante Modelo (Desenvolvedor)';
-                }
-                if (document.getElementById('establishmentTagline')) {
-                    document.getElementById('establishmentTagline').textContent = 'Demonstração para Desenvolvedor';
-                }
-                document.getElementById('establishmentAddress').textContent = 'Rua Exemplo, 123 - Centro';
-                document.getElementById('establishmentHours').textContent = 'Seg-Sex: 18h-23h | Sáb-Dom: 12h-23h';
-                document.getElementById('establishmentContact').textContent = '(11) 99999-9999';
-                
-                // Show sample social media icons
-                document.getElementById('facebookLink').href = '#';
-                document.getElementById('facebookLink').innerHTML = '📱';
-                document.getElementById('facebookLink').title = 'Facebook';
-                document.getElementById('facebookLink').style.display = 'inline';
-                
-                document.getElementById('instagramLink').href = '#';
-                document.getElementById('instagramLink').innerHTML = '📱';
-                document.getElementById('instagramLink').title = 'Instagram';
-                document.getElementById('instagramLink').style.display = 'inline';
-                
-                document.getElementById('whatsappLink').href = '#';
-                document.getElementById('whatsappLink').innerHTML = '📱';
-                document.getElementById('whatsappLink').title = 'WhatsApp';
-                document.getElementById('whatsappLink').style.display = 'inline';
-            }
-            
-            // Load and display menu items
-            loadMenuItems();
-            
-            // Customizations applied successfully
-        }
-        
-        // Load and display menu items
-        function loadMenuItems() {
-            // Check if we're in developer mode
-            const urlParams = new URLSearchParams(window.location.search);
-            const isDeveloper = urlParams.get('developer') === 'true';
-            
-            // Load menu items from localStorage
-            let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            
-            // If no items and in developer mode, use sample items
-            if (menuItems.length === 0 && isDeveloper) {
-                menuItems = [
-                    {
-                        id: 1,
-                        name: 'Feijoada Completa',
-                        category: 'main',
-                        price: '32.90',
-                        description: 'Feijoada tradicional com arroz, couve, laranja e torresmo',
-                        image: null
-                    },
-                    {
-                        id: 2,
-                        name: 'Batata Frita',
-                        category: 'appetizer',
-                        price: '18.90',
-                        description: 'Batata frita crocante com temperos especiais',
-                        image: null
-                    },
-                    {
-                        id: 3,
-                        name: 'Pudim de Leite',
-                        category: 'dessert',
-                        price: '12.90',
-                        description: 'Pudim tradicional de leite condensado',
-                        image: null
-                    },
-                    {
-                        id: 4,
-                        name: 'Refrigerante',
-                        category: 'drink',
-                        price: '7.90',
-                        description: 'Refrigerante lata 350ml',
-                        image: null
-                    }
-                ];
-            }
-            
-            // Display menu items
-            const menuItemsContainer = document.querySelector('.menu-items');
-            if (menuItemsContainer) {
-                // Clear existing items
-                menuItemsContainer.innerHTML = '';
-                
-                // Add items to container
-                menuItems.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'menu-item';
-                    itemElement.setAttribute('data-category', item.category);
-                    itemElement.innerHTML = `
-                        <div class="item-image">
-                            ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">` : 'Imagem do Produto'}
-                        </div>
-                        <div class="item-details">
-                            <div class="item-header">
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-price">R$ ${parseFloat(item.price).toFixed(2).replace('.', ',')}</div>
-                            </div>
-                            <p>${item.description}</p>
-                            <div class="quantity-control">
-                                <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
-                                <span class="quantity">0</span>
-                                <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
-                            </div>
-                        </div>
-                    `;
-                    menuItemsContainer.appendChild(itemElement);
-                });
-            }
-        }
-        
-        // Apply customizations when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add form submission event listener
-            const customerForm = document.getElementById('customerForm');
-            if (customerForm) {
-                customerForm.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent default form submission
-                    completeRegistration(); // Call our custom registration function
-                });
-            }
+    // Global WebSocket variable
+    window.ws = null;
 
-            // Check for customer registration
-            const customerData = localStorage.getItem('customerData');
-            if (!customerData) {
-                // Show registration section if no customer data found
-                showSection('registration');
-            } else {
-                // Show menu section if customer data exists
-                showSection('menu');
-                applyEstablishmentCustomizations();
-            }
-            
-            // Load menu items initially
-            filterMenu('all');
-            
-            // Load user orders
-            loadUserOrders();
-            
-            // Set up automatic cart updates
-            setInterval(function() {
-                if (document.getElementById('cart').classList.contains('active')) {
-                    updateCartDisplay();
-                }
-            }, 1000); // Update every second when cart is active
-        });
-        
-        // Tab navigation
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update tab active state
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Find and activate the corresponding tab
-            const tabs = document.querySelectorAll('.tab');
-            const sectionMap = {
-                'registration': 0,
-                'menu': 1,
-                'cart': 2,
-                'payment': 3,
-                'status': 4,
-                'orderHistory': 5
-            };
-            
-            if (sectionMap[sectionId] !== undefined && sectionMap[sectionId] < tabs.length) {
-                tabs[sectionMap[sectionId]].classList.add('active');
-            }
-            
-            // If showing order history, refresh the list
-            if (sectionId === 'orderHistory') {
-                loadUserOrders();
-            }
+    function loadMenuItems() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDeveloper = urlParams.get('developer') === 'true';
+        let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+
+        if (menuItems.length === 0 && isDeveloper) {
+            menuItems = [
+                { id: 1, name: 'Feijoada Completa', category: 'main', price: '32.90', description: 'Acompanha arroz, couve, e torresmo', image: null },
+                { id: 2, name: 'Batata Frita', category: 'appetizer', price: '18.90', description: 'Porção generosa e crocante', image: null },
+                { id: 3, name: 'Pudim de Leite', category: 'dessert', price: '12.90', description: 'Receita tradicional da casa', image: null },
+                { id: 4, name: 'Refrigerante', category: 'drink', price: '7.90', description: 'Lata 350ml', image: null }
+            ];
         }
-        
-        // Menu filtering
-        function filterMenu(category) {
-            const items = document.querySelectorAll('.menu-item');
-            items.forEach(item => {
-                if (category === 'all' || item.getAttribute('data-category') === category) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-        
-        // Automatically update cart when quantity changes
-        function increaseQuantity(button) {
-            const quantityElement = button.parentElement.querySelector('.quantity');
-            let quantity = parseInt(quantityElement.textContent);
-            quantity++;
-            quantityElement.textContent = quantity;
-            
-            // Update cart display automatically
-            updateCartDisplay();
-        }
-        
-        function decreaseQuantity(button) {
-            const quantityElement = button.parentElement.querySelector('.quantity');
-            let quantity = parseInt(quantityElement.textContent);
-            if (quantity > 0) {
-                quantity--;
-                quantityElement.textContent = quantity;
-                
-                // Update cart display automatically
-                updateCartDisplay();
-            }
-        }
-        
-        // Calculate cart total with automatic updates
-        function calculateCartTotal() {
-            let subtotal = 0;
-            const cartItems = [];
-            
-            // Get all menu items
-            document.querySelectorAll('.menu-item').forEach(item => {
-                const quantityElement = item.querySelector('.quantity');
-                const quantity = parseInt(quantityElement.textContent);
-                
-                if (quantity > 0) {
-                    const name = item.querySelector('.item-name').textContent;
-                    const priceText = item.querySelector('.item-price').textContent;
-                    // Extract price correctly removing "R$ " and converting comma to period
-                    const price = parseFloat(priceText.replace('R$ ', '').replace(',', '.'));
-                    
-                    subtotal += price * quantity;
-                    
-                    cartItems.push({ 
-                        name, 
-                        quantity, 
-                        price,
-                        category: item.getAttribute('data-category') || 'unknown'
-                    });
-                }
-            });
-            
-            // Calculate service fee (10%)
-            const serviceFee = subtotal * 0.10;
-            const total = subtotal + serviceFee;
-            
-            return { subtotal, serviceFee, total, cartItems };
-        }
-        
-        // Update cart display automatically
-        function updateCartDisplay() {
-            const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
-            
-            // Update cart items display
-            const cartItemsContainer = document.getElementById('cartItemsContainer');
-            
-            // Clear existing cart items
-            cartItemsContainer.innerHTML = '';
-            
-            // Add cart items
-            if (cartItems.length === 0) {
-                cartItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
-            } else {
-                cartItems.forEach(item => {
-                    const cartItemElement = document.createElement('div');
-                    cartItemElement.className = 'cart-item';
-                    cartItemElement.innerHTML = `
-                        <div>
-                            <div>${item.name}</div>
-                            <small>Quantidade: ${item.quantity}</small>
-                        </div>
-                        <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
-                    `;
-                    cartItemsContainer.appendChild(cartItemElement);
-                });
-            }
-            
-            // Update cart summary
-            const cartSummary = document.querySelector('#cart .cart-summary');
-            if (cartSummary) {
-                cartSummary.innerHTML = `
-                    <div class="cart-item">
-                        <div>Subtotal</div>
-                        <div>R$ ${subtotal.toFixed(2).replace('.', ',')}</div>
-                    </div>
-                    <div class="cart-item">
-                        <div>Taxa de Serviço (10%)</div>
-                        <div>R$ ${serviceFee.toFixed(2).replace('.', ',')}</div>
-                    </div>
-                    <div class="cart-item" style="font-weight: bold; font-size: 18px;">
-                        <div>Total</div>
-                        <div>R$ ${total.toFixed(2).replace('.', ',')}</div>
-                    </div>
-                `;
-            }
-            
-            // Update PIX payment amount if visible
-            if (document.getElementById('pixPayment').style.display !== 'none') {
-                document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            }
-            
-            // Automatically update payment amount when in payment section
-            if (document.getElementById('payment').classList.contains('active')) {
-                document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            }
-            
-            // Also update the status section order items if it's active
-            if (document.getElementById('status').classList.contains('active')) {
-                // This would update the order items display in real-time if needed
-            }
-        }
-        
-        // Show cart section with automatic calculation
-        function showCart() {
-            updateCartDisplay();
-            showSection('cart');
-        }
-        
-        // Payment selection
-        function selectPayment(method) {
-            // Reset selection
-            document.querySelectorAll('.payment-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // Mark selected
-            event.currentTarget.classList.add('selected');
-            
-            // Show appropriate payment method
-            document.getElementById('pixPayment').style.display = (method === 'pix') ? 'block' : 'none';
-            document.getElementById('otherPayment').style.display = (method !== 'pix') ? 'block' : 'none';
-            
-            // Update PIX amount if PIX is selected
-            if (method === 'pix') {
-                const { total } = calculateCartTotal();
-                document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            }
-        }
-        
-        // Copy PIX key to clipboard
-        function copyPixKey() {
-            const pixKeyElement = document.getElementById('pixKey');
-            pixKeyElement.select();
-            document.execCommand('copy');
-            alert('Chave PIX copiada para a área de transferência!');
-        }
-        
-        // Submit payment
-        function submitPayment() {
-            const receipt = document.getElementById('receipt').value;
-            if (!receipt) {
-                alert('Por favor, envie o comprovante de pagamento.');
-                return;
-            }
-            
-            // Get the current order ID from the status display
-            const orderId = document.getElementById('orderIdDisplay').textContent;
-            
-            // Send payment status update to server
-            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-                if (orderId) {
-                    window.ws.send(JSON.stringify({
-                        type: 'updatePaymentStatus',
-                        orderId: orderId,
-                        paymentStatus: 'completed',
-                        updatedBy: 'customer'
-                    }));
-                    
-                    console.log('Status de pagamento atualizado para o pedido:', orderId);
-                }
-            }
-            
-            // Clear order history after payment is completed
-            if (orderId) {
-                clearOrderHistory(orderId);
-            }
-            
-            // Show success message
-            alert('Pagamento enviado com sucesso! O histórico será atualizado após confirmação.');
-            
-            // Payment receipt submitted successfully
-            showSection('status');
-        }
-        
-        // Clear order history after payment is completed
-        function clearOrderHistory(orderId) {
-            // Get existing user orders from localStorage
-            let userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-            
-            // Filter out the completed order
-            userOrders = userOrders.filter(order => order.id !== orderId);
-            
-            // Save back to localStorage
-            localStorage.setItem('userOrders', JSON.stringify(userOrders));
-            
-            // Reload the order history display if the order history section is active
-            if (document.getElementById('orderHistory').classList.contains('active')) {
-                loadUserOrders();
-            }
-            
-            console.log(`Histórico de pedidos limpo para o pedido: ${orderId}`);
-        }
-        
-        // Play sound notifications
-        function playSound(soundId) {
-            const sound = document.getElementById(soundId);
-            if (sound) {
-                sound.currentTime = 0; // Reset to start
-                sound.play().catch(e => console.log("Sound play prevented by browser policies"));
-            }
-        }
-        
-        // Update order status display
-        function updateOrderStatusDisplay(status) {
-            const statusIndicator = document.querySelector('.status-indicator');
-            const statusTitle = document.getElementById('statusTitle');
-            const statusDescription = document.getElementById('statusDescription');
-            const deliverySection = document.getElementById('deliverySection');
-            
-            switch (status) {
-                case 'pending':
-                    statusIndicator.className = 'status-indicator status-pending';
-                    statusIndicator.innerHTML = '🕒';
-                    statusTitle.innerHTML = 'Pedido Recebido';
-                    statusDescription.innerHTML = 'Seu pedido foi recebido e será preparado em breve';
-                    deliverySection.style.display = 'none';
-                    break;
-                case 'preparing':
-                    statusIndicator.className = 'status-indicator status-preparing';
-                    statusIndicator.innerHTML = '👨‍🍳';
-                    statusTitle.innerHTML = 'Preparando Pedido';
-                    statusDescription.innerHTML = 'Seu pedido está sendo preparado pela cozinha';
-                    deliverySection.style.display = 'none';
-                    // Play frying sound
-                    playSound('fryingSound');
-                    alert('Seu pedido está sendo preparado!');
-                    break;
-                case 'ready':
-                    statusIndicator.className = 'status-indicator status-ready';
-                    statusIndicator.innerHTML = '✅';
-                    statusTitle.innerHTML = 'Pedido Pronto';
-                    statusDescription.innerHTML = 'Seu pedido está pronto e será entregue em breve';
-                    deliverySection.style.display = 'none';
-                    // Play bell sound
-                    playSound('bellSound');
-                    alert('Seu pedido está pronto e será entregue em breve pelo garçom!');
-                    break;
-                case 'delivered':
-                    statusIndicator.className = 'status-indicator status-delivered';
-                    statusIndicator.innerHTML = '📦';
-                    statusTitle.innerHTML = 'Pedido Entregue';
-                    statusDescription.innerHTML = 'Seu pedido foi entregue pelo garçom';
-                    deliverySection.style.display = 'block';
-                    // Play bell sound for delivery
-                    playSound('bellSound');
-                    alert('Seu pedido foi entregue pelo garçom. Por favor, confirme o recebimento.');
-                    break;
-                case 'completed':
-                    statusIndicator.className = 'status-indicator status-delivered';
-                    statusIndicator.innerHTML = '👍';
-                    statusTitle.innerHTML = 'Pedido Concluído';
-                    statusDescription.innerHTML = 'Recebimento confirmado. Aprecie sua refeição!';
-                    deliverySection.style.display = 'none';
-                    // Play delight sound
-                    playSound('delightSound');
-                    alert('Recebimento confirmado com sucesso! Aprecie sua refeição.');
-                    break;
-            }
-        }
-        
-        // Send order to kitchen and admin
-        function sendOrder() {
-            // Get customer data - FIXED: Ensure we're getting the data correctly
-            let customerData = localStorage.getItem('customerData');
-            try {
-                customerData = customerData ? JSON.parse(customerData) : {};
-            } catch (e) {
-                console.error('Erro ao parsear dados do cliente:', e);
-                customerData = {};
-            }
-            
-            // Validate that we have customer data with required fields
-            if (!customerData || 
-                !customerData.fullName || 
-                !customerData.phone || 
-                !customerData.tableNumber) {
-                alert('Por favor, complete o cadastro antes de enviar o pedido.');
-                showSection('registration');
-                return;
-            }
-            
-            // Get cart items and calculate total
-            const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
-            
-            if (cartItems.length === 0) {
-                alert('Por favor, adicione itens ao carrinho antes de enviar o pedido.');
-                return;
-            }
-            
-            // Get observations
-            const observations = document.getElementById('observations').value;
-            
-            // Generate order ID
-            const orderId = `#${Math.floor(Math.random() * 90) + 10}-${Date.now()}`;
-            
-            // Create order object with correct values
-            const order = {
-                id: orderId,
-                customer: customerData, // This should now contain the actual customer data
-                items: cartItems,
-                observations: observations,
-                subtotal: subtotal,
-                serviceFee: serviceFee,
-                total: total,
-                table: customerData.tableNumber ? `Mesa ${customerData.tableNumber}` : 'Mesa 05', // Use table number from registration
-                status: 'pending',
-                timestamp: new Date().toISOString()
-            };
-            
-            console.log('Enviando pedido:', order); // Debug log
-            
-            // Send order via WebSocket
-            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-                window.ws.send(JSON.stringify({
-                    type: 'submitOrder',
-                    order: order
-                }));
-                
-                // Save order to user's order history immediately
-                saveUserOrder(order);
-                
-                // Show confirmation message
-                alert('Pedido enviado com sucesso! Número do pedido: ' + orderId);
-                showSection('status');
-                
-                // Update status display with order ID
-                document.getElementById('orderIdDisplay').textContent = orderId;
-                
-                // Update order items display in status section
-                updateOrderItemsStatus(order.items);
-            } else {
-                // Even if WebSocket fails, save the order locally
-                saveUserOrder(order);
-                alert('Pedido salvo localmente. Número do pedido: ' + orderId + '\nConecte-se ao servidor para enviar o pedido.');
-                showSection('status');
-                document.getElementById('orderIdDisplay').textContent = orderId;
-                updateOrderItemsStatus(order.items);
-            }
-        }
-        
-        // Update order items display in status section
-        function updateOrderItemsStatus(items) {
-            const orderItemsContainer = document.getElementById('orderItemsStatus');
-            orderItemsContainer.innerHTML = '';
-            
-            items.forEach(item => {
+
+        const menuItemsContainer = document.querySelector('.menu-items');
+        if (menuItemsContainer) {
+            menuItemsContainer.innerHTML = '';
+            menuItems.forEach(item => {
                 const itemElement = document.createElement('div');
-                itemElement.className = 'cart-item';
+                itemElement.className = 'menu-item';
+                itemElement.setAttribute('data-category', item.category);
                 itemElement.innerHTML = `
-                    <div>
-                        <div>${item.name}</div>
-                        <small>Quantidade: ${item.quantity}</small>
-                    </div>
-                    <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
-                `;
-                orderItemsContainer.appendChild(itemElement);
+                    <div class="item-image">${item.image ? `<img src="${item.image}" alt="${item.name}" class="item-image-placeholder">` : 'Imagem do Produto'}</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">R$ ${parseFloat(item.price).toFixed(2).replace('.', ',')}</div>
+                        </div>
+                        <p>${item.description}</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn" onclick="decreaseQuantity(this)">-</button>
+                            <span class="quantity">0</span>
+                            <button class="quantity-btn" onclick="increaseQuantity(this)">+</button>
+                        </div>
+                    </div>`;
+                menuItemsContainer.appendChild(itemElement);
             });
         }
-        
-        // Save user order to localStorage
-        function saveUserOrder(order) {
-            // Get existing orders
-            let userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-            
-            // Add new order
-            userOrders.push(order);
-            
-            // Save back to localStorage
-            localStorage.setItem('userOrders', JSON.stringify(userOrders));
-            
-            console.log('Pedido salvo localmente:', order); // Debug log
+    }
+
+    function completeRegistration() {
+        const name = document.getElementById('fullName').value;
+        const phone = document.getElementById('phone').value;
+        const tableNumber = document.getElementById('tableNumber').value;
+        if (!name || !phone || !tableNumber) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            return;
         }
-        
-        // Load user orders
-        function loadUserOrders() {
-            const userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-            displayUserOrders(userOrders);
+        const customerData = {
+            fullName: name,
+            phone: phone,
+            cpf: document.getElementById('cpf').value,
+            tableNumber: tableNumber
+        };
+        localStorage.setItem('customerData', JSON.stringify(customerData));
+        showSection('menu');
+        applyCustomizationsToMenu();
+    }
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        const sectionMap = { 'registration': 0, 'menu': 1, 'cart': 2, 'payment': 3, 'status': 4, 'orderHistory': 5 };
+        const activeTab = document.querySelectorAll('.tab')[sectionMap[sectionId]];
+        if(activeTab) activeTab.classList.add('active');
+
+        if (sectionId === 'orderHistory') loadUserOrders();
+        if (sectionId === 'payment') updatePixAmount();
+    }
+
+    function updatePixAmount() {
+        const { total } = calculateCartTotal();
+        document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function filterMenu(category) {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.style.display = (category === 'all' || item.getAttribute('data-category') === category) ? 'block' : 'none';
+        });
+    }
+
+    function increaseQuantity(button) {
+        const quantityElement = button.parentElement.querySelector('.quantity');
+        quantityElement.textContent = parseInt(quantityElement.textContent) + 1;
+        updateCartDisplay();
+    }
+
+    function decreaseQuantity(button) {
+        const quantityElement = button.parentElement.querySelector('.quantity');
+        let quantity = parseInt(quantityElement.textContent);
+        if (quantity > 0) {
+            quantityElement.textContent = quantity - 1;
+            updateCartDisplay();
         }
-        
-        // Display user orders
-        function displayUserOrders(orders) {
-            const ordersList = document.getElementById('userOrdersList');
-            ordersList.innerHTML = '';
-            
-            if (orders.length === 0) {
-                ordersList.innerHTML = '<p>Você ainda não fez nenhum pedido.</p>';
-                return;
+    }
+
+    function calculateCartTotal() {
+        let subtotal = 0;
+        const cartItems = [];
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const quantity = parseInt(item.querySelector('.quantity').textContent);
+            if (quantity > 0) {
+                const name = item.querySelector('.item-name').textContent;
+                const price = parseFloat(item.querySelector('.item-price').textContent.replace('R$ ', '').replace(',', '.'));
+                const category = item.getAttribute('data-category') || 'unknown';
+                
+                // Obter o setor do item do localStorage
+                const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+                const menuItem = menuItems.find(mi => mi.name === name);
+                const sector = menuItem && menuItem.sector ? menuItem.sector : 'kitchen'; // padrão para cozinha
+                
+                subtotal += price * quantity;
+                cartItems.push({ name, quantity, price, category, sector });
             }
+        });
+        const serviceFee = subtotal * 0.10;
+        const total = subtotal + serviceFee;
+        return { subtotal, serviceFee, total, cartItems };
+    }
+
+    function updateCartDisplay() {
+        const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        cartItemsContainer.innerHTML = cartItems.length === 0 ? '<p>Seu carrinho está vazio.</p>' : '';
+        
+        cartItems.forEach(item => {
+            const cartItemElement = document.createElement('div');
+            cartItemElement.className = 'cart-item';
+            cartItemElement.innerHTML = `
+                <div>
+                    <div>${item.name}</div><small>Quantidade: ${item.quantity}</small>
+                </div>
+                <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>`;
+            cartItemsContainer.appendChild(cartItemElement);
+        });
+
+        const cartSummary = document.querySelector('#cart .cart-summary');
+        if (cartSummary) {
+            cartSummary.innerHTML = `
+                <div class="cart-item"><div>Subtotal</div><div>R$ ${subtotal.toFixed(2).replace('.', ',')}</div></div>
+                <div class="cart-item"><div>Taxa de Serviço (10%)</div><div>R$ ${serviceFee.toFixed(2).replace('.', ',')}</div></div>
+                <div class="cart-item cart-total-bold"><div>Total</div><div>R$ ${total.toFixed(2).replace('.', ',')}</div></div>`;
+        }
+        if (document.getElementById('payment').classList.contains('active')) {
+            updatePixAmount();
+        }
+    }
+
+    function showCart() {
+        updateCartDisplay();
+        showSection('cart');
+    }
+
+    function showPayment() {
+        updateCartDisplay();
+        showSection('payment');
+    }
+
+    function selectPayment(method, event) {
+        document.querySelectorAll('.payment-option').forEach(option => option.classList.remove('selected'));
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('selected');
+        }
+        ['pixPayment', 'cardPayment', 'cashPayment'].forEach(id => document.getElementById(id).style.display = 'none');
+
+        if (method === 'pix') {
+            document.getElementById('pixPayment').style.display = 'block';
+            updatePixAmount();
+            // Check if automatic PIX payment is configured
+            checkAutomaticPayment();
+        } else if (method === 'card') {
+            document.getElementById('cardPayment').style.display = 'block';
+        } else if (method === 'cash') {
+            document.getElementById('cashPayment').style.display = 'block';
+        }
+    }
+    
+    // Check if automatic payment is configured
+    function checkAutomaticPayment() {
+        // In a real implementation, this would check if the establishment has configured
+        // automatic payment processing. For now, we'll simulate with localStorage
+        const hasAutomaticPayment = localStorage.getItem('automaticPaymentEnabled') === 'true';
+        
+        if (hasAutomaticPayment) {
+            // Show automatic payment interface
+            document.getElementById('pixQrCode').innerHTML = '<div style="background-color: #e8f4fc; padding: 20px; border-radius: 10px; text-align: center;"><h4>📱 Escaneie o QR Code com seu app bancário</h4><p style="font-size: 40px;">&#128248;</p><p>O pagamento será confirmado automaticamente</p></div>';
+            document.getElementById('pixManualPayment').style.display = 'none';
+        } else {
+            // Show manual payment interface
+            document.getElementById('pixQrCode').innerHTML = '<span>QR CODE PIX</span>';
+            document.getElementById('pixKey').value = 'restaurante-sabores@pix.com.br';
+            document.getElementById('pixManualPayment').style.display = 'block';
+        }
+    }
+    
+    // Enable automatic payment (for testing)
+    function enableAutomaticPayment() {
+        localStorage.setItem('automaticPaymentEnabled', 'true');
+        alert('Pagamento automático habilitado! Recarregue a página para ver as mudanças.');
+    }
+    
+    // Disable automatic payment (for testing)
+    function disableAutomaticPayment() {
+        localStorage.setItem('automaticPaymentEnabled', 'false');
+        alert('Pagamento automático desabilitado! Recarregue a página para ver as mudanças.');
+    }
+    
+    function copyPixKey() {
+        const pixKeyElement = document.getElementById('pixKey');
+        pixKeyElement.select();
+        document.execCommand('copy');
+        alert('Chave PIX copiada!');
+    }
+
+    function submitPayment() {
+        if (!document.getElementById('receipt').value) {
+            alert('Por favor, envie o comprovante de pagamento.');
+            return;
+        }
+        const orderId = document.getElementById('orderIdDisplay').textContent;
+        if (window.ws && window.ws.readyState === WebSocket.OPEN && orderId) {
+            window.ws.send(JSON.stringify({ type: 'updatePaymentStatus', orderId, paymentStatus: 'completed', updatedBy: 'customer' }));
+        }
+        alert('Pagamento enviado com sucesso!');
+        showSection('status');
+    }
+
+    function callWaiterForPayment(method) {
+        const customerData = JSON.parse(localStorage.getItem('customerData'));
+        const orderId = document.getElementById('orderIdDisplay').textContent;
+
+        if (!customerData || !customerData.tableNumber) {
+            alert('Não foi possível identificar sua mesa. Por favor, refaça o cadastro.');
+            showSection('registration');
+            return;
+        }
+        if (!orderId || orderId === '#00-0000') {
+            alert('Você precisa ter um pedido ativo para chamar o garçom.');
+            showSection('cart');
+            return;
+        }
+
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify({ type: 'callWaiter', table: customerData.tableNumber, paymentMethod: method, orderId: orderId }));
             
-            // Sort orders by timestamp (newest first)
-            orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            // Calculate total of all orders
-            let totalAllOrders = 0;
-            
-            orders.forEach(order => {
-                // Add to total
-                totalAllOrders += order.total || 0;
-                
-                const orderElement = document.createElement('div');
-                orderElement.className = 'order-card';
-                orderElement.style.marginBottom = '20px';
-                orderElement.style.border = '1px solid #eee';
-                orderElement.style.borderRadius = '10px';
-                orderElement.style.padding = '15px';
-                
-                // Format date
-                const orderDate = new Date(order.timestamp);
-                const formattedDate = orderDate.toLocaleDateString('pt-BR') + ' ' + orderDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                
-                orderElement.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <div><strong>Pedido ${order.id || 'N/A'}</strong></div>
-                        <div>${formattedDate}</div>
+            const action = { type: 'callWaiter', orderId: orderId, paymentMethod: method, timestamp: new Date().toISOString() };
+            saveUserAction(action);
+
+            alert(`O garçom foi notificado e virá até sua mesa para o pagamento com ${method}.`);
+        } else {
+            alert('Não foi possível notificar o garçom. Verifique sua conexão.');
+        }
+    }
+
+    function sendOrder() {
+        let customerData = JSON.parse(localStorage.getItem('customerData'));
+        if (!customerData || !customerData.tableNumber) {
+            alert('Por favor, complete o cadastro antes de enviar o pedido.');
+            showSection('registration');
+            return;
+        }
+        const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
+        if (cartItems.length === 0) {
+            alert('Seu carrinho está vazio.');
+            return;
+        }
+        const order = {
+            id: `#${Math.floor(Math.random() * 90) + 10}-${Date.now()}`,
+            customer: customerData,
+            items: cartItems,
+            observations: document.getElementById('observations').value,
+            subtotal, serviceFee, total,
+            table: `Mesa ${customerData.tableNumber}`,
+            status: 'pending',
+            paymentStatus: 'pending',
+            timestamp: new Date().toISOString()
+        };
+
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify({ type: 'submitOrder', order }));
+            saveUserOrder(order);
+            alert('Pedido enviado com sucesso! Número: ' + order.id);
+            showSection('status');
+            document.getElementById('orderIdDisplay').textContent = order.id;
+            updateOrderItemsStatus(order.items);
+        } else {
+            alert('Erro de conexão. Não foi possível enviar o pedido.');
+        }
+    }
+
+    function updateOrderStatusDisplay(status) {
+        const statusIndicator = document.querySelector('.status-indicator');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusDescription = document.getElementById('statusDescription');
+        const deliverySection = document.getElementById('deliverySection');
+        const statuses = {
+            pending: { icon: '🕒', title: 'Pedido Recebido', desc: 'Seu pedido foi recebido e será preparado.' },
+            preparing: { icon: '👨‍🍳', title: 'Preparando Pedido', desc: 'Seu pedido está sendo preparado.' },
+            ready: { icon: '✅', title: 'Pedido Pronto', desc: 'Seu pedido está pronto para ser entregue.' },
+            delivered: { icon: '📦', title: 'Pedido Entregue', desc: 'Seu pedido foi entregue.' },
+            completed: { icon: '👍', title: 'Pedido Concluído', desc: 'Aprecie sua refeição!' }
+        };
+        const currentStatus = statuses[status] || statuses.pending;
+        statusIndicator.innerHTML = currentStatus.icon;
+        statusTitle.innerHTML = currentStatus.title;
+        statusDescription.innerHTML = currentStatus.desc;
+        deliverySection.style.display = status === 'delivered' ? 'block' : 'none';
+        
+        if (['preparing', 'ready', 'delivered'].includes(status)) {
+            playSound('bellSound');
+            alert(currentStatus.title);
+        }
+    }
+
+    function updateOrderItemsStatus(items) {
+        const container = document.getElementById('orderItemsStatus');
+        container.innerHTML = '';
+        items.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <div><div>${item.name}</div><small>Quantidade: ${item.quantity}</small></div>
+                <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>`;
+            container.appendChild(itemElement);
+        });
+    }
+
+    function saveUserAction(action) {
+        const userActions = JSON.parse(localStorage.getItem('userActions') || '[]');
+        userActions.push(action);
+        localStorage.setItem('userActions', JSON.stringify(userActions));
+    }
+
+    function saveUserOrder(order) {
+        let userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+        userOrders.push(order);
+        localStorage.setItem('userOrders', JSON.stringify(userOrders));
+    }
+
+    function loadUserOrders() {
+        const userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+        const userActions = JSON.parse(localStorage.getItem('userActions') || '[]');
+        const historyFeed = [...userOrders, ...userActions];
+        historyFeed.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        displayUserHistory(historyFeed);
+    }
+
+    function displayUserHistory(history) {
+        const historyList = document.getElementById('orderHistoryList');
+        historyList.innerHTML = '';
+
+        if (history.length === 0) {
+            historyList.innerHTML = '<p>Nenhum pedido ou ação registrada.</p>';
+            return;
+        }
+
+        history.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'order-card';
+            itemElement.style.marginBottom = '15px';
+
+            const itemDate = new Date(item.timestamp);
+            const formattedDate = itemDate.toLocaleDateString('pt-BR') + ' ' + itemDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            if (item.type === 'callWaiter') {
+                itemElement.innerHTML = `
+                    <div class="order-items-container">
+                        <div><strong>Chamada de Garçom</strong></div><div>${formattedDate}</div>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <strong>Status:</strong> 
-                        <span style="color: ${getStatusColor(order.status)};">${getStatusText(order.status)}</span>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <strong>Mesa:</strong> ${order.table || 'N/A'}
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <strong>Itens:</strong>
-                        <div id="order-items-${order.id}" style="margin-top: 5px;">
-                            <!-- Items will be added here -->
-                        </div>
-                    </div>
-                    <div style="text-align: right; font-weight: bold;">
-                        Total: R$ ${order.total ? order.total.toFixed(2).replace('.', ',') : '0,00'}
-                    </div>
-                `;
-                
-                ordersList.appendChild(orderElement);
-                
-                // Add items to the order
-                const itemsContainer = document.getElementById(`order-items-${order.id}`);
-                if (itemsContainer && order.items) {
-                    order.items.forEach(item => {
-                        const itemElement = document.createElement('div');
-                        itemElement.style.display = 'flex';
-                        itemElement.style.justifyContent = 'space-between';
-                        itemElement.style.padding = '3px 0';
-                        itemElement.style.borderBottom = '1px dashed #eee';
-                        
-                        itemElement.innerHTML = `
-                            <div>${item.name} <small>(x${item.quantity})</small></div>
-                            <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
-                        `;
-                        
-                        itemsContainer.appendChild(itemElement);
+                    <div class="order-status-margin">
+                        Você chamou o garçom para pagamento com <strong>${item.paymentMethod}</strong> para o pedido ${item.orderId}.
+                    </div>`;
+            } else {
+                let itemsHTML = '';
+                if(item.items) {
+                    item.items.forEach(prod => {
+                        itemsHTML += `<div class="order-item-element"><div>${prod.name} <small>(x${prod.quantity})</small></div><div>R$ ${(prod.price * prod.quantity).toFixed(2).replace('.', ',')}</div></div>`;
                     });
                 }
-            });
-            
-            // Add summary of all orders
-            const summaryElement = document.createElement('div');
-            summaryElement.style.marginTop = '30px';
-            summaryElement.style.padding = '20px';
-            summaryElement.style.backgroundColor = '#f8f9fa';
-            summaryElement.style.borderRadius = '10px';
-            summaryElement.style.fontWeight = 'bold';
-            summaryElement.style.textAlign = 'right';
-            summaryElement.innerHTML = `
-                <div style="font-size: 18px;">
-                    Total de todos os pedidos: R$ ${totalAllOrders.toFixed(2).replace('.', ',')}
-                </div>
-            `;
-            ordersList.appendChild(summaryElement);
-        }
-        
-        // Get status color
-        function getStatusColor(status) {
-            switch (status) {
-                case 'pending': return '#f39c12';
-                case 'preparing': return '#3498db';
-                case 'ready': return '#27ae60';
-                case 'delivered': return '#9b59b6';
-                default: return '#7f8c8d';
+                itemElement.innerHTML = `
+                    <div class="order-items-container"><div><strong>Pedido ${item.id || 'N/A'}</strong></div><div>${formattedDate}</div></div>
+                    <div class="order-status-margin"><strong>Status:</strong> <span class="order-status-color-${item.status}">${getStatusText(item.status)}</span></div>
+                    <div class="order-items-margin"><strong>Itens:</strong><div class="order-items-details">${itemsHTML}</div></div>
+                    <div class="order-total-right">Total: R$ ${item.total ? item.total.toFixed(2).replace('.', ',') : '0,00'}</div>`;
             }
-        }
-        
-        // Get status text
-        function getStatusText(status) {
-            switch (status) {
-                case 'pending': return 'Pendente';
-                case 'preparing': return 'Em Preparo';
-                case 'ready': return 'Pronto';
-                case 'delivered': return 'Entregue';
-                default: return status;
-            }
-        }
-        
-        // Rating function
-        function rate(stars) {
-            const ratingElements = document.querySelectorAll('#status .cart-item + div span');
-            for (let i = 0; i < ratingElements.length; i++) {
-                ratingElements[i].style.color = i < stars ? '#f39c12' : '#ddd';
-            }
-        }
-        
-        // Submit review
-        function submitReview() {
-            const review = document.getElementById('review').value;
-            if (!review) {
-                alert('Por favor, deixe seu comentário antes de enviar.');
-                return;
-            }
-            
-            // Review submitted successfully
-            // In a production environment, this would send the review to the server
-        }
-        
-        // Repeat order
-        function repeatOrder(orderId) {
-            // Log the action
-            console.log('Repetindo pedido:', orderId);
-            
-            // Save this action to order history
-            const action = {
-                type: 'repeatOrder',
-                orderId: orderId,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Get existing actions
-            let orderActions = JSON.parse(localStorage.getItem('orderActions') || '[]');
-            
-            // Add new action
-            orderActions.push(action);
-            
-            // Save back to localStorage
-            localStorage.setItem('orderActions', JSON.stringify(orderActions));
-            
-            // Previous order added to cart
-            showSection('cart');
-            // In a production environment, this would populate the cart with the previous order items
-        }
-        
-        // Update happy hour timer
-        function updateTimer() {
-            // In a production environment, this would calculate the actual time remaining
-            document.getElementById('happyHourTimer').textContent = '15:32';
-        }
-        
-        // Initialize WebSocket connection
-        function initWebSocket() {
-            // Check if WebSocket is already initialized
-            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-                console.log('WebSocket já está conectado');
-                return;
-            }
-            
-            const ws = new WebSocket('ws://localhost:3002');
-            
-            ws.onopen = function() {
-                console.log('Conectado ao servidor WebSocket');
-                window.ws = ws;
-            };
-            
-            ws.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                console.log('Mensagem recebida:', data); // Debug log
-                
-                if (data.type === 'orderConfirmation') {
-                    // Update status section with order ID
-                    document.getElementById('orderIdDisplay').textContent = data.orderId;
-                    console.log('Pedido confirmado:', data.orderId);
-                    // Show additional confirmation
-                    alert('Pedido confirmado com sucesso! Número do pedido: ' + data.orderId);
-                } else if (data.type === 'statusUpdate') {
-                    // Update status display
-                    updateOrderStatusDisplay(data.status);
-                    console.log('Status atualizado:', data.status);
-                } else if (data.type === 'connected') {
-                    console.log('Conectado ao servidor:', data.message);
-                }
-            };
-            
-            ws.onclose = function() {
-                console.log('Conexão WebSocket fechada');
-            };
-            
-            ws.onerror = function(error) {
-                console.error('Erro na conexão WebSocket:', error);
-                alert('Erro na conexão com o servidor. Por favor, recarregue a página.');
-            };
-        }
-        
-        // Initialize timer and WebSocket
-        setInterval(updateTimer, 1000);
-        updateTimer();
-        initWebSocket();
-        
-        // Reconnect WebSocket if needed
-        setInterval(function() {
-            if (!window.ws || window.ws.readyState === WebSocket.CLOSED) {
-                console.log('Tentando reconectar WebSocket...');
-                initWebSocket();
-            }
-        }, 5000); // Try to reconnect every 5 seconds
-        
-        
+            historyList.appendChild(itemElement);
+        });
+    }
+    
+    function getStatusText(status) {
+        const statuses = { pending: 'Pendente', preparing: 'Em preparação', ready: 'Pronto', delivered: 'Entregue', completed: 'Concluído' };
+        return statuses[status] || status;
+    }
+    
+    function playSound(soundId) {
+        const sound = document.getElementById(soundId);
+        if (sound) sound.play().catch(e => console.log("Sound play prevented"));
+    }
 
-    </script>
+    function connectWebSocket() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let wsUrl = urlParams.get('ws');
+        
+        if (!wsUrl) {
+            // Usar a mesma porta do servidor HTTP atual
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.hostname;
+            const port = window.location.port || '3002';
+            wsUrl = `${protocol}//${host}:${port}`;
+        }
+        
+        window.ws = new WebSocket(wsUrl);
+
+        window.ws.onopen = () => {
+            console.log('WebSocket conectado com sucesso na porta 3002.');
+
+            // Send user login message to identify this connection as user
+            window.ws.send(JSON.stringify({
+                type: 'userLogin'
+            }));
+        };
+        window.ws.onclose = () => setTimeout(connectWebSocket, 5000);
+        window.ws.onerror = (error) => console.error('WebSocket Error:', error);
+
+        window.ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'updateStatus' && message.orderId === document.getElementById('orderIdDisplay').textContent) {
+                updateOrderStatusDisplay(message.status);
+            } else if (message.type === 'clearHistory') {
+                alert('Pagamento confirmado pelo estabelecimento! Seu histórico será limpo para um novo pedido.');
+                localStorage.removeItem('userOrders');
+                localStorage.removeItem('userActions');
+                localStorage.removeItem('customerData'); // Also clear customer data for fresh start
+                location.reload();
+            } else if (message.type === 'userLoginSuccess') {
+                console.log('User login successful');
+            } else if (message.type === 'orderConfirmation') {
+                console.log('Order confirmed:', message.orderId);
+            } else if (message.type === 'callWaiterConfirmation') {
+                // Handle call waiter confirmation from server
+                alert(message.message || 'Garçom foi notificado e virá até sua mesa.');
+            } else if (message.type === 'orderNotification') {
+                // Handle order notification messages from server
+                alert(message.message);
+                
+                // Also update the status display
+                if (message.status) {
+                    updateOrderStatusDisplay(message.status);
+                }
+            } else if (message.type === 'adminMessage') {
+                // Handle admin message from server
+                alert('Mensagem do estabelecimento: ' + message.message);
+            } else if (message.type === 'existingOrders') {
+                console.log('Received existing orders for user:', message.orders.length);
+                // User will only see their own orders
+            }
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const customerForm = document.getElementById('customerForm');
+        if (customerForm) {
+            customerForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                completeRegistration();
+            });
+        }
+
+        // Carregar itens do menu
+        loadMenuItems();
+
+        if (!localStorage.getItem('customerData')) {
+            showSection('registration');
+        } else {
+            showSection('menu');
+            applyCustomizationsToMenu();
+        }
+
+        filterMenu('all');
+        loadUserOrders();
+        connectWebSocket();
+    });
+</script>
 </body>
 </html>
