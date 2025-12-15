@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Debug</title>
+</head>
+<body>
+    <h1>Teste de Debug de Customizações</h1>
+    
+    <div id="establishmentLogo">
+        <div id="establishmentName">Nome do Restaurante</div>
+        <div id="establishmentTagline">Tagline do Restaurante</div>
+    </div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        // Testar se as funções estão disponíveis
+        console.log('Funções disponíveis:');
+        console.log('loadCustomizations:', typeof loadCustomizations);
+        console.log('applyCustomizationsToMenu:', typeof applyCustomizationsToMenu);
+        
+        // Testar carregamento de customizações
+        try {
+            const customizations = loadCustomizations();
+            console.log('Customizações carregadas:', customizations);
+        } catch (e) {
+            console.error('Erro ao carregar customizações:', e);
+        }
+        
+        // Testar aplicação de customizações
+        try {
+            applyCustomizationsToMenu();
+            console.log('Aplicação de customizações concluída');
+        } catch (e) {
+            console.error('Erro ao aplicar customizações:', e);
+        }
+    </script>
+</body>
+</html>

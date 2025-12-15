@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificar Imagens Customizadas</title>
+</head>
+<body>
+    <h1>Verificar Imagens Customizadas</h1>
+    <button onclick="checkCustomizations()">Verificar Customizações</button>
+    <button onclick="applyImages()">Aplicar Imagens Manualmente</button>
+    <div id="output"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function checkCustomizations() {
+            try {
+                const customizations = loadCustomizations();
+                const output = document.getElementById('output');
+                
+                output.innerHTML = `
+                    <h2>Customizações Atuais:</h2>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    
+                    <h3>Imagens:</h3>
+                    <p><strong>Logo:</strong> ${customizations.logo || 'NENHUM CONFIGURADO'}</p>
+                    <p><strong>Background:</strong> ${customizations.background || 'NENHUM CONFIGURADO'}</p>
+                    
+                    ${customizations.logo ? `
+                        <div>
+                            <h4>Preview do Logo:</h4>
+                            <img src="${customizations.logo}" alt="Logo Preview" style="max-width: 200px; max-height: 100px; border: 1px solid #ccc;">
+                        </div>
+                    ` : '<p>Sem logo para mostrar</p>'}
+                    
+                    ${customizations.background ? `
+                        <div>
+                            <h4>Preview do Background:</h4>
+                            <div style="width: 200px; height: 100px; background-image: url(${customizations.background}); background-size: cover; border: 1px solid #ccc;"></div>
+                        </div>
+                    ` : '<p>Sem background para mostrar</p>'}
+                `;
+            } catch (e) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${e.message}</p>`;
+            }
+        }
+        
+        function applyImages() {
+            try {
+                // Verificar se temos imagens na pasta uploads
+                const logoUrl = '/uploads/1765579114013-194519.png'; // Último logo enviado
+                const bgUrl = '/uploads/1765579127632-3405.png'; // Último background enviado
+                
+                const customizations = loadCustomizations();
+                customizations.logo = logoUrl;
+                customizations.background = bgUrl;
+                
+                saveCustomizations(customizations);
+                
+                document.getElementById('output').innerHTML = `
+                    <p style="color: green;">Imagens aplicadas com sucesso!</p>
+                    <p>Logo: ${logoUrl}</p>
+                    <p>Background: ${bgUrl}</p>
+                    <p>Recarregue a página para ver as mudanças.</p>
+                `;
+            } catch (e) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

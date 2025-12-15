@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Definir Customizações Manualmente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        select, input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Definir Customizações Manualmente</h1>
+        
+        <div>
+            <h2>Selecionar Imagens Existentes</h2>
+            <label for="logoSelect">Logo:</label>
+            <select id="logoSelect">
+                <option value="/uploads/1758641231853-802575236.png">Logo 1</option>
+                <option value="/uploads/1758641246866-164303529.png">Logo 2</option>
+                <option value="/uploads/1758642907142-51736523.png">Logo 3</option>
+                <option value="/uploads/1758642917233-508455064.png">Logo 4</option>
+            </select>
+            
+            <label for="bgSelect">Background:</label>
+            <select id="bgSelect">
+                <option value="/uploads/1758643322703-268957204.png">Background 1</option>
+                <option value="/uploads/1758643332548-420301807.png">Background 2</option>
+                <option value="/uploads/1758651056176-255564749.png">Background 3</option>
+                <option value="/uploads/1758651071345-12727815.png">Background 4</option>
+                <option value="/uploads/1758652590368-578727251.png">Background 5</option>
+                <option value="/uploads/1758652600948-978263467.png">Background 6</option>
+                <option value="/uploads/1758653233471-942831681.png">Background 7</option>
+                <option value="/uploads/1758653243815-780406311.png">Background 8</option>
+            </select>
+            
+            <button onclick="applyCustomizations()">Aplicar Customizações</button>
+        </div>
+        
+        <div>
+            <h2>Ou Definir URLs Personalizados</h2>
+            <label for="logoUrl">URL do Logo:</label>
+            <input type="text" id="logoUrl" placeholder="/uploads/nome-do-arquivo.png" style="width: 300px;">
+            
+            <label for="bgUrl">URL do Background:</label>
+            <input type="text" id="bgUrl" placeholder="/uploads/nome-do-arquivo.png" style="width: 300px;">
+            
+            <button onclick="applyCustomUrls()">Aplicar URLs Personalizados</button>
+        </div>
+        
+        <div>
+            <h2>Verificar Customizações Atuais</h2>
+            <button onclick="checkCustomizations()">Verificar Customizações</button>
+            <button onclick="resetCustomizations()">Resetar para Padrão</button>
+        </div>
+        
+        <div id="output"></div>
+    </div>
+
+    <script src="customizations.js"></script>
+    <script>
+        function applyCustomizations() {
+            try {
+                const logoUrl = document.getElementById('logoSelect').value;
+                const bgUrl = document.getElementById('bgSelect').value;
+                
+                const customizations = loadCustomizations();
+                customizations.logo = logoUrl;
+                customizations.background = bgUrl;
+                
+                saveCustomizations(customizations);
+                
+                document.getElementById('output').innerHTML = `
+                    <p style="color: green;">Customizações aplicadas com sucesso!</p>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    <p>Recarregue as páginas para ver as mudanças.</p>
+                `;
+            } catch (error) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+            }
+        }
+        
+        function applyCustomUrls() {
+            try {
+                const logoUrl = document.getElementById('logoUrl').value;
+                const bgUrl = document.getElementById('bgUrl').value;
+                
+                const customizations = loadCustomizations();
+                if (logoUrl) customizations.logo = logoUrl;
+                if (bgUrl) customizations.background = bgUrl;
+                
+                saveCustomizations(customizations);
+                
+                document.getElementById('output').innerHTML = `
+                    <p style="color: green;">Customizações aplicadas com sucesso!</p>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    <p>Recarregue as páginas para ver as mudanças.</p>
+                `;
+            } catch (error) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+            }
+        }
+        
+        function checkCustomizations() {
+            try {
+                const customizations = loadCustomizations();
+                document.getElementById('output').innerHTML = `
+                    <h3>Customizações Atuais:</h3>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+            }
+        }
+        
+        function resetCustomizations() {
+            try {
+                resetCustomizations();
+                const customizations = loadCustomizations();
+                document.getElementById('output').innerHTML = `
+                    <p style="color: green;">Customizações resetadas para padrão!</p>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

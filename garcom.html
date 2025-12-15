@@ -270,8 +270,14 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">📱 GARÇOM</div>
+        <header id="establishmentHeader">
+            <div class="logo" id="establishmentLogo">
+                <!-- Logo will be inserted here by JavaScript -->
+                <div id="establishmentName">Restaurante Sabores</div>
+                <div id="establishmentTagline" class="establishment-tagline">
+                   Cozinha Brasileira Autêntica
+                </div>
+            </div>
             <div class="user-info">
                 <span id="waiterName">Garçom</span>
                 <button class="btn btn-warning" onclick="logout()">Sair</button>
@@ -361,6 +367,10 @@
                         <option value="Mesa 15">Mesa 15</option>
                     </select>
                 </div>
+            </div>
+            
+            <div style="margin-bottom: 20px; text-align: right;">
+                <button class="btn btn-warning" onclick="closeDayOrders()">Fechar Pedidos do Dia</button>
             </div>
             
             <div id="allOrders">
@@ -1039,6 +1049,36 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 }
             }
         }
+        
+        // Close day orders
+        function closeDayOrders() {
+            if (confirm('Tem certeza que deseja fechar todos os pedidos do dia? Isso limpará a lista de pedidos.')) {
+                // Clear orders from UI
+                const ordersContainer = document.getElementById('allOrders');
+                ordersContainer.innerHTML = '<p>Nenhum pedido registrado ainda.</p>';
+                
+                // Clear orders from local data
+                window.ordersData = [];
+                
+                // Reset dashboard counts
+                document.getElementById('pendingCount').textContent = '0';
+                document.getElementById('preparingCount').textContent = '0';
+                document.getElementById('readyCount').textContent = '0';
+                document.getElementById('deliveredCount').textContent = '0';
+                
+                // Clear latest orders
+                document.getElementById('latestOrders').innerHTML = '<p>Nenhum pedido registrado ainda.</p>';
+                
+                alert('Pedidos do dia fechados com sucesso!');
+            }
+        }
+    </script>
+    <script src="customizations.js"></script>
+    <script>
+        // Apply customizations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            applyCustomizationsToMenu();
+        });
     </script>
 </body>
 </html>

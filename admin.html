@@ -333,8 +333,14 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">📱 CARDÁPIO DIGITAL UNIVERSAL</div>
+        <header id="establishmentHeader">
+            <div class="logo" id="establishmentLogo">
+                <!-- Logo will be inserted here by JavaScript -->
+                <div id="establishmentName">Restaurante Sabores</div>
+                <div id="establishmentTagline" class="establishment-tagline">
+                   Cozinha Brasileira Autêntica
+                </div>
+            </div>
             <div class="user-info">
                 <span id="adminName">Administrador</span>
                 <button class="btn btn-warning" onclick="logout()">Sair</button>
@@ -645,6 +651,9 @@
             displayMenuUrl();
             
             loadPaymentConfiguration();
+            
+            // Apply customizations
+            applyCustomizationsToMenu();
         });
 
         // Display menu URL
@@ -1338,7 +1347,8 @@
                         orders: [],
                         totalItems: 0,
                         totalPrice: 0,
-                        customerNames: []
+                        customerNames: [],
+                        waiterCommission: 0 // Adicionando campo para comissão
                     };
                 }
                 
@@ -1357,6 +1367,10 @@
             let html = '';
             for (const table in combinedOrdersByTable) {
                 const combinedOrder = combinedOrdersByTable[table];
+                
+                // Calcular comissão automaticamente com base na porcentagem
+                combinedOrder.waiterCommission = calculateWaiterCommission(table, combinedOrder.totalPrice);
+                
                 html += `
                     <div class="orders-column" style="margin-bottom: 30px;">
                         <div class="column-header">
@@ -1365,6 +1379,17 @@
                         </div>
                         <div class="order-card">
                             <div><strong>Clientes:</strong> ${combinedOrder.customerNames.join(', ')}</div>
+                            
+                            <!-- Campo para definir porcentagem de comissão do garçom -->
+                            <div style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+                                <label for="commission_${table}"><strong>Comissão para Garçom (%):</strong></label>
+                                <input type="number" id="commission_${table}" value="${getSavedCommissionPercentage(table)}" 
+                                       style="width: 100px; margin-left: 10px; padding: 5px; border: 1px solid #ddd; border-radius: 3px;"
+                                       onchange="saveWaiterCommissionPercentage('${table}', this.value)">
+                                <button class="btn btn-primary" style="margin-left: 10px; padding: 5px 10px;" 
+                                        onclick="saveWaiterCommissionPercentage('${table}', document.getElementById('commission_${table}').value)">Salvar</button>
+                            </div>
+                            
                             <div style="margin: 15px 0;">
                                 <strong>Itens Pedidos:</strong>
                                 <div class="order-items">
@@ -1403,7 +1428,8 @@
                                 </div>
                             </div>
                             <div class="order-total">
-                                Total: R$ ${combinedOrder.totalPrice.toFixed(2).replace('.', ',')}
+                                Total: R$ ${combinedOrder.totalPrice.toFixed(2).replace('.', ',')} 
+                                ${combinedOrder.waiterCommission > 0 ? `| Comissão (${getSavedCommissionPercentage(table)}%): R$ ${combinedOrder.waiterCommission.toFixed(2).replace('.', ',')}` : ''}
                             </div>
                             <div class="order-actions">
                                 <button class="btn btn-success" onclick="processTablePayment('${table}')">Processar Pagamento</button>
@@ -1475,6 +1501,32 @@
             document.getElementById('combinedPendingTotal').textContent = 'R$ ' + pendingTotal.toFixed(2).replace('.', ',');
             document.getElementById('combinedCompletedTotal').textContent = 'R$ ' + completedTotal.toFixed(2).replace('.', ',');
             document.getElementById('combinedTotal').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+        }
+        
+        // Get saved commission percentage
+        function getSavedCommissionPercentage(table) {
+            const savedPercentage = localStorage.getItem(`commission_percentage_${table}`);
+            return savedPercentage ? parseFloat(savedPercentage) : 10; // Default to 10%
+        }
+        
+        // Save waiter commission percentage
+        function saveWaiterCommissionPercentage(table, percentage) {
+            // Save percentage to localStorage
+            localStorage.setItem(`commission_percentage_${table}`, percentage);
+            
+            // Update the display
+            alert(`Porcentagem de comissão de ${parseFloat(percentage).toFixed(2).replace('.', ',')}% salva para a mesa ${table}`);
+            
+            // Optionally refresh the display to show the updated commission
+            if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
+                displayCombinedOrders(window.ordersData);
+            }
+        }
+        
+        // Calculate waiter commission based on percentage
+        function calculateWaiterCommission(table, totalAmount) {
+            const percentage = getSavedCommissionPercentage(table);
+            return (totalAmount * percentage) / 100;
         }
         
         // Process all payments
@@ -1567,8 +1619,25 @@
 
         // Processar pagamento PIX
         function processPixPayment(orderId, section) {
-            if (confirm('Confirmar pagamento via PIX para o pedido ' + orderId + '?')) {
+            const order = window.ordersData.find(o => o.id === orderId);
+            if (!order) {
+                alert('Pedido não encontrado!');
+                return;
+            }
+            
+            // Calculate commission for this table
+            const commission = calculateWaiterCommission(order.table, order.total);
+            let message = `Confirmar pagamento via PIX para o pedido ${orderId}?`;
+            message += `\nValor do pedido: R$ ${order.total.toFixed(2).replace('.', ',')}`;
+            if (commission > 0) {
+                const percentage = getSavedCommissionPercentage(order.table);
+                message += `\nComissão do garçom para mesa ${order.table} (${percentage}%): R$ ${commission.toFixed(2).replace('.', ',')}`;
+            }
+            
+            if (confirm(message)) {
                 updatePaymentStatus(orderId, 'completed', section);
+                
+                // We don't need to clear the commission percentage as it can be reused for future orders
             }
         }
         
@@ -1585,13 +1654,32 @@
             // Calculate total for the table
             const total = tableOrders.reduce((sum, order) => sum + order.total, 0);
             
-            if (confirm(`Confirmar pagamento via PIX para a mesa ${table}? Valor total: R$ ${total.toFixed(2).replace('.', ',')}`)) {
+            // Calculate waiter commission for this table
+            const commission = calculateWaiterCommission(table, total);
+            const totalWithCommission = total + commission;
+            
+            let message = `Confirmar pagamento via PIX para a mesa ${table}?`;
+            message += `\nValor total dos pedidos: R$ ${total.toFixed(2).replace('.', ',')}`;
+            if (commission > 0) {
+                const percentage = getSavedCommissionPercentage(table);
+                message += `\nComissão do garçom (${percentage}%): R$ ${commission.toFixed(2).replace('.', ',')}`;
+                message += `\nTotal com comissão: R$ ${totalWithCommission.toFixed(2).replace('.', ',')}`;
+            }
+            
+            if (confirm(message)) {
                 // Update payment status for all orders in this table
                 tableOrders.forEach(order => {
                     updatePaymentStatus(order.id, 'completed', 'combined');
                 });
                 
+                // We don't need to clear the commission percentage as it can be reused for future orders
+                
                 alert('Pagamento confirmado para a mesa ' + table);
+                
+                // Refresh the display
+                if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
+                    displayCombinedOrders(window.ordersData);
+                }
             }
         }
         
@@ -1603,20 +1691,35 @@
                 return;
             }
 
-            const amountPaidStr = prompt(`Valor total do pedido: R$ ${order.total.toFixed(2)}. Digite o valor pago pelo cliente:`);
+            // Calculate commission for this table
+            const commission = calculateWaiterCommission(order.table, order.total);
+            const totalWithCommission = order.total + commission;
+            
+            let promptMessage = `Valor total do pedido: R$ ${order.total.toFixed(2).replace('.', ',')}`;
+            if (commission > 0) {
+                const percentage = getSavedCommissionPercentage(order.table);
+                promptMessage += `\nComissão do garçom (${percentage}%): R$ ${commission.toFixed(2).replace('.', ',')}`;
+                promptMessage += `\nTotal com comissão: R$ ${totalWithCommission.toFixed(2).replace('.', ',')}`;
+            }
+            promptMessage += `\n\nDigite o valor pago pelo cliente:`;
+            
+            const amountPaidStr = prompt(promptMessage);
 
             if (amountPaidStr) {
                 const paid = parseFloat(amountPaidStr.replace(',', '.'));
-                if (isNaN(paid) || paid < order.total) {
+                if (isNaN(paid) || paid < totalWithCommission) {
                     alert('Valor inválido ou insuficiente. O pagamento não foi processado.');
                     return;
                 }
 
-                const change = paid - order.total;
+                const change = paid - totalWithCommission;
                 const confirmation = confirm(`Troco a ser devolvido: R$ ${change.toFixed(2).replace('.', ',')}.\n\nDeseja confirmar o pagamento?`);
 
                 if (confirmation) {
                     updatePaymentStatus(orderId, 'completed', section);
+                    
+                    // We don't need to clear the commission percentage as it can be reused for future orders
+                    
                     alert('Pagamento confirmado e status atualizado!');
                 } else {
                     alert('Pagamento cancelado pelo administrador.');
@@ -1626,10 +1729,27 @@
 
         // Processar pagamento com cartão
         function processCardPayment(orderId, section) {
+            const order = window.ordersData.find(o => o.id === orderId);
+            if (!order) {
+                alert('Pedido não encontrado!');
+                return;
+            }
+            
             const cardType = prompt('Qual a bandeira do cartão? (Crédito ou Débito)');
             if (cardType && (cardType.toLowerCase() === 'crédito' || cardType.toLowerCase() === 'debito' || cardType.toLowerCase() === 'credito' || cardType.toLowerCase() === 'débito')) {
-                if (confirm(`Confirmar pagamento com cartão de ${cardType} para o pedido ${orderId}?`)) {
+                // Calculate commission for this table
+                const commission = calculateWaiterCommission(order.table, order.total);
+                let message = `Confirmar pagamento com cartão de ${cardType} para o pedido ${orderId}?`;
+                message += `\nValor do pedido: R$ ${order.total.toFixed(2).replace('.', ',')}`;
+                if (commission > 0) {
+                    const percentage = getSavedCommissionPercentage(order.table);
+                    message += `\nComissão do garçom para mesa ${order.table} (${percentage}%): R$ ${commission.toFixed(2).replace('.', ',')}`;
+                }
+                
+                if (confirm(message)) {
                     updatePaymentStatus(orderId, 'completed', section);
+                    
+                    // We don't need to clear the commission percentage as it can be reused for future orders
                 }
             } else if (cardType !== null) {
                 alert('Tipo de cartão inválido. Por favor, insira Crédito ou Débito.');

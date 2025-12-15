@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Corrigir Customizações</title>
+</head>
+<body>
+    <h1>Corrigir Customizações</h1>
+    <button onclick="fixCustomizations()">Corrigir Customizações</button>
+    <button onclick="checkCustomizations()">Verificar Customizações</button>
+    <div id="output"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function fixCustomizations() {
+            try {
+                const customizations = loadCustomizations();
+                
+                // Forçar as últimas imagens enviadas
+                customizations.logo = '/uploads/1765579114013-194519.png';
+                customizations.background = '/uploads/1765579127632-3405.png';
+                
+                saveCustomizations(customizations);
+                
+                document.getElementById('output').innerHTML = `
+                    <p style="color: green;">✅ Customizações corrigidas com sucesso!</p>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    <p><strong>Recarregue as páginas para ver as mudanças:</strong></p>
+                    <ul>
+                        <li><a href="/usuario.html" target="_blank">Cardápio (usuário)</a></li>
+                        <li><a href="/admin.html" target="_blank">Admin</a></li>
+                        <li><a href="/cozinha.html" target="_blank">Cozinha</a></li>
+                        <li><a href="/balcao.html" target="_blank">Balcão</a></li>
+                        <li><a href="/garcom.html" target="_blank">Garçom</a></li>
+                    </ul>
+                `;
+            } catch (e) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${e.message}</p>`;
+            }
+        }
+        
+        function checkCustomizations() {
+            try {
+                const customizations = loadCustomizations();
+                const output = document.getElementById('output');
+                
+                output.innerHTML = `
+                    <h2>Customizações Atuais:</h2>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    
+                    <h3>Status das Imagens:</h3>
+                    <p><strong>Logo:</strong> ${customizations.logo ? '✅ CONFIGURADO' : '❌ NÃO CONFIGURADO'}</p>
+                    <p><strong>Background:</strong> ${customizations.background ? '✅ CONFIGURADO' : '❌ NÃO CONFIGURADO'}</p>
+                    
+                    ${customizations.logo ? `
+                        <div>
+                            <h4>Preview do Logo:</h4>
+                            <img src="${customizations.logo}" alt="Logo Preview" style="max-width: 200px; max-height: 100px; border: 1px solid #ccc;" onerror="this.parentNode.innerHTML+='<p style=color:red>❌ Erro ao carregar logo</p>'">
+                        </div>
+                    ` : '<p>Sem logo configurado</p>'}
+                    
+                    ${customizations.background ? `
+                        <div>
+                            <h4>Preview do Background:</h4>
+                            <div style="width: 200px; height: 100px; background-image: url(${customizations.background}); background-size: cover; border: 1px solid #ccc;" onerror="this.parentNode.innerHTML+='<p style=color:red>❌ Erro ao carregar background</p>'"></div>
+                        </div>
+                    ` : '<p>Sem background configurado</p>'}
+                `;
+            } catch (e) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

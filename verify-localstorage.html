@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificar LocalStorage</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Verificar LocalStorage</h1>
+    <button onclick="verificarLocalStorage()">Verificar LocalStorage</button>
+    <button onclick="corrigirLocalStorage()">Corrigir LocalStorage</button>
+    <div id="resultado"></div>
+    
+    <script>
+        function verificarLocalStorage() {
+            try {
+                const customizacoes = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+                const resultado = document.getElementById('resultado');
+                
+                resultado.innerHTML = `
+                    <h2>Conteúdo Atual do LocalStorage:</h2>
+                    <pre>${JSON.stringify(customizacoes, null, 2)}</pre>
+                    
+                    <h3>Status das Imagens:</h3>
+                    <p><strong>Logo:</strong> ${customizacoes.logo ? '✅ PRESENTE' : '❌ AUSENTE'}</p>
+                    <p><strong>Background:</strong> ${customizacoes.background ? '✅ PRESENTE' : '❌ AUSENTE'}</p>
+                    
+                    ${customizacoes.logo ? `
+                        <div>
+                            <h4>Preview do Logo:</h4>
+                            <img src="${customizacoes.logo}" alt="Logo" style="max-width: 200px; max-height: 100px; border: 1px solid #ccc;">
+                        </div>
+                    ` : ''}
+                    
+                    ${customizacoes.background ? `
+                        <div>
+                            <h4>Preview do Background:</h4>
+                            <div style="width: 200px; height: 100px; background-image: url(${customizacoes.background}); background-size: cover; border: 1px solid #ccc;"></div>
+                        </div>
+                    ` : ''}
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+        
+        function corrigirLocalStorage() {
+            try {
+                // Forçar as últimas imagens que sabemos que foram enviadas
+                const customizacoes = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+                
+                // Adicionar as imagens que devem estar lá
+                customizacoes.logo = '/uploads/1765581455496-988671.png';
+                customizacoes.background = '/uploads/1765581481553-966829.png';
+                
+                localStorage.setItem('establishmentCustomizations', JSON.stringify(customizacoes));
+                
+                document.getElementById('resultado').innerHTML = `
+                    <p style="color: green; font-size: 18px;">✅ LocalStorage Corrigido com Sucesso!</p>
+                    <pre>${JSON.stringify(customizacoes, null, 2)}</pre>
+                    <p><strong>Agora recarregue as páginas para ver as mudanças:</strong></p>
+                    <ul>
+                        <li><a href="/usuario.html" target="_blank">Cardápio (usuário)</a></li>
+                        <li><a href="/admin.html" target="_blank">Admin</a></li>
+                        <li><a href="/cozinha.html" target="_blank">Cozinha</a></li>
+                        <li><a href="/balcao.html" target="_blank">Balcão</a></li>
+                        <li><a href="/garcom.html" target="_blank">Garçom</a></li>
+                    </ul>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificar LocalStorage</title>
+</head>
+<body>
+    <h1>Verificar LocalStorage</h1>
+    <button onclick="checkLocalStorage()">Verificar LocalStorage</button>
+    <div id="output"></div>
+    
+    <script>
+        function checkLocalStorage() {
+            try {
+                const customizations = localStorage.getItem('establishmentCustomizations');
+                const output = document.getElementById('output');
+                
+                if (customizations) {
+                    const parsed = JSON.parse(customizations);
+                    output.innerHTML = `
+                        <h2>Customizações encontradas:</h2>
+                        <pre>${JSON.stringify(parsed, null, 2)}</pre>
+                        
+                        <h3>Detalhes:</h3>
+                        <p><strong>Logo:</strong> ${parsed.logo || 'Nenhum'}</p>
+                        <p><strong>Background:</strong> ${parsed.background || 'Nenhum'}</p>
+                        <p><strong>Nome:</strong> ${parsed.establishmentName || 'Nenhum'}</p>
+                        <p><strong>Tagline:</strong> ${parsed.establishmentTagline || 'Nenhum'}</p>
+                        <p><strong>Cor Primária:</strong> ${parsed.primaryColor || 'Nenhum'}</p>
+                        <p><strong>Cor Secundária:</strong> ${parsed.secondaryColor || 'Nenhum'}</p>
+                    `;
+                } else {
+                    output.innerHTML = '<p>Nenhuma customização encontrada no localStorage</p>';
+                }
+            } catch (e) {
+                document.getElementById('output').innerHTML = `<p>Erro: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

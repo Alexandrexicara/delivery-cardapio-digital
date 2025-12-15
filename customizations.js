@@ -77,11 +77,16 @@ class CustomizationManager {
 
     // Aplicar customizações no cardápio
     applyToMenu() {
+        console.log('[DEBUG] Iniciando aplicação de customizações');
         const customizations = this.loadCustomizations();
+        console.log('[DEBUG] Customizações carregadas:', customizations);
 
         // Aplicar logo
         if (customizations.logo) {
+            console.log('[DEBUG] Aplicando logo:', customizations.logo);
             let logoImg = document.getElementById('establishmentLogoImg');
+            console.log('[DEBUG] Elemento logoImg encontrado:', logoImg);
+            
             if (!logoImg) {
                 logoImg = document.createElement('img');
                 logoImg.id = 'establishmentLogoImg';
@@ -89,49 +94,75 @@ class CustomizationManager {
                 logoImg.style.display = 'block';
                 logoImg.style.marginBottom = '10px';
                 logoImg.style.objectFit = 'contain';
+                
                 const logoContainer = document.getElementById('establishmentLogo');
+                console.log('[DEBUG] Elemento logoContainer encontrado:', logoContainer);
+                
                 if (logoContainer) {
                     logoContainer.insertBefore(logoImg, logoContainer.firstChild);
+                    console.log('[DEBUG] Logo inserido no container');
+                } else {
+                    console.log('[DEBUG] Container de logo não encontrado');
                 }
             }
-            logoImg.src = customizations.logo;
-            logoImg.alt = 'Logo do Estabelecimento';
+            
+            if (logoImg) {
+                logoImg.src = customizations.logo;
+                logoImg.alt = 'Logo do Estabelecimento';
+                console.log('[DEBUG] Logo atualizado com sucesso');
+            }
         }
 
         // Aplicar background
         if (customizations.background) {
+            console.log('[DEBUG] Aplicando background:', customizations.background);
             document.body.style.backgroundImage = `url(${customizations.background})`;
             document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundAttachment = 'fixed';
             document.body.style.backgroundRepeat = 'no-repeat';
+            console.log('[DEBUG] Background aplicado');
         }
 
         // Aplicar cores
         if (customizations.primaryColor) {
+            console.log('[DEBUG] Aplicando cor primária:', customizations.primaryColor);
             document.documentElement.style.setProperty('--primary-color', customizations.primaryColor);
         }
         if (customizations.secondaryColor) {
+            console.log('[DEBUG] Aplicando cor secundária:', customizations.secondaryColor);
             document.documentElement.style.setProperty('--secondary-color', customizations.secondaryColor);
         }
 
         // Aplicar nome do estabelecimento
         if (customizations.establishmentName) {
+            console.log('[DEBUG] Aplicando nome do estabelecimento:', customizations.establishmentName);
             document.title = `${customizations.establishmentName} - Cardápio Digital`;
             const nameElement = document.getElementById('establishmentName');
+            console.log('[DEBUG] Elemento establishmentName encontrado:', nameElement);
+            
             if (nameElement) {
                 nameElement.textContent = customizations.establishmentName;
+                console.log('[DEBUG] Nome do estabelecimento atualizado');
+            } else {
+                console.log('[DEBUG] Elemento establishmentName não encontrado');
             }
         }
 
         // Aplicar tagline
         if (customizations.establishmentTagline) {
+            console.log('[DEBUG] Aplicando tagline:', customizations.establishmentTagline);
             const taglineElement = document.getElementById('establishmentTagline');
+            console.log('[DEBUG] Elemento establishmentTagline encontrado:', taglineElement);
+            
             if (taglineElement) {
                 taglineElement.textContent = customizations.establishmentTagline;
+                console.log('[DEBUG] Tagline atualizada');
+            } else {
+                console.log('[DEBUG] Elemento establishmentTagline não encontrado');
             }
         }
 
-        console.log('Customizações aplicadas no cardápio');
+        console.log('[DEBUG] Customizações aplicadas no cardápio');
     }
 
     // Aplicar customizações no admin

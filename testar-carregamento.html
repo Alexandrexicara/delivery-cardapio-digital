@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testar Carregamento de Customizações</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Testar Carregamento de Customizações</h1>
+    <button onclick="testarCarregamento()">Testar Carregamento</button>
+    <button onclick="testarAplicacao()">Testar Aplicação</button>
+    <button onclick="mostrarLocalStorage()">Mostrar LocalStorage</button>
+    <div id="resultado"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function testarCarregamento() {
+            try {
+                const resultado = document.getElementById('resultado');
+                
+                // Testar carregamento direto do localStorage
+                const localStorageData = localStorage.getItem('establishmentCustomizations');
+                const parsedData = JSON.parse(localStorageData || '{}');
+                
+                // Testar função oficial
+                const loadedData = loadCustomizations();
+                
+                resultado.innerHTML = `
+                    <h2>Teste de Carregamento:</h2>
+                    
+                    <h3>Do LocalStorage diretamente:</h3>
+                    <pre>${localStorageData || 'VAZIO'}</pre>
+                    
+                    <h3>Objeto parseado:</h3>
+                    <pre>${JSON.stringify(parsedData, null, 2)}</pre>
+                    
+                    <h3>Função loadCustomizations():</h3>
+                    <pre>${JSON.stringify(loadedData, null, 2)}</pre>
+                    
+                    <h3>Comparação:</h3>
+                    <p>Iguais: ${JSON.stringify(parsedData) === JSON.stringify(loadedData) ? '✅ SIM' : '❌ NÃO'}</p>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+        
+        function testarAplicacao() {
+            try {
+                const resultado = document.getElementById('resultado');
+                
+                // Carregar customizações
+                const customizacoes = loadCustomizations();
+                
+                // Mostrar o que será aplicado
+                resultado.innerHTML = `
+                    <h2>Teste de Aplicação:</h2>
+                    <pre>${JSON.stringify(customizacoes, null, 2)}</pre>
+                    
+                    <h3>Campos que serão aplicados:</h3>
+                    <ul>
+                        <li>Logo: ${customizacoes.logo ? '✅ ' + customizacoes.logo : '❌ Nenhum'}</li>
+                        <li>Background: ${customizacoes.background ? '✅ ' + customizacoes.background : '❌ Nenhum'}</li>
+                        <li>Nome: ${customizacoes.establishmentName ? '✅ ' + customizacoes.establishmentName : '❌ Nenhum'}</li>
+                        <li>Slogan: ${customizacoes.establishmentTagline ? '✅ ' + customizacoes.establishmentTagline : '❌ Nenhum'}</li>
+                    </ul>
+                `;
+                
+                // Tentar aplicar manualmente
+                setTimeout(() => {
+                    aplicarManualmente(customizacoes);
+                }, 1000);
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+        
+        function aplicarManualmente(customizacoes) {
+            const resultado = document.getElementById('resultado');
+            
+            try {
+                // Aplicar logo
+                if (customizacoes.logo) {
+                    let logoImg = document.getElementById('establishmentLogoImg');
+                    if (!logoImg) {
+                        logoImg = document.createElement('img');
+                        logoImg.id = 'establishmentLogoImg';
+                        logoImg.style.maxHeight = '50px';
+                        logoImg.style.display = 'block';
+                        logoImg.style.marginBottom = '10px';
+                        logoImg.style.objectFit = 'contain';
+                        
+                        const logoContainer = document.getElementById('establishmentLogo');
+                        if (logoContainer) {
+                            if (logoContainer.firstChild) {
+                                logoContainer.insertBefore(logoImg, logoContainer.firstChild);
+                            } else {
+                                logoContainer.appendChild(logoImg);
+                            }
+                        }
+                    }
+                    logoImg.src = customizacoes.logo;
+                    logoImg.alt = 'Logo do Estabelecimento';
+                }
+                
+                // Aplicar background
+                if (customizacoes.background) {
+                    document.body.style.backgroundImage = `url(${customizacoes.background})`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundRepeat = 'no-repeat';
+                }
+                
+                resultado.innerHTML += `
+                    <p style="color: green;">✅ Aplicação manual concluída!</p>
+                    <p>Verifique se o logo e background apareceram nesta página.</p>
+                `;
+            } catch (erro) {
+                resultado.innerHTML += `<p style="color: red;">Erro na aplicação manual: ${erro.message}</p>`;
+            }
+        }
+        
+        function mostrarLocalStorage() {
+            try {
+                const localStorageData = localStorage.getItem('establishmentCustomizations');
+                const parsedData = JSON.parse(localStorageData || '{}');
+                
+                document.getElementById('resultado').innerHTML = `
+                    <h2>Conteúdo do LocalStorage:</h2>
+                    <pre>${localStorageData || 'VAZIO'}</pre>
+                    
+                    <h3>Análise:</h3>
+                    <ul>
+                        <li>Logo presente: ${parsedData.logo ? '✅ SIM' : '❌ NÃO'}</li>
+                        <li>Background presente: ${parsedData.background ? '✅ SIM' : '❌ NÃO'}</li>
+                        <li>Nome presente: ${parsedData.establishmentName ? '✅ SIM' : '❌ NÃO'}</li>
+                        <li>Slogan presente: ${parsedData.establishmentTagline ? '✅ SIM' : '❌ NÃO'}</li>
+                    </ul>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

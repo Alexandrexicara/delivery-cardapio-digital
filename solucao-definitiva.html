@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Solução Definitiva - Customizações</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Solução Definitiva - Customizações</h1>
+    <button onclick="aplicarSolucaoCompleta()">Aplicar Solução Completa</button>
+    <button onclick="verificarStatus()">Verificar Status</button>
+    <button onclick="resetarCustomizacoes()">Resetar Customizações</button>
+    <div id="resultado"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function aplicarSolucaoCompleta() {
+            try {
+                const resultado = document.getElementById('resultado');
+                
+                // 1. Carregar customizações atuais
+                const customizacoes = loadCustomizations();
+                
+                // 2. Garantir que todas as propriedades existam
+                const customizacoesCompletas = {
+                    establishmentName: customizacoes.establishmentName || 'ALMIRANTE BAR',
+                    establishmentTagline: customizacoes.establishmentTagline || 'Cozinha Brasileira Autêntica',
+                    establishmentAddress: customizacoes.establishmentAddress || 'Rua das Flores, 123 - Centro',
+                    establishmentPhone: customizacoes.establishmentPhone || '(11) 98828-3318',
+                    establishmentHours: customizacoes.establishmentHours || 'Ter-Sex: 18h-23h | Sáb-Dom: 12h-23h',
+                    primaryColor: customizacoes.primaryColor || '#95a80b',
+                    secondaryColor: customizacoes.secondaryColor || '#10d1b1',
+                    facebook: customizacoes.facebook || '',
+                    instagram: customizacoes.instagram || '',
+                    whatsapp: customizacoes.whatsapp || '',
+                    logo: customizacoes.logo || '/uploads/1765581455496-988671.png',
+                    background: customizacoes.background || '/uploads/1765581481553-966829.png'
+                };
+                
+                // 3. Salvar customizações completas
+                saveCustomizations(customizacoesCompletas);
+                
+                // 4. Aplicar customizações manualmente para garantir
+                aplicarCustomizacoesManualmente(customizacoesCompletas);
+                
+                resultado.innerHTML = `
+                    <p style="color: green; font-size: 18px;">✅ SOLUÇÃO APLICADA COM SUCESSO!</p>
+                    
+                    <h3>O que foi feito:</h3>
+                    <ul>
+                        <li>✅ Garantido que todas as propriedades existam</li>
+                        <li>✅ Adicionado logo: ${customizacoesCompletas.logo}</li>
+                        <li>✅ Adicionado background: ${customizacoesCompletas.background}</li>
+                        <li>✅ Customizações salvas no localStorage</li>
+                        <li>✅ Customizações aplicadas manualmente</li>
+                    </ul>
+                    
+                    <h3>Próximos passos:</h3>
+                    <ol>
+                        <li>Feche esta janela</li>
+                        <li>Recarregue todas as páginas:</li>
+                        <ul>
+                            <li><a href="/usuario.html" target="_blank">Cardápio (usuário)</a></li>
+                            <li><a href="/admin.html" target="_blank">Admin</a></li>
+                            <li><a href="/cozinha.html" target="_blank">Cozinha</a></li>
+                            <li><a href="/balcao.html" target="_blank">Balcão</a></li>
+                            <li><a href="/garcom.html" target="_blank">Garçom</a></li>
+                        </ul>
+                        <li>Você verá:</li>
+                        <ul>
+                            <li>✅ Seu logo no topo de todas as páginas</li>
+                            <li>✅ Sua imagem de fundo em todas as páginas</li>
+                            <li>✅ Cores personalizadas</li>
+                            <li>✅ Nome e slogan do estabelecimento</li>
+                        </ul>
+                    </ol>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+        
+        function aplicarCustomizacoesManualmente(customizacoes) {
+            // Aplicar logo
+            if (customizacoes.logo) {
+                let logoImg = document.getElementById('establishmentLogoImg');
+                if (!logoImg) {
+                    logoImg = document.createElement('img');
+                    logoImg.id = 'establishmentLogoImg';
+                    logoImg.style.maxHeight = '50px';
+                    logoImg.style.display = 'block';
+                    logoImg.style.marginBottom = '10px';
+                    logoImg.style.objectFit = 'contain';
+                    
+                    const logoContainer = document.getElementById('establishmentLogo');
+                    if (logoContainer) {
+                        // Inserir o logo como primeiro filho
+                        if (logoContainer.firstChild) {
+                            logoContainer.insertBefore(logoImg, logoContainer.firstChild);
+                        } else {
+                            logoContainer.appendChild(logoImg);
+                        }
+                    }
+                }
+                logoImg.src = customizacoes.logo;
+                logoImg.alt = 'Logo do Estabelecimento';
+            }
+            
+            // Aplicar background
+            if (customizacoes.background) {
+                document.body.style.backgroundImage = `url(${customizacoes.background})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+                document.body.style.backgroundRepeat = 'no-repeat';
+            }
+            
+            // Aplicar cores
+            if (customizacoes.primaryColor) {
+                document.documentElement.style.setProperty('--primary-color', customizacoes.primaryColor);
+            }
+            if (customizacoes.secondaryColor) {
+                document.documentElement.style.setProperty('--secondary-color', customizacoes.secondaryColor);
+            }
+            
+            // Aplicar nome do estabelecimento
+            if (customizacoes.establishmentName) {
+                const nameElement = document.getElementById('establishmentName');
+                if (nameElement) {
+                    nameElement.textContent = customizacoes.establishmentName;
+                }
+            }
+            
+            // Aplicar tagline
+            if (customizacoes.establishmentTagline) {
+                const taglineElement = document.getElementById('establishmentTagline');
+                if (taglineElement) {
+                    taglineElement.textContent = customizacoes.establishmentTagline;
+                }
+            }
+        }
+        
+        function verificarStatus() {
+            try {
+                const customizacoes = loadCustomizations();
+                const resultado = document.getElementById('resultado');
+                
+                const temLogo = !!customizacoes.logo;
+                const temBackground = !!customizacoes.background;
+                const logoValido = temLogo && customizacoes.logo.includes('/uploads/');
+                const backgroundValido = temBackground && customizacoes.background.includes('/uploads/');
+                
+                const tudoOk = temLogo && temBackground && logoValido && backgroundValido;
+                
+                resultado.innerHTML = `
+                    <h2>Status das Customizações:</h2>
+                    <p style="font-size: 18px; color: ${tudoOk ? 'green' : 'red'};">
+                        ${tudoOk ? '✅ TUDO OK' : '❌ INCOMPLETO'}
+                    </p>
+                    
+                    <h3>Detalhes:</h3>
+                    <ul>
+                        <li>Nome: ${customizacoes.establishmentName || '❌ Ausente'}</li>
+                        <li>Slogan: ${customizacoes.establishmentTagline || '❌ Ausente'}</li>
+                        <li>Logo: ${temLogo ? '✅ Presente' : '❌ Ausente'}</li>
+                        <li>Logo válido: ${logoValido ? '✅ Válido' : '❌ Inválido'}</li>
+                        <li>Background: ${temBackground ? '✅ Presente' : '❌ Ausente'}</li>
+                        <li>Background válido: ${backgroundValido ? '✅ Válido' : '❌ Inválido'}</li>
+                        <li>Cor primária: ${customizacoes.primaryColor || '❌ Ausente'}</li>
+                        <li>Cor secundária: ${customizacoes.secondaryColor || '❌ Ausente'}</li>
+                    </ul>
+                    
+                    ${temLogo ? `
+                        <div>
+                            <h4>Preview do Logo:</h4>
+                            <img src="${customizacoes.logo}" alt="Logo" style="max-width: 200px; max-height: 100px; border: 1px solid #ccc;">
+                        </div>
+                    ` : ''}
+                    
+                    ${temBackground ? `
+                        <div>
+                            <h4>Preview do Background:</h4>
+                            <div style="width: 200px; height: 100px; background-image: url(${customizacoes.background}); background-size: cover; border: 1px solid #ccc;"></div>
+                        </div>
+                    ` : ''}
+                    
+                    ${!tudoOk ? `
+                        <p style="color: orange;">
+                            Clique em "Aplicar Solução Completa" para corrigir os problemas.
+                        </p>
+                    ` : ''}
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+        
+        function resetarCustomizacoes() {
+            try {
+                const customizacoesPadrao = resetCustomizations();
+                document.getElementById('resultado').innerHTML = `
+                    <p style="color: green;">✅ Customizações resetadas para valores padrão!</p>
+                    <pre>${JSON.stringify(customizacoesPadrao, null, 2)}</pre>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

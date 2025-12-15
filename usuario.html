@@ -562,10 +562,7 @@
                     <div>Subtotal</div>
                     <div>R$ 0,00</div>
                 </div>
-                <div class="cart-item">
-                    <div>Taxa de Serviço (10%)</div>
-                    <div>R$ 0,00</div>
-                </div>
+
                 <div class="cart-item cart-total-bold">
                     <div>Total</div>
                     <div>R$ 0,00</div>
@@ -851,8 +848,8 @@
                 cartItems.push({ name, quantity, price, category, sector });
             }
         });
-        const serviceFee = subtotal * 0.10;
-        const total = subtotal + serviceFee;
+        const serviceFee = 0;
+        const total = subtotal;
         return { subtotal, serviceFee, total, cartItems };
     }
 
@@ -876,7 +873,6 @@
         if (cartSummary) {
             cartSummary.innerHTML = `
                 <div class="cart-item"><div>Subtotal</div><div>R$ ${subtotal.toFixed(2).replace('.', ',')}</div></div>
-                <div class="cart-item"><div>Taxa de Serviço (10%)</div><div>R$ ${serviceFee.toFixed(2).replace('.', ',')}</div></div>
                 <div class="cart-item cart-total-bold"><div>Total</div><div>R$ ${total.toFixed(2).replace('.', ',')}</div></div>`;
         }
         if (document.getElementById('payment').classList.contains('active')) {
@@ -1007,7 +1003,9 @@
             customer: customerData,
             items: cartItems,
             observations: document.getElementById('observations').value,
-            subtotal, serviceFee, total,
+            subtotal: subtotal,
+            serviceFee: 0,
+            total: total,
             table: `Mesa ${customerData.tableNumber}`,
             status: 'pending',
             paymentStatus: 'pending',

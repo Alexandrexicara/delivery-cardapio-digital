@@ -185,8 +185,14 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">📦 BALCÃO</div>
+        <header id="establishmentHeader">
+            <div class="logo" id="establishmentLogo">
+                <!-- Logo will be inserted here by JavaScript -->
+                <div id="establishmentName">Restaurante Sabores</div>
+                <div id="establishmentTagline" class="establishment-tagline">
+                   Cozinha Brasileira Autêntica
+                </div>
+            </div>
         </header>
 
         <div class="tabs">
@@ -228,6 +234,10 @@
                         <option value="Mesa 15">Mesa 15</option>
                     </select>
                 </div>
+            </div>
+            
+            <div style="margin-bottom: 20px; text-align: right;">
+                <button class="btn btn-warning" onclick="closeDayOrders()">Fechar Pedidos do Dia</button>
             </div>
             
             <div id="counterOrders">
@@ -402,19 +412,17 @@
                     
                     // Update button states based on new status
                     const buttons = card.querySelectorAll('.order-actions button');
-                    if (buttons.length >= 4) {
-                        console.log('[DEBUG] Balcão: Atualizando estados dos botões');
-                        // Update each button's disabled state based on current order status
+                    console.log('[DEBUG] Balcão: Número de botões encontrados', buttons.length);
+                    
+                    // Update fixed buttons (Iniciar Preparação and Marcar como Pronto)
+                    if (buttons.length >= 2) {
+                        console.log('[DEBUG] Balcão: Atualizando estados dos botões fixos');
                         buttons[0].disabled = (status !== 'pending'); // Iniciar Preparação
                         buttons[1].disabled = (status !== 'preparing'); // Marcar como Pronto
-                        buttons[2].disabled = (status !== 'ready'); // Enviar para Entrega
-                        buttons[3].disabled = (status !== 'delivered'); // Marcar como Concluído
                         
-                        console.log('[DEBUG] Balcão: Estados dos botões atualizados', {
+                        console.log('[DEBUG] Balcão: Estados dos botões fixos atualizados', {
                             iniciarPreparacao: buttons[0].disabled,
-                            marcarPronto: buttons[1].disabled,
-                            enviarEntrega: buttons[2].disabled,
-                            marcarConcluido: buttons[3].disabled
+                            marcarPronto: buttons[1].disabled
                         });
                     }
                 }
@@ -523,8 +531,7 @@
                     <div class="order-actions">
                         <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}', 'preparing')" ${order.status !== 'pending' ? 'disabled' : ''}>Iniciar Preparação</button>
                         <button class="btn btn-warning" onclick="updateOrderStatus('${order.id}', 'ready')" ${order.status !== 'preparing' ? 'disabled' : ''}>Marcar como Pronto</button>
-                        <button class="btn btn-info" onclick="updateOrderStatus('${order.id}', 'delivered')" ${order.status !== 'ready' ? 'disabled' : ''}>Enviar para Entrega</button>
-                        <button class="btn btn-success" onclick="updateOrderStatus('${order.id}', 'completed')" ${order.status !== 'delivered' ? 'disabled' : ''}>Marcar como Concluído</button>
+                        ${order.status === 'ready' ? `<button class="btn btn-info" onclick="notifyWaiterForDelivery('${order.id}')">Notificar Garçom para Entrega</button>` : ''}
                     </div>
                 </div>
             `;
@@ -577,6 +584,27 @@
                 alert('Erro: Não foi possível conectar ao servidor');
             }
         }
+        
+        // Close day orders
+        function closeDayOrders() {
+            if (confirm('Tem certeza que deseja fechar todos os pedidos do dia? Isso limpará a lista de pedidos.')) {
+                // Clear orders from UI
+                const ordersContainer = document.getElementById('counterOrders');
+                ordersContainer.innerHTML = '<p>Carregando pedidos do balcão...</p>';
+                
+                // Clear orders from local data
+                window.ordersData = [];
+                
+                alert('Pedidos do dia fechados com sucesso!');
+            }
+        }
+    </script>
+    <script src="customizations.js"></script>
+    <script>
+        // Apply customizations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            applyCustomizationsToMenu();
+        });
     </script>
 </body>
 </html>

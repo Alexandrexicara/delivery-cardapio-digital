@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug de Customizações</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .logo-preview {
+            max-width: 200px;
+            max-height: 100px;
+            margin: 10px 0;
+        }
+        .background-preview {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            background-size: cover;
+            background-position: center;
+        }
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .element-check {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .found {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .not-found {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Debug de Customizações</h1>
+        
+        <div class="debug-section">
+            <h2>Verificar Elementos do DOM</h2>
+            <button onclick="checkElements()">Verificar Elementos Necessários</button>
+            <div id="elementsCheck"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Verificar Customizações Salvas</h2>
+            <button onclick="checkCustomizations()">Verificar Customizações</button>
+            <div id="customizationsOutput"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Aplicar Customizações Manualmente</h2>
+            <button onclick="applyCustomizations()">Aplicar Customizações</button>
+            <div id="applyOutput"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Resetar Customizações</h2>
+            <button onclick="resetCustomizations()">Resetar para Padrão</button>
+            <div id="resetOutput"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Testar Carregamento de Imagens</h2>
+            <button onclick="testImageLoading()">Testar Carregamento de Imagens</button>
+            <div id="imageTestOutput"></div>
+        </div>
+    </div>
+
+    <script src="customizations.js"></script>
+    <script>
+        function checkElements() {
+            const elements = [
+                'establishmentLogo',
+                'establishmentName', 
+                'establishmentTagline',
+                'establishmentLogoImg'
+            ];
+            
+            let output = '<h3>Verificação de Elementos:</h3>';
+            
+            elements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                const className = element ? 'found' : 'not-found';
+                const status = element ? 'ENCONTRADO' : 'NÃO ENCONTRADO';
+                output += `<div class="element-check ${className}">Elemento "${elementId}": ${status}</div>`;
+            });
+            
+            document.getElementById('elementsCheck').innerHTML = output;
+        }
+        
+        function checkCustomizations() {
+            try {
+                console.log('[DEBUG] Iniciando verificação de customizações');
+                const customizations = loadCustomizations();
+                console.log('[DEBUG] Customizações carregadas:', customizations);
+                
+                document.getElementById('customizationsOutput').innerHTML = `
+                    <h3>Customizações Atuais:</h3>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    
+                    <h3>Preview:</h3>
+                    ${customizations.logo ? `
+                        <div>
+                            <strong>Logo:</strong><br>
+                            <img src="${customizations.logo}" alt="Logo Preview" class="logo-preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzY2NiI+TE9HTzwvdGV4dD48L3N2Zz4=';">
+                        </div>
+                    ` : '<p>Nenhum logo configurado</p>'}
+                    
+                    ${customizations.background ? `
+                        <div>
+                            <strong>Background:</strong><br>
+                            <div class="background-preview" style="background-image: url(${customizations.background});"></div>
+                        </div>
+                    ` : '<p>Nenhuma imagem de fundo configurada</p>'}
+                    
+                    ${customizations.primaryColor ? `
+                        <div>
+                            <strong>Cor Primária:</strong><br>
+                            <div style="width: 100px; height: 30px; background-color: ${customizations.primaryColor}; border: 1px solid #ccc;"></div>
+                            <p>${customizations.primaryColor}</p>
+                        </div>
+                    ` : '<p>Nenhuma cor primária configurada</p>'}
+                `;
+            } catch (error) {
+                document.getElementById('customizationsOutput').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                console.error('[DEBUG] Erro ao verificar customizações:', error);
+            }
+        }
+        
+        function applyCustomizations() {
+            try {
+                console.log('[DEBUG] Iniciando aplicação manual de customizações');
+                applyCustomizationsToMenu();
+                document.getElementById('applyOutput').innerHTML = '<p style="color: green;">Customizações aplicadas com sucesso! Verifique o console para detalhes.</p>';
+            } catch (error) {
+                document.getElementById('applyOutput').innerHTML = `<p style="color: red;">Erro ao aplicar customizações: ${error.message}</p>`;
+                console.error('[DEBUG] Erro ao aplicar customizações:', error);
+            }
+        }
+        
+        function resetCustomizations() {
+            try {
+                console.log('[DEBUG] Resetando customizações');
+                const defaultCustomizations = resetCustomizations();
+                document.getElementById('resetOutput').innerHTML = `
+                    <p style="color: green;">Customizações resetadas para padrão!</p>
+                    <pre>${JSON.stringify(defaultCustomizations, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('resetOutput').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                console.error('[DEBUG] Erro ao resetar customizações:', error);
+            }
+        }
+        
+        function testImageLoading() {
+            try {
+                console.log('[DEBUG] Testando carregamento de imagens');
+                const customizations = loadCustomizations();
+                
+                if (customizations.logo) {
+                    const img = new Image();
+                    img.onload = function() {
+                        document.getElementById('imageTestOutput').innerHTML += 
+                            `<p style="color: green;">Logo carregado com sucesso: ${customizations.logo}</p>`;
+                    };
+                    img.onerror = function() {
+                        document.getElementById('imageTestOutput').innerHTML += 
+                            `<p style="color: red;">Falha ao carregar logo: ${customizations.logo}</p>`;
+                    };
+                    img.src = customizations.logo;
+                }
+                
+                if (customizations.background) {
+                    const img = new Image();
+                    img.onload = function() {
+                        document.getElementById('imageTestOutput').innerHTML += 
+                            `<p style="color: green;">Background carregado com sucesso: ${customizations.background}</p>`;
+                    };
+                    img.onerror = function() {
+                        document.getElementById('imageTestOutput').innerHTML += 
+                            `<p style="color: red;">Falha ao carregar background: ${customizations.background}</p>`;
+                    };
+                    img.src = customizations.background;
+                }
+                
+                document.getElementById('imageTestOutput').innerHTML = '<p>Testando carregamento de imagens...</p>';
+            } catch (error) {
+                document.getElementById('imageTestOutput').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                console.error('[DEBUG] Erro ao testar carregamento de imagens:', error);
+            }
+        }
+    </script>
+</body>
+</html>

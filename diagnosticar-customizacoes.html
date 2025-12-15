@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnosticar Customizações</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Diagnosticar Customizações</h1>
+    <button onclick="diagnosticarPassoAPasso()">Diagnosticar Passo a Passo</button>
+    <button onclick="verificarAplicacao()">Verificar Aplicação</button>
+    <button onclick="corrigirTudo()">Corrigir Tudo</button>
+    <div id="resultado"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function diagnosticarPassoAPasso() {
+            try {
+                const resultado = document.getElementById('resultado');
+                
+                // 1. Verificar o que está no localStorage
+                const localStorageData = localStorage.getItem('establishmentCustomizations');
+                const customizacoes = JSON.parse(localStorageData || '{}');
+                
+                // 2. Verificar se o objeto de customizações existe
+                const customizationManagerExists = typeof customizationManager !== 'undefined';
+                
+                // 3. Verificar se as funções existem
+                const loadFunctionExists = typeof loadCustomizations !== 'undefined';
+                const applyFunctionExists = typeof applyCustomizationsToMenu !== 'undefined';
+                
+                // 4. Testar carregar customizações
+                let loadedCustomizations = null;
+                let loadError = null;
+                try {
+                    loadedCustomizations = loadCustomizations();
+                } catch (e) {
+                    loadError = e.message;
+                }
+                
+                // 5. Verificar se as imagens estão presentes
+                const temLogo = !!customizacoes.logo;
+                const temBackground = !!customizacoes.background;
+                const logoValido = temLogo && customizacoes.logo.includes('/uploads/');
+                const backgroundValido = temBackground && customizacoes.background.includes('/uploads/');
+                
+                resultado.innerHTML = `
+                    <h2>Diagnóstico Completo:</h2>
+                    
+                    <h3>1. Estado do LocalStorage:</h3>
+                    <pre>${localStorageData || 'VAZIO'}</pre>
+                    
+                    <h3>2. Verificação de Componentes:</h3>
+                    <ul>
+                        <li>CustomizationManager: ${customizationManagerExists ? '✅ EXISTE' : '❌ NÃO EXISTE'}</li>
+                        <li>Função loadCustomizations: ${loadFunctionExists ? '✅ EXISTE' : '❌ NÃO EXISTE'}</li>
+                        <li>Função applyCustomizationsToMenu: ${applyFunctionExists ? '✅ EXISTE' : '❌ NÃO EXISTE'}</li>
+                    </ul>
+                    
+                    <h3>3. Teste de Carregamento:</h3>
+                    ${loadError ? 
+                        `<p style="color: red;">Erro ao carregar: ${loadError}</p>` : 
+                        `<pre>${JSON.stringify(loadedCustomizations, null, 2)}</pre>`
+                    }
+                    
+                    <h3>4. Status das Imagens:</h3>
+                    <ul>
+                        <li>Logo presente: ${temLogo ? '✅ SIM' : '❌ NÃO'}</li>
+                        <li>Logo válido: ${logoValido ? '✅ SIM' : '❌ NÃO'}</li>
+                        <li>Background presente: ${temBackground ? '✅ SIM' : '❌ NÃO'}</li>
+                        <li>Background válido: ${backgroundValido ? '✅ SIM' : '❌ NÃO'}</li>
+                    </ul>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro no diagnóstico: ${erro.message}</p>`;
+            }
+        }
+        
+        function verificarAplicacao() {
+            try {
+                const resultado = document.getElementById('resultado');
+                
+                // Limpar qualquer estilo anterior
+                document.body.style.backgroundImage = '';
+                document.body.style.backgroundColor = '';
+                
+                // Tentar aplicar customizações manualmente
+                const customizacoes = loadCustomizations();
+                console.log('[DIAGNÓSTICO] Customizações carregadas:', customizacoes);
+                
+                // Aplicar logo manualmente
+                if (customizacoes.logo) {
+                    console.log('[DIAGNÓSTICO] Tentando aplicar logo:', customizacoes.logo);
+                    let logoImg = document.getElementById('establishmentLogoImg');
+                    if (!logoImg) {
+                        logoImg = document.createElement('img');
+                        logoImg.id = 'establishmentLogoImg';
+                        logoImg.style.maxHeight = '50px';
+                        logoImg.style.display = 'block';
+                        logoImg.style.marginBottom = '10px';
+                        
+                        const logoContainer = document.getElementById('establishmentLogo');
+                        if (logoContainer) {
+                            logoContainer.insertBefore(logoImg, logoContainer.firstChild);
+                        }
+                    }
+                    logoImg.src = customizacoes.logo;
+                    logoImg.alt = 'Logo do Estabelecimento';
+                    console.log('[DIAGNÓSTICO] Logo aplicado com sucesso');
+                }
+                
+                // Aplicar background manualmente
+                if (customizacoes.background) {
+                    console.log('[DIAGNÓSTICO] Tentando aplicar background:', customizacoes.background);
+                    document.body.style.backgroundImage = `url(${customizacoes.background})`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundRepeat = 'no-repeat';
+                    console.log('[DIAGNÓSTICO] Background aplicado com sucesso');
+                }
+                
+                resultado.innerHTML = `
+                    <p style="color: green;">✅ Aplicação manual concluída!</p>
+                    <p>Verifique se o logo e background apareceram.</p>
+                    <p>Se sim, o problema está na função automática de aplicação.</p>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro na aplicação: ${erro.message}</p>`;
+            }
+        }
+        
+        function corrigirTudo() {
+            try {
+                const resultado = document.getElementById('resultado');
+                
+                // 1. Verificar se as imagens existem nos uploads
+                const logoUrl = '/uploads/1765581455496-988671.png';
+                const backgroundUrl = '/uploads/1765581481553-966829.png';
+                
+                // 2. Carregar customizações atuais
+                const customizacoes = loadCustomizations();
+                
+                // 3. Forçar adicionar as imagens
+                customizacoes.logo = logoUrl;
+                customizacoes.background = backgroundUrl;
+                
+                // 4. Salvar customizações corrigidas
+                saveCustomizations(customizacoes);
+                
+                // 5. Aplicar imediatamente
+                applyCustomizationsToMenu();
+                
+                resultado.innerHTML = `
+                    <p style="color: green; font-size: 18px;">✅ TUDO CORRIGIDO COM SUCESSO!</p>
+                    
+                    <h3>O que foi feito:</h3>
+                    <ul>
+                        <li>✅ Adicionado logo: ${logoUrl}</li>
+                        <li>✅ Adicionado background: ${backgroundUrl}</li>
+                        <li>✅ Customizações salvas</li>
+                        <li>✅ Customizações aplicadas imediatamente</li>
+                    </ul>
+                    
+                    <h3>Próximos passos:</h3>
+                    <ol>
+                        <li>Feche esta janela</li>
+                        <li>Recarregue todas as páginas para confirmar:</li>
+                        <ul>
+                            <li><a href="/usuario.html" target="_blank">Cardápio (usuário)</a></li>
+                            <li><a href="/admin.html" target="_blank">Admin</a></li>
+                            <li><a href="/cozinha.html" target="_blank">Cozinha</a></li>
+                            <li><a href="/balcao.html" target="_blank">Balcão</a></li>
+                            <li><a href="/garcom.html" target="_blank">Garçom</a></li>
+                        </ul>
+                    </ol>
+                `;
+            } catch (erro) {
+                document.getElementById('resultado').innerHTML = `<p style="color: red;">Erro na correção: ${erro.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

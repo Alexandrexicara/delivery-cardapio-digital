@@ -318,18 +318,24 @@
                 <div>
                     <div class="form-group">
                         <label for="logoUpload">Logo do Estabelecimento</label>
-                        <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('logoUpload').click()">
+                        <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('logoUpload').click()" id="logoUploadBox">
                             <p>Clique para fazer upload da logo</p>
                             <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 200x200px)</p>
+                            <div id="logoPreview" style="margin-top: 10px; display: none;">
+                                <img src="" alt="Logo Preview" style="max-width: 100%; max-height: 100px;">
+                            </div>
                         </div>
                         <input type="file" id="logoUpload" accept="image/*" style="display: none;">
                     </div>
                     
                     <div class="form-group">
                         <label for="backgroundUpload">Imagem de Fundo</label>
-                        <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('backgroundUpload').click()">
+                        <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer;" onclick="document.getElementById('backgroundUpload').click()" id="backgroundUploadBox">
                             <p>Clique para fazer upload da imagem de fundo</p>
                             <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 1920x1080px)</p>
+                            <div id="backgroundPreview" style="margin-top: 10px; display: none;">
+                                <img src="" alt="Background Preview" style="max-width: 100%; max-height: 100px;">
+                            </div>
                         </div>
                         <input type="file" id="backgroundUpload" accept="image/*" style="display: none;">
                     </div>
@@ -430,44 +436,8 @@
         <p>Cardápio Digital Universal &copy; 2025 - Sistema de pedidos automatizado</p>
     </footer>
 
+    <script src="customizations.js"></script>
     <script>
-        // Load establishment data on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if admin has proper access
-            const adminAccess = localStorage.getItem('adminAccess');
-            const establishmentData = localStorage.getItem('establishmentData');
-            
-            if (!adminAccess || !establishmentData) {
-                // Redirect to login page if no proper authentication
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            const data = JSON.parse(establishmentData);
-            if (data && data.isAuthenticated) {
-                document.getElementById('adminName').textContent = 'Administrador - ' + data.establishmentName;
-            } else {
-                // Redirect to login page if not properly authenticated
-                window.location.href = 'login.html';
-            }
-            
-            const savedCustomizations = localStorage.getItem('establishmentCustomizations');
-            if (savedCustomizations) {
-                const customizations = JSON.parse(savedCustomizations);
-                
-                document.getElementById('establishmentName').value = customizations.establishmentName || '';
-                document.getElementById('establishmentTagline').value = customizations.establishmentTagline || '';
-                document.getElementById('establishmentAddress').value = customizations.establishmentAddress || '';
-                document.getElementById('establishmentPhone').value = customizations.establishmentPhone || '';
-                document.getElementById('establishmentHours').value = customizations.establishmentHours || '';
-                document.getElementById('primaryColor').value = customizations.primaryColor || '#e74c3c';
-                document.getElementById('secondaryColor').value = customizations.secondaryColor || '#3498db';
-                document.getElementById('facebook').value = customizations.facebook || '';
-                document.getElementById('instagram').value = customizations.instagram || '';
-                document.getElementById('whatsapp').value = customizations.whatsapp || '';
-            }
-        });
-        
         // Tab navigation
         function showSection(sectionId) {
             // Hide all sections
@@ -496,6 +466,285 @@
                 tabs[sectionMap[sectionId]].classList.add('active');
             }
         }
+        
+        // Customization functions using the centralized system
+        function saveCustomization() {
+            console.log('[DEBUG] Iniciando salvamento de customizações');
+            // Save customizations to localStorage
+            const customizations = {
+                establishmentName: document.getElementById('establishmentName').value,
+                establishmentTagline: document.getElementById('establishmentTagline').value,
+                establishmentAddress: document.getElementById('establishmentAddress').value,
+                establishmentPhone: document.getElementById('establishmentPhone').value,
+                establishmentHours: document.getElementById('establishmentHours').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                facebook: document.getElementById('facebook').value,
+                instagram: document.getElementById('instagram').value,
+                whatsapp: document.getElementById('whatsapp').value
+            };
+            
+            console.log('[DEBUG] Customizações coletadas:', customizations);
+            
+            // Save to localStorage using the centralized system
+            if (typeof saveCustomizations === 'function') {
+                saveCustomizations(customizations);
+            } else {
+                // Fallback to direct localStorage save
+                localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
+            }
+            console.log('[DEBUG] Customizações salvas no localStorage');
+            
+            // Create success message with image information
+            let successMessage = `Personalizações salvas com sucesso!\nEstabelecimento: ${customizations.establishmentName}\nCor Primária: ${customizations.primaryColor}\nCor Secundária: ${customizations.secondaryColor}`;
+            
+            // Add image information to success message if they exist
+            const savedCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            if (savedCustomizations.logo) {
+                successMessage += `\nLogo: ${savedCustomizations.logo}`;
+            }
+            if (savedCustomizations.background) {
+                successMessage += `\nBackground: ${savedCustomizations.background}`;
+            }
+            
+            // Reset upload boxes after successful save
+            resetUploadBoxes();
+            
+            alert(successMessage);
+        }
+        
+        function previewCustomization() {
+            console.log('[DEBUG] Iniciando preview de customizações');
+            // Save current customizations first
+            saveCustomization();
+            
+            // Show a message about what will be previewed
+            const savedCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            let previewMessage = 'Abrindo preview do cardápio com as personalizações atuais...\n\n';
+            
+            if (savedCustomizations.logo) {
+                previewMessage += `Logo: ${savedCustomizations.logo}\n`;
+            }
+            if (savedCustomizations.background) {
+                previewMessage += `Background: ${savedCustomizations.background}\n`;
+            }
+            
+            previewMessage += '\nUma nova aba será aberta com o cardápio.';
+            alert(previewMessage);
+            
+            // Open usuario.html in a new tab to preview
+            console.log('[DEBUG] Abrindo preview em usuario.html?admin=true');
+            window.open('usuario.html?admin=true', '_blank');
+        }
+        
+        function uploadImage(file, type) {
+            console.log(`[DEBUG] Iniciando upload de ${type}`, file);
+            
+            // Use the centralized upload system if available
+            if (typeof uploadImage === 'function' && uploadImage !== window.uploadImage) {
+                uploadImage(file, type)
+                    .then(imageUrl => {
+                        // Show preview of uploaded image
+                        showImagePreview(type, imageUrl);
+                        alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! Salve as personalizações para aplicar.`);
+                    })
+                    .catch(error => {
+                        console.error(`[DEBUG] Erro no upload:`, error);
+                        // Reset upload box text on error
+                        if (type === 'logo') {
+                            const logoUploadBox = document.getElementById('logoUploadBox');
+                            logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        } else if (type === 'background') {
+                            const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+                            backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        }
+                        alert('Erro ao fazer upload: ' + (error.message || 'Erro desconhecido'));
+                    });
+            } else {
+                // Fallback to direct upload
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const serverUrl = window.location.origin;
+                console.log(`[DEBUG] Enviando requisição POST para ${serverUrl}/upload/${type}`);
+                
+                // Show uploading message
+                if (type === 'logo') {
+                    const logoUploadBox = document.getElementById('logoUploadBox');
+                    logoUploadBox.querySelector('p:first-child').textContent = 'Enviando logo...';
+                } else if (type === 'background') {
+                    const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+                    backgroundUploadBox.querySelector('p:first-child').textContent = 'Enviando imagem de fundo...';
+                }
+                
+                fetch(`${serverUrl}/upload/${type}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    console.log(`[DEBUG] Resposta recebida do servidor`, response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`[DEBUG] Dados recebidos:`, data);
+                    if (data.success) {
+                        const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+                        customizations[type] = data.imageUrl;
+                        localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
+                        console.log(`[DEBUG] Customizações atualizadas:`, customizations);
+                        
+                        // Show preview of uploaded image
+                        showImagePreview(type, data.imageUrl);
+                        
+                        alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! Salve as personalizações para aplicar.`);
+                    } else {
+                        console.error(`[DEBUG] Erro no upload:`, data.error);
+                        // Reset upload box text on error
+                        if (type === 'logo') {
+                            const logoUploadBox = document.getElementById('logoUploadBox');
+                            logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        } else if (type === 'background') {
+                            const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+                            backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        }
+                        alert('Erro ao fazer upload: ' + (data.error || 'Erro desconhecido'));
+                    }
+                })
+                .catch(error => {
+                    console.error(`[DEBUG] Erro na requisição fetch:`, error);
+                    // Reset upload box text on error
+                    if (type === 'logo') {
+                        const logoUploadBox = document.getElementById('logoUploadBox');
+                        logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                    } else if (type === 'background') {
+                        const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+                        backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                    }
+                    alert('Erro ao fazer upload. Tente novamente. Detalhes: ' + error.message);
+                });
+            }
+        }
+        
+        // Function to show image preview
+        function showImagePreview(type, imageUrl) {
+            if (type === 'logo') {
+                const logoPreview = document.getElementById('logoPreview');
+                const logoImg = logoPreview.querySelector('img');
+                logoImg.src = imageUrl;
+                logoPreview.style.display = 'block';
+                
+                // Update upload box text
+                const logoUploadBox = document.getElementById('logoUploadBox');
+                logoUploadBox.querySelector('p:first-child').textContent = 'Logo carregado com sucesso!';
+            } else if (type === 'background') {
+                const backgroundPreview = document.getElementById('backgroundPreview');
+                const backgroundImg = backgroundPreview.querySelector('img');
+                backgroundImg.src = imageUrl;
+                backgroundPreview.style.display = 'block';
+                
+                // Update upload box text
+                const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+                backgroundUploadBox.querySelector('p:first-child').textContent = 'Imagem de fundo carregada com sucesso!';
+            }
+        }
+        
+        // Function to reset upload boxes to initial state
+        function resetUploadBoxes() {
+            // Reset logo upload box
+            const logoUploadBox = document.getElementById('logoUploadBox');
+            logoUploadBox.querySelector('p:first-child').textContent = 'Clique para fazer upload da logo';
+            document.getElementById('logoPreview').style.display = 'none';
+            
+            // Reset background upload box
+            const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+            backgroundUploadBox.querySelector('p:first-child').textContent = 'Clique para fazer upload da imagem de fundo';
+            document.getElementById('backgroundPreview').style.display = 'none';
+        }
+        
+        // Load establishment data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if admin has proper access
+            const adminAccess = localStorage.getItem('adminAccess');
+            const establishmentData = localStorage.getItem('establishmentData');
+            
+            if (!adminAccess || !establishmentData) {
+                // Redirect to login page if no proper authentication
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const data = JSON.parse(establishmentData);
+            if (data && data.isAuthenticated) {
+                document.getElementById('adminName').textContent = 'Administrador - ' + data.establishmentName;
+            } else {
+                // Redirect to login page if not properly authenticated
+                window.location.href = 'login.html';
+            }
+            
+            // Load existing customizations and show previews on page load
+            // Load and show image previews if they exist
+            let savedCustomizations = null;
+            
+            // Try to use the centralized system first
+            if (typeof loadCustomizations === 'function') {
+                savedCustomizations = loadCustomizations();
+            } else {
+                // Fallback to direct localStorage access
+                savedCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            }
+            
+            if (savedCustomizations) {
+                const customizations = savedCustomizations;
+                
+                // Show logo preview if it exists
+                if (customizations.logo) {
+                    showImagePreview('logo', customizations.logo);
+                }
+                
+                // Show background preview if it exists
+                if (customizations.background) {
+                    showImagePreview('background', customizations.background);
+                }
+                
+                document.getElementById('establishmentName').value = customizations.establishmentName || '';
+                document.getElementById('establishmentTagline').value = customizations.establishmentTagline || '';
+                document.getElementById('establishmentAddress').value = customizations.establishmentAddress || '';
+                document.getElementById('establishmentPhone').value = customizations.establishmentPhone || '';
+                document.getElementById('establishmentHours').value = customizations.establishmentHours || '';
+                document.getElementById('primaryColor').value = customizations.primaryColor || '#e74c3c';
+                document.getElementById('secondaryColor').value = customizations.secondaryColor || '#3498db';
+                document.getElementById('facebook').value = customizations.facebook || '';
+                document.getElementById('instagram').value = customizations.instagram || '';
+                document.getElementById('whatsapp').value = customizations.whatsapp || '';
+            }
+            
+            // Add event listeners for file inputs
+            document.getElementById('logoUpload').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    uploadImage(e.target.files[0], 'logo');
+                }
+            });
+            
+            document.getElementById('backgroundUpload').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    uploadImage(e.target.files[0], 'background');
+                }
+            });
+            
+            // Add event listener to reset file inputs when clicked
+            document.getElementById('logoUploadBox').addEventListener('click', function() {
+                // Clear the file input
+                document.getElementById('logoUpload').value = '';
+            });
+            
+            document.getElementById('backgroundUploadBox').addEventListener('click', function() {
+                // Clear the file input
+                document.getElementById('backgroundUpload').value = '';
+            });
+        });
         
         // Modal functions
         function openAddTableModal() {
@@ -601,75 +850,4 @@
                 event.target.style.display = 'none';
             }
         }
-        
-        // Customization functions
-        function saveCustomization() {
-            // Save customizations to localStorage
-            const customizations = {
-                establishmentName: document.getElementById('establishmentName').value,
-                establishmentTagline: document.getElementById('establishmentTagline').value,
-                establishmentAddress: document.getElementById('establishmentAddress').value,
-                establishmentPhone: document.getElementById('establishmentPhone').value,
-                establishmentHours: document.getElementById('establishmentHours').value,
-                primaryColor: document.getElementById('primaryColor').value,
-                secondaryColor: document.getElementById('secondaryColor').value,
-                facebook: document.getElementById('facebook').value,
-                instagram: document.getElementById('instagram').value,
-                whatsapp: document.getElementById('whatsapp').value
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
-            
-            alert(`Personalizações salvas com sucesso!\nEstabelecimento: ${customizations.establishmentName}\nCor Primária: ${customizations.primaryColor}\nCor Secundária: ${customizations.secondaryColor}`);
-        }
-        
-        function previewCustomization() {
-            // Save current customizations first
-            saveCustomization();
-            
-            // Open usuario.html in a new tab to preview
-            window.open('usuario.html?admin=true', '_blank');
-        }
-        
-        function uploadImage(file, type) {
-            const formData = new FormData();
-            formData.append('image', file);
-            
-            const serverUrl = window.location.origin;
-            fetch(`${serverUrl}/upload/${type}`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
-                    customizations[type] = data.imageUrl;
-                    localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
-                    alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! Salve as personalizações para aplicar.`);
-                } else {
-                    alert('Erro ao fazer upload: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Erro ao fazer upload. Tente novamente.');
-            });
-        }
-        
-        // Handle file uploads
-        document.getElementById('logoUpload').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                uploadImage(e.target.files[0], 'logo');
-            }
-        });
-
-        document.getElementById('backgroundUpload').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                uploadImage(e.target.files[0], 'background');
-            }
-        });
-    </script>
-</body>
-</html>
+    </script></body></html>

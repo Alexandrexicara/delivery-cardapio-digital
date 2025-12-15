@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Carregamento</title>
+</head>
+<body>
+    <h1>Teste de Carregamento de Customizações</h1>
+    
+    <div id="establishmentLogo">
+        <div id="establishmentName">Nome do Restaurante</div>
+        <div id="establishmentTagline">Tagline do Restaurante</div>
+    </div>
+    
+    <script>
+        // Testar se o localStorage está disponível
+        console.log('localStorage disponível:', typeof localStorage !== 'undefined');
+        
+        // Testar se há dados no localStorage
+        try {
+            const customizations = localStorage.getItem('establishmentCustomizations');
+            console.log('Dados no localStorage:', customizations);
+            
+            if (customizations) {
+                const parsed = JSON.parse(customizations);
+                console.log('Dados parseados:', parsed);
+            }
+        } catch (e) {
+            console.error('Erro ao acessar localStorage:', e);
+        }
+    </script>
+    
+    <script src="customizations.js"></script>
+    <script>
+        // Testar se as funções foram carregadas
+        console.log('Funções disponíveis após carregar customizations.js:');
+        console.log('customizationManager:', typeof customizationManager);
+        console.log('loadCustomizations:', typeof loadCustomizations);
+        console.log('applyCustomizationsToMenu:', typeof applyCustomizationsToMenu);
+        
+        // Testar carregamento de customizações
+        try {
+            const customizations = loadCustomizations();
+            console.log('Customizações carregadas:', customizations);
+        } catch (e) {
+            console.error('Erro ao carregar customizações:', e);
+        }
+    </script>
+</body>
+</html>

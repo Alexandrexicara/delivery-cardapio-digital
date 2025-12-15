@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnóstico de Timing</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Diagnóstico de Timing</h1>
+    <button onclick="testarTiming()">Testar Timing</button>
+    <button onclick="simularAplicacao()">Simular Aplicação</button>
+    <div id="resultado"></div>
+    
+    <div id="establishmentLogo" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+        <div id="establishmentName">Restaurante Teste</div>
+        <div id="establishmentTagline">Descrição teste</div>
+    </div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function testarTiming() {
+            const resultado = document.getElementById('resultado');
+            
+            // Verificar estado atual
+            const logoContainer = document.getElementById('establishmentLogo');
+            const logoImg = document.getElementById('establishmentLogoImg');
+            
+            resultado.innerHTML = `
+                <h2>Estado Atual do DOM:</h2>
+                <ul>
+                    <li>Container (#establishmentLogo): ${logoContainer ? '✅ Existe' : '❌ Não existe'}</li>
+                    <li>Logo Img (#establishmentLogoImg): ${logoImg ? '✅ Existe' : '❌ Não existe'}</li>
+                </ul>
+                
+                <h3>Estrutura do Container:</h3>
+                <p>Filhos: ${logoContainer ? logoContainer.children.length : 'N/A'}</p>
+                <ul>
+                    ${logoContainer ? Array.from(logoContainer.children).map((child, index) => 
+                        `<li>${index}: &lt;${child.tagName}&gt; ${child.id || child.className || 'sem id/class'}</li>`
+                    ).join('') : 'N/A'}
+                </ul>
+            `;
+        }
+        
+        function simularAplicacao() {
+            const resultado = document.getElementById('resultado');
+            
+            try {
+                // Carregar customizações
+                const customizacoes = loadCustomizations();
+                
+                resultado.innerHTML = `
+                    <h2>Simulação de Aplicação:</h2>
+                    <pre>${JSON.stringify(customizacoes, null, 2)}</pre>
+                `;
+                
+                // Simular aplicação do logo
+                setTimeout(() => {
+                    aplicarLogo(customizacoes);
+                }, 500);
+                
+            } catch (erro) {
+                resultado.innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+        
+        function aplicarLogo(customizacoes) {
+            const resultado = document.getElementById('resultado');
+            
+            if (customizacoes.logo) {
+                let logoImg = document.getElementById('establishmentLogoImg');
+                
+                if (!logoImg) {
+                    console.log('[SIMULAÇÃO] Criando elemento de logo');
+                    logoImg = document.createElement('img');
+                    logoImg.id = 'establishmentLogoImg';
+                    logoImg.style.maxHeight = '50px';
+                    logoImg.style.display = 'block';
+                    logoImg.style.marginBottom = '10px';
+                    logoImg.style.objectFit = 'contain';
+                    
+                    const logoContainer = document.getElementById('establishmentLogo');
+                    if (logoContainer) {
+                        console.log('[SIMULAÇÃO] Inserindo logo no container');
+                        if (logoContainer.firstChild) {
+                            logoContainer.insertBefore(logoImg, logoContainer.firstChild);
+                        } else {
+                            logoContainer.appendChild(logoImg);
+                        }
+                    }
+                }
+                
+                logoImg.src = customizacoes.logo;
+                logoImg.alt = 'Logo do Estabelecimento';
+                
+                resultado.innerHTML += `
+                    <p style="color: green;">✅ Logo aplicado com sucesso!</p>
+                    <p>Verifique se a imagem apareceu acima.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

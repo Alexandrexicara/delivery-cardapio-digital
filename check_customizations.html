@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificar Customizações</title>
+</head>
+<body>
+    <h1>Verificar Customizações</h1>
+    <button onclick="checkCustomizations()">Verificar Customizações</button>
+    <div id="output"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        function checkCustomizations() {
+            try {
+                const customizations = loadCustomizations();
+                const output = document.getElementById('output');
+                
+                output.innerHTML = `
+                    <h2>Customizações Atuais:</h2>
+                    <pre>${JSON.stringify(customizations, null, 2)}</pre>
+                    
+                    <h3>Detalhes:</h3>
+                    <p><strong>Logo:</strong> ${customizations.logo || 'Nenhum'}</p>
+                    <p><strong>Background:</strong> ${customizations.background || 'Nenhum'}</p>
+                    <p><strong>Nome:</strong> ${customizations.establishmentName || 'Nenhum'}</p>
+                    <p><strong>Tagline:</strong> ${customizations.establishmentTagline || 'Nenhum'}</p>
+                    <p><strong>Cor Primária:</strong> ${customizations.primaryColor || 'Nenhum'}</p>
+                    <p><strong>Cor Secundária:</strong> ${customizations.secondaryColor || 'Nenhum'}</p>
+                    
+                    <h3>Teste de Imagens:</h3>
+                    ${customizations.logo ? `
+                        <div>
+                            <p><strong>Teste de Logo:</strong></p>
+                            <img src="${customizations.logo}" alt="Logo Test" style="max-width: 200px; max-height: 100px;" onerror="document.getElementById('logoError').style.display='block'" onload="document.getElementById('logoSuccess').style.display='block'">
+                            <p id="logoSuccess" style="color: green; display: none;">Logo carregado com sucesso!</p>
+                            <p id="logoError" style="color: red; display: none;">Erro ao carregar logo!</p>
+                        </div>
+                    ` : '<p>Nenhum logo configurado</p>'}
+                    
+                    ${customizations.background ? `
+                        <div>
+                            <p><strong>Teste de Background:</strong></p>
+                            <div style="width: 200px; height: 100px; background-image: url(${customizations.background}); background-size: cover; border: 1px solid #ccc;"></div>
+                            <p id="bgSuccess" style="color: green; display: none;">Background carregado com sucesso!</p>
+                            <p id="bgError" style="color: red; display: none;">Erro ao carregar background!</p>
+                        </div>
+                    ` : '<p>Nenhum background configurado</p>'}
+                `;
+            } catch (e) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Erro: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
