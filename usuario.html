@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurante Sabores - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -256,6 +257,29 @@
             text-decoration: none;
             margin: 0 10px;
             font-size: 24px;
+            font-family: 'Font Awesome 6 Brands';
+        }
+        
+        /* Animação de rotação 360 graus */
+        @keyframes rotate360 {
+            from {
+                transform: rotateY(0deg);
+            }
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+        
+        .animated-icon {
+            display: inline-block;
+            animation: rotate360 2s linear infinite;
+            transition: transform 0.3s ease;
+            font-style: normal;
+        }
+        
+        .animated-icon:hover {
+            animation-play-state: paused;
+            transform: scale(1.2);
         }
         .cart-total {
             font-weight: bold;
@@ -452,9 +476,6 @@
             <p id="establishmentContact">(11) 99999-9999</p>
             <p id="socialMediaLinks">
                 <!-- Social media icons will be inserted here by JavaScript -->
-                <a href="#" id="facebookLink" class="social-media-link" title="Facebook">📱</a>
-                <a href="#" id="instagramLink" class="social-media-link" title="Instagram">📱</a>
-                <a href="#" id="whatsappLink" class="social-media-link" title="WhatsApp">📱</a>
             </p>
         </div>
 
@@ -733,11 +754,14 @@
     window.ws = null;
 
     function loadMenuItems() {
+        console.log('[DEBUG] Carregando itens do menu');
         const urlParams = new URLSearchParams(window.location.search);
         const isDeveloper = urlParams.get('developer') === 'true';
         let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+        console.log('[DEBUG] Menu items carregados:', menuItems);
 
         if (menuItems.length === 0 && isDeveloper) {
+            console.log('[DEBUG] Nenhum item encontrado, criando itens padrão');
             menuItems = [
                 { id: 1, name: 'Feijoada Completa', category: 'main', price: '32.90', description: 'Acompanha arroz, couve, e torresmo', image: null },
                 { id: 2, name: 'Batata Frita', category: 'appetizer', price: '18.90', description: 'Porção generosa e crocante', image: null },
@@ -773,9 +797,11 @@
     }
 
     function completeRegistration() {
+        console.log('[DEBUG] Completando registro');
         const name = document.getElementById('fullName').value;
         const phone = document.getElementById('phone').value;
         const tableNumber = document.getElementById('tableNumber').value;
+        console.log('[DEBUG] Dados do formulário:', { name, phone, tableNumber });
         if (!name || !phone || !tableNumber) {
             alert('Por favor, preencha todos os campos obrigatórios.');
             return;
@@ -786,12 +812,14 @@
             cpf: document.getElementById('cpf').value,
             tableNumber: tableNumber
         };
+        console.log('[DEBUG] Dados do cliente:', customerData);
         localStorage.setItem('customerData', JSON.stringify(customerData));
         showSection('menu');
         applyCustomizationsToMenu();
     }
 
     function showSection(sectionId) {
+        console.log('[DEBUG] Mostrando seção:', sectionId);
         document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
         document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -804,13 +832,20 @@
     }
 
     function updatePixAmount() {
+        console.log('[DEBUG] Atualizando valor do PIX');
         const { total } = calculateCartTotal();
+        console.log('[DEBUG] Total calculado:', total);
         document.getElementById('pixAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        console.log('[DEBUG] Valor do PIX atualizado:', document.getElementById('pixAmount').textContent);
     }
 
     function filterMenu(category) {
+        console.log('[DEBUG] Filtrando menu por categoria:', category);
         document.querySelectorAll('.menu-item').forEach(item => {
-            item.style.display = (category === 'all' || item.getAttribute('data-category') === category) ? 'block' : 'none';
+            const itemCategory = item.getAttribute('data-category');
+            console.log('[DEBUG] Item category:', itemCategory);
+            item.style.display = (category === 'all' || itemCategory === category) ? 'block' : 'none';
+            console.log('[DEBUG] Item display set to:', item.style.display);
         });
     }
 
@@ -830,10 +865,12 @@
     }
 
     function calculateCartTotal() {
+        console.log('[DEBUG] Calculando total do carrinho');
         let subtotal = 0;
         const cartItems = [];
         document.querySelectorAll('.menu-item').forEach(item => {
             const quantity = parseInt(item.querySelector('.quantity').textContent);
+            console.log('[DEBUG] Quantidade:', quantity);
             if (quantity > 0) {
                 const name = item.querySelector('.item-name').textContent;
                 const price = parseFloat(item.querySelector('.item-price').textContent.replace('R$ ', '').replace(',', '.'));
@@ -846,15 +883,19 @@
                 
                 subtotal += price * quantity;
                 cartItems.push({ name, quantity, price, category, sector });
+                console.log('[DEBUG] Item adicionado:', { name, quantity, price, category, sector });
             }
         });
         const serviceFee = 0;
         const total = subtotal;
+        console.log('[DEBUG] Subtotal:', subtotal, 'Total:', total, 'Itens:', cartItems);
         return { subtotal, serviceFee, total, cartItems };
     }
 
     function updateCartDisplay() {
+        console.log('[DEBUG] Atualizando exibição do carrinho');
         const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
+        console.log('[DEBUG] Dados do carrinho:', { subtotal, serviceFee, total, cartItems });
         const cartItemsContainer = document.getElementById('cartItemsContainer');
         cartItemsContainer.innerHTML = cartItems.length === 0 ? '<p>Seu carrinho está vazio.</p>' : '';
         
@@ -881,16 +922,19 @@
     }
 
     function showCart() {
+        console.log('[DEBUG] Mostrando carrinho');
         updateCartDisplay();
         showSection('cart');
     }
 
     function showPayment() {
+        console.log('[DEBUG] Mostrando pagamento');
         updateCartDisplay();
         showSection('payment');
     }
 
     function selectPayment(method, event) {
+        console.log('[DEBUG] Selecionando método de pagamento:', method);
         document.querySelectorAll('.payment-option').forEach(option => option.classList.remove('selected'));
         if (event && event.currentTarget) {
             event.currentTarget.classList.add('selected');
@@ -911,9 +955,11 @@
     
     // Check if automatic payment is configured
     function checkAutomaticPayment() {
+        console.log('[DEBUG] Verificando pagamento automático');
         // In a real implementation, this would check if the establishment has configured
         // automatic payment processing. For now, we'll simulate with localStorage
         const hasAutomaticPayment = localStorage.getItem('automaticPaymentEnabled') === 'true';
+        console.log('[DEBUG] Pagamento automático habilitado:', hasAutomaticPayment);
         
         if (hasAutomaticPayment) {
             // Show automatic payment interface
@@ -929,12 +975,14 @@
     
     // Enable automatic payment (for testing)
     function enableAutomaticPayment() {
+        console.log('[DEBUG] Habilitando pagamento automático');
         localStorage.setItem('automaticPaymentEnabled', 'true');
         alert('Pagamento automático habilitado! Recarregue a página para ver as mudanças.');
     }
     
     // Disable automatic payment (for testing)
     function disableAutomaticPayment() {
+        console.log('[DEBUG] Desabilitando pagamento automático');
         localStorage.setItem('automaticPaymentEnabled', 'false');
         alert('Pagamento automático desabilitado! Recarregue a página para ver as mudanças.');
     }
@@ -1202,13 +1250,17 @@
             });
         }
 
+        console.log('[DEBUG] Iniciando carregamento da página usuário');
         // Carregar itens do menu
         loadMenuItems();
 
         if (!localStorage.getItem('customerData')) {
+            console.log('[DEBUG] Sem dados do cliente, mostrando registro');
             showSection('registration');
         } else {
+            console.log('[DEBUG] Com dados do cliente, mostrando menu');
             showSection('menu');
+            console.log('[DEBUG] Aplicando customizações ao menu');
             applyCustomizationsToMenu();
         }
 

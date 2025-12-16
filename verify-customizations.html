@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Customizações</title>
+</head>
+<body>
+    <h1>Verificação de Customizações</h1>
+    
+    <h2>Estado Atual do LocalStorage</h2>
+    <div id="localStorageState"></div>
+    
+    <h2>Aplicação de Customizações</h2>
+    <div id="customizationApplication"></div>
+    
+    <h2>Verificação Visual</h2>
+    <div id="visualVerification"></div>
+    
+    <script src="customizations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const localStorageState = document.getElementById('localStorageState');
+            const customizationApplication = document.getElementById('customizationApplication');
+            const visualVerification = document.getElementById('visualVerification');
+            
+            // Verificar estado do localStorage
+            localStorageState.innerHTML = '<h3>Conteúdo do LocalStorage:</h3>';
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                
+                const keyDiv = document.createElement('div');
+                keyDiv.innerHTML = `<strong>${key}:</strong>`;
+                localStorageState.appendChild(keyDiv);
+                
+                const valuePre = document.createElement('pre');
+                valuePre.textContent = value;
+                valuePre.style.backgroundColor = '#f5f5f5';
+                valuePre.style.padding = '10px';
+                valuePre.style.borderRadius = '5px';
+                valuePre.style.marginBottom = '10px';
+                localStorageState.appendChild(valuePre);
+            }
+            
+            // Verificar aplicação de customizações
+            customizationApplication.innerHTML = '<h3>Aplicação de Customizações:</h3>';
+            
+            try {
+                const customizations = loadCustomizations();
+                customizationApplication.innerHTML += `<p><strong>Customizações carregadas:</strong></p>`;
+                customizationApplication.innerHTML += `<pre>${JSON.stringify(customizations, null, 2)}</pre>`;
+                
+                // Verificar se as imagens existem
+                if (customizations.logo) {
+                    customizationApplication.innerHTML += `<p><strong>Logo encontrado:</strong> ${customizations.logo}</p>`;
+                } else {
+                    customizationApplication.innerHTML += `<p><strong>Logo não encontrado</strong></p>`;
+                }
+                
+                if (customizations.background) {
+                    customizationApplication.innerHTML += `<p><strong>Background encontrado:</strong> ${customizations.background}</p>`;
+                } else {
+                    customizationApplication.innerHTML += `<p><strong>Background não encontrado</strong></p>`;
+                }
+                
+                // Tentar aplicar as customizações manualmente
+                customizationApplication.innerHTML += '<h4>Tentando aplicar customizações manualmente:</h4>';
+                
+                if (customizations.background) {
+                    document.body.style.backgroundImage = `url(${customizations.background})`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundRepeat = 'no-repeat';
+                    customizationApplication.innerHTML += '<p>✅ Background aplicado manualmente</p>';
+                }
+                
+                if (customizations.logo) {
+                    // Criar um elemento de imagem para o logo
+                    const logoImg = document.createElement('img');
+                    logoImg.src = customizations.logo;
+                    logoImg.style.maxWidth = '200px';
+                    logoImg.style.display = 'block';
+                    logoImg.style.margin = '10px 0';
+                    logoImg.alt = 'Logo Preview';
+                    
+                    logoImg.onload = function() {
+                        customizationApplication.innerHTML += '<p>✅ Logo carregado com sucesso</p>';
+                    };
+                    
+                    logoImg.onerror = function() {
+                        customizationApplication.innerHTML += '<p>❌ Erro ao carregar logo</p>';
+                    };
+                    
+                    customizationApplication.appendChild(logoImg);
+                }
+                
+            } catch (e) {
+                customizationApplication.innerHTML += `<p style="color: red;">Erro ao carregar customizações: ${e.message}</p>`;
+            }
+            
+            // Verificação visual
+            visualVerification.innerHTML = '<h3>Verificação Visual:</h3>';
+            visualVerification.innerHTML += '<p>Verifique se as seguintes imagens estão visíveis abaixo:</p>';
+            
+            // Verificar background
+            const bgTest = document.createElement('div');
+            bgTest.style.width = '200px';
+            bgTest.style.height = '100px';
+            bgTest.style.border = '2px solid #333';
+            bgTest.style.margin = '10px 0';
+            bgTest.textContent = 'Teste de Background';
+            bgTest.style.display = 'flex';
+            bgTest.style.alignItems = 'center';
+            bgTest.style.justifyContent = 'center';
+            bgTest.style.fontWeight = 'bold';
+            
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            if (customizations.background) {
+                bgTest.style.backgroundImage = `url(${customizations.background})`;
+                bgTest.style.backgroundSize = 'cover';
+                bgTest.style.backgroundPosition = 'center';
+            }
+            
+            visualVerification.appendChild(bgTest);
+            
+            // Verificar logo
+            if (customizations.logo) {
+                const logoTest = document.createElement('img');
+                logoTest.src = customizations.logo;
+                logoTest.alt = 'Teste de Logo';
+                logoTest.style.maxWidth = '200px';
+                logoTest.style.border = '2px solid #333';
+                logoTest.style.margin = '10px 0';
+                
+                logoTest.onload = function() {
+                    visualVerification.innerHTML += '<p>✅ Teste de logo visível</p>';
+                };
+                
+                logoTest.onerror = function() {
+                    visualVerification.innerHTML += '<p>❌ Teste de logo não visível</p>';
+                };
+                
+                visualVerification.appendChild(logoTest);
+            }
+        });
+    </script>
+</body>
+</html>

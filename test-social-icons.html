@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Ícones Animados</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #e74c3c;
+            text-align: center;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+        
+        .social-media-link {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 32px;
+            display: inline-block;
+        }
+        
+        /* Animação de rotação 360 graus */
+        @keyframes rotate360 {
+            from {
+                transform: rotateY(0deg);
+            }
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+        
+        .animated-icon {
+            display: inline-block;
+            animation: rotate360 2s linear infinite;
+            transition: transform 0.3s ease;
+        }
+        
+        .animated-icon:hover {
+            animation-play-state: paused;
+            transform: scale(1.2);
+        }
+        
+        .icon-preview {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .code-sample {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de Ícones Animados de Redes Sociais</h1>
+        
+        <div class="test-section">
+            <h2>Ícones Animados</h2>
+            <p>Os ícones abaixo devem estar girando continuamente em 360 graus na horizontal:</p>
+            
+            <div class="icon-preview">
+                <a href="#" class="social-media-link animated-icon fab fa-facebook-f" title="Facebook" style="color: #1877F2; font-size: 48px;"></a>
+                <a href="#" class="social-media-link animated-icon fab fa-instagram" title="Instagram" style="color: #E4405F; font-size: 48px;"></a>
+                <a href="#" class="social-media-link animated-icon fab fa-whatsapp" title="WhatsApp" style="color: #25D366; font-size: 48px;"></a>
+            </div>
+            
+            <p><strong>Efeito:</strong> Ao passar o mouse sobre os ícones, a animação pausa e eles aumentam levemente.</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>Código CSS Utilizado</h2>
+            <div class="code-sample">
+/* Animação de rotação 360 graus */<br>
+@keyframes rotate360 {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;from {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transform: rotateY(0deg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transform: rotateY(360deg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+<br>
+.animated-icon {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;display: inline-block;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;animation: rotate360 2s linear infinite;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transition: transform 0.3s ease;<br>
+}<br>
+<br>
+.animated-icon:hover {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;animation-play-state: paused;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transform: scale(1.2);<br>
+}
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Controles de Teste</h2>
+            <p>Você pode usar os botões abaixo para testar diferentes velocidades de animação:</p>
+            
+            <button class="btn" onclick="changeSpeed('slow')">Animação Lenta</button>
+            <button class="btn" onclick="changeSpeed('normal')">Animação Normal</button>
+            <button class="btn" onclick="changeSpeed('fast')">Animação Rápida</button>
+            <button class="btn btn-success" onclick="resetAnimation()">Resetar Animação</button>
+        </div>
+    </div>
+    
+    <script>
+        function changeSpeed(speed) {
+            const icons = document.querySelectorAll('.animated-icon');
+            let duration;
+            
+            switch(speed) {
+                case 'slow':
+                    duration = '4s';
+                    break;
+                case 'fast':
+                    duration = '0.5s';
+                    break;
+                case 'normal':
+                default:
+                    duration = '2s';
+                    break;
+            }
+            
+            icons.forEach(icon => {
+                icon.style.animationDuration = duration;
+            });
+            
+            alert(`Velocidade alterada para: ${speed}`);
+        }
+        
+        function resetAnimation() {
+            const icons = document.querySelectorAll('.animated-icon');
+            icons.forEach(icon => {
+                icon.style.animationDuration = '2s';
+            });
+            
+            alert('Animação resetada para velocidade normal');
+        }
+    </script>
+</body>
+</html>

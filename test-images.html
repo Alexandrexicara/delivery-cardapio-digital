@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Imagens</title>
+</head>
+<body>
+    <h1>Teste de Imagens</h1>
+    
+    <h2>Logo</h2>
+    <img id="logoTest" src="/uploads/1765922508779-658236832.png" alt="Logo Test" style="width: 200px; height: auto;">
+    
+    <h2>Background</h2>
+    <img id="backgroundTest" src="/uploads/1765922526194-808001992.png" alt="Background Test" style="width: 200px; height: auto;">
+    
+    <h2>Imagem padrão</h2>
+    <img id="defaultTest" src="/uploads/1758641231853-802575236.png" alt="Default Test" style="width: 200px; height: auto;">
+    
+    <script>
+        // Testar se as imagens estão carregando
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = ['logoTest', 'backgroundTest', 'defaultTest'];
+            
+            images.forEach(imgId => {
+                const img = document.getElementById(imgId);
+                img.onload = function() {
+                    console.log(`Imagem ${imgId} carregada com sucesso`);
+                };
+                img.onerror = function() {
+                    console.log(`Erro ao carregar imagem ${imgId}`);
+                };
+            });
+        });
+    </script>
+</body>
+</html>

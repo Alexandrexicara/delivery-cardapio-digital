@@ -10,15 +10,38 @@
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
+            /* background-image will be set by JavaScript */
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
             color: #333;
+            position: relative;
+        }
+        
+        /* Ensure background is visible */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: inherit;
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            z-index: -2;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background-color: transparent;
+            position: relative;
+            z-index: 1;
         }
         header {
-            background-color: #2c3e50;
+            background-color: rgba(44, 62, 80, 0.9);
             color: white;
             padding: 20px;
             border-radius: 10px;
@@ -26,6 +49,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
         .logo {
             font-size: 24px;
@@ -38,11 +63,13 @@
         }
         .tabs {
             display: flex;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
         }
         .tab {
             flex: 1;
@@ -60,10 +87,12 @@
         }
         .content-section {
             display: none;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
         }
         .content-section.active {
             display: block;
@@ -118,7 +147,7 @@
             border-radius: 10px;
             padding: 20px;
             text-align: center;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .qr-code {
@@ -159,7 +188,7 @@
             justify-content: center;
         }
         .modal-content {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             padding: 30px;
             width: 90%;
@@ -322,7 +351,7 @@
                             <p>Clique para fazer upload da logo</p>
                             <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 200x200px)</p>
                             <div id="logoPreview" style="margin-top: 10px; display: none;">
-                                <img src="" alt="Logo Preview" style="max-width: 100%; max-height: 100px;">
+                                <img src="" alt="Logo Preview" style="width: 400px; height: auto; max-width: none;">
                             </div>
                         </div>
                         <input type="file" id="logoUpload" accept="image/*" style="display: none;">
@@ -334,7 +363,7 @@
                             <p>Clique para fazer upload da imagem de fundo</p>
                             <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 1920x1080px)</p>
                             <div id="backgroundPreview" style="margin-top: 10px; display: none;">
-                                <img src="" alt="Background Preview" style="max-width: 100%; max-height: 100px;">
+                                <img src="" alt="Background Preview" style="width: 600px; height: auto; max-width: none;">
                             </div>
                         </div>
                         <input type="file" id="backgroundUpload" accept="image/*" style="display: none;">
@@ -470,27 +499,49 @@
         // Customization functions using the centralized system
         function saveCustomization() {
             console.log('[DEBUG] Iniciando salvamento de customizações');
+            
+            // First, get existing customizations to preserve image URLs
+            const existingCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            console.log('[DEBUG] Customizações existentes:', existingCustomizations);
+            
+            // Get form values
+            const establishmentNameElement = document.getElementById('establishmentName');
+            const establishmentTaglineElement = document.getElementById('establishmentTagline');
+            const establishmentAddressElement = document.getElementById('establishmentAddress');
+            const establishmentPhoneElement = document.getElementById('establishmentPhone');
+            const establishmentHoursElement = document.getElementById('establishmentHours');
+            const primaryColorElement = document.getElementById('primaryColor');
+            const secondaryColorElement = document.getElementById('secondaryColor');
+            const facebookElement = document.getElementById('facebook');
+            const instagramElement = document.getElementById('instagram');
+            const whatsappElement = document.getElementById('whatsapp');
+            
             // Save customizations to localStorage
             const customizations = {
-                establishmentName: document.getElementById('establishmentName').value,
-                establishmentTagline: document.getElementById('establishmentTagline').value,
-                establishmentAddress: document.getElementById('establishmentAddress').value,
-                establishmentPhone: document.getElementById('establishmentPhone').value,
-                establishmentHours: document.getElementById('establishmentHours').value,
-                primaryColor: document.getElementById('primaryColor').value,
-                secondaryColor: document.getElementById('secondaryColor').value,
-                facebook: document.getElementById('facebook').value,
-                instagram: document.getElementById('instagram').value,
-                whatsapp: document.getElementById('whatsapp').value
+                establishmentName: establishmentNameElement ? establishmentNameElement.value : '',
+                establishmentTagline: establishmentTaglineElement ? establishmentTaglineElement.value : '',
+                establishmentAddress: establishmentAddressElement ? establishmentAddressElement.value : '',
+                establishmentPhone: establishmentPhoneElement ? establishmentPhoneElement.value : '',
+                establishmentHours: establishmentHoursElement ? establishmentHoursElement.value : '',
+                primaryColor: primaryColorElement ? primaryColorElement.value : '#e74c3c',
+                secondaryColor: secondaryColorElement ? secondaryColorElement.value : '#3498db',
+                facebook: facebookElement ? facebookElement.value : '',
+                instagram: instagramElement ? instagramElement.value : '',
+                whatsapp: whatsappElement ? whatsappElement.value : '',
+                // Preserve existing image URLs
+                logo: existingCustomizations.logo || '',
+                background: existingCustomizations.background || ''
             };
             
             console.log('[DEBUG] Customizações coletadas:', customizations);
             
             // Save to localStorage using the centralized system
             if (typeof saveCustomizations === 'function') {
+                console.log('[DEBUG] Usando função saveCustomizations');
                 saveCustomizations(customizations);
             } else {
                 // Fallback to direct localStorage save
+                console.log('[DEBUG] Usando fallback para localStorage');
                 localStorage.setItem('establishmentCustomizations', JSON.stringify(customizations));
             }
             console.log('[DEBUG] Customizações salvas no localStorage');
@@ -499,13 +550,14 @@
             let successMessage = `Personalizações salvas com sucesso!\nEstabelecimento: ${customizations.establishmentName}\nCor Primária: ${customizations.primaryColor}\nCor Secundária: ${customizations.secondaryColor}`;
             
             // Add image information to success message if they exist
-            const savedCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
-            if (savedCustomizations.logo) {
-                successMessage += `\nLogo: ${savedCustomizations.logo}`;
+            if (customizations.logo) {
+                successMessage += `\nLogo: ${customizations.logo}`;
             }
-            if (savedCustomizations.background) {
-                successMessage += `\nBackground: ${savedCustomizations.background}`;
+            if (customizations.background) {
+                successMessage += `\nBackground: ${customizations.background}`;
             }
+            
+            console.log('[DEBUG] Mensagem de sucesso:', successMessage);
             
             // Reset upload boxes after successful save
             resetUploadBoxes();
@@ -520,8 +572,12 @@
             
             // Show a message about what will be previewed
             const savedCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            console.log('[DEBUG] Customizações salvas para preview:', savedCustomizations);
             let previewMessage = 'Abrindo preview do cardápio com as personalizações atuais...\n\n';
             
+            if (savedCustomizations.establishmentName) {
+                previewMessage += `Estabelecimento: ${savedCustomizations.establishmentName}\n`;
+            }
             if (savedCustomizations.logo) {
                 previewMessage += `Logo: ${savedCustomizations.logo}\n`;
             }
@@ -542,25 +598,32 @@
             
             // Use the centralized upload system if available
             if (typeof uploadImage === 'function' && uploadImage !== window.uploadImage) {
+                console.log('[DEBUG] Usando sistema centralizado de upload');
                 uploadImage(file, type)
                     .then(imageUrl => {
+                        console.log('[DEBUG] Upload concluído com sucesso:', imageUrl);
                         // Show preview of uploaded image
                         showImagePreview(type, imageUrl);
-                        alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! Salve as personalizações para aplicar.`);
+                        alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! A personalização será aplicada automaticamente.`);
                     })
                     .catch(error => {
                         console.error(`[DEBUG] Erro no upload:`, error);
                         // Reset upload box text on error
                         if (type === 'logo') {
                             const logoUploadBox = document.getElementById('logoUploadBox');
-                            logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            if (logoUploadBox) {
+                                logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            }
                         } else if (type === 'background') {
                             const backgroundUploadBox = document.getElementById('backgroundUploadBox');
-                            backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            if (backgroundUploadBox) {
+                                backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            }
                         }
                         alert('Erro ao fazer upload: ' + (error.message || 'Erro desconhecido'));
                     });
             } else {
+                console.log('[DEBUG] Usando fallback para upload direto');
                 // Fallback to direct upload
                 const formData = new FormData();
                 formData.append('image', file);
@@ -571,10 +634,14 @@
                 // Show uploading message
                 if (type === 'logo') {
                     const logoUploadBox = document.getElementById('logoUploadBox');
-                    logoUploadBox.querySelector('p:first-child').textContent = 'Enviando logo...';
+                    if (logoUploadBox) {
+                        logoUploadBox.querySelector('p:first-child').textContent = 'Enviando logo...';
+                    }
                 } else if (type === 'background') {
                     const backgroundUploadBox = document.getElementById('backgroundUploadBox');
-                    backgroundUploadBox.querySelector('p:first-child').textContent = 'Enviando imagem de fundo...';
+                    if (backgroundUploadBox) {
+                        backgroundUploadBox.querySelector('p:first-child').textContent = 'Enviando imagem de fundo...';
+                    }
                 }
                 
                 fetch(`${serverUrl}/upload/${type}`, {
@@ -599,16 +666,20 @@
                         // Show preview of uploaded image
                         showImagePreview(type, data.imageUrl);
                         
-                        alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! Salve as personalizações para aplicar.`);
+                        alert(`${type === 'logo' ? 'Logo' : 'Imagem de fundo'} carregada com sucesso! A personalização será aplicada automaticamente.`);
                     } else {
                         console.error(`[DEBUG] Erro no upload:`, data.error);
                         // Reset upload box text on error
                         if (type === 'logo') {
                             const logoUploadBox = document.getElementById('logoUploadBox');
-                            logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            if (logoUploadBox) {
+                                logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            }
                         } else if (type === 'background') {
                             const backgroundUploadBox = document.getElementById('backgroundUploadBox');
-                            backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            if (backgroundUploadBox) {
+                                backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                            }
                         }
                         alert('Erro ao fazer upload: ' + (data.error || 'Erro desconhecido'));
                     }
@@ -618,132 +689,315 @@
                     // Reset upload box text on error
                     if (type === 'logo') {
                         const logoUploadBox = document.getElementById('logoUploadBox');
-                        logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        if (logoUploadBox) {
+                            logoUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        }
                     } else if (type === 'background') {
                         const backgroundUploadBox = document.getElementById('backgroundUploadBox');
-                        backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        if (backgroundUploadBox) {
+                            backgroundUploadBox.querySelector('p:first-child').textContent = 'Erro no upload. Clique para tentar novamente.';
+                        }
                     }
                     alert('Erro ao fazer upload. Tente novamente. Detalhes: ' + error.message);
                 });
             }
+            
+            // Prevent default behavior
+            return false;
         }
         
         // Function to show image preview
         function showImagePreview(type, imageUrl) {
+            console.log('[DEBUG] showImagePreview chamada com:', type, imageUrl);
             if (type === 'logo') {
                 const logoPreview = document.getElementById('logoPreview');
-                const logoImg = logoPreview.querySelector('img');
-                logoImg.src = imageUrl;
-                logoPreview.style.display = 'block';
-                
-                // Update upload box text
-                const logoUploadBox = document.getElementById('logoUploadBox');
-                logoUploadBox.querySelector('p:first-child').textContent = 'Logo carregado com sucesso!';
+                console.log('[DEBUG] Elemento logoPreview:', logoPreview);
+                if (logoPreview) {
+                    const logoImg = logoPreview.querySelector('img');
+                    console.log('[DEBUG] Elemento logoImg:', logoImg);
+                    if (logoImg) {
+                        logoImg.src = imageUrl;
+                        console.log('[DEBUG] LogoImg src definido para:', imageUrl);
+                        logoPreview.style.display = 'block';
+                        console.log('[DEBUG] LogoPreview display definido para block');
+                        
+                        // Update upload box text
+                        const logoUploadBox = document.getElementById('logoUploadBox');
+                        if (logoUploadBox) {
+                            logoUploadBox.querySelector('p:first-child').textContent = 'Logo carregado com sucesso!';
+                            console.log('[DEBUG] Texto do logoUploadBox atualizado');
+                        }
+                    }
+                }
             } else if (type === 'background') {
                 const backgroundPreview = document.getElementById('backgroundPreview');
-                const backgroundImg = backgroundPreview.querySelector('img');
-                backgroundImg.src = imageUrl;
-                backgroundPreview.style.display = 'block';
-                
-                // Update upload box text
-                const backgroundUploadBox = document.getElementById('backgroundUploadBox');
-                backgroundUploadBox.querySelector('p:first-child').textContent = 'Imagem de fundo carregada com sucesso!';
+                console.log('[DEBUG] Elemento backgroundPreview:', backgroundPreview);
+                if (backgroundPreview) {
+                    const backgroundImg = backgroundPreview.querySelector('img');
+                    console.log('[DEBUG] Elemento backgroundImg:', backgroundImg);
+                    if (backgroundImg) {
+                        backgroundImg.src = imageUrl;
+                        console.log('[DEBUG] BackgroundImg src definido para:', imageUrl);
+                        backgroundPreview.style.display = 'block';
+                        console.log('[DEBUG] BackgroundPreview display definido para block');
+                        
+                        // Update upload box text
+                        const backgroundUploadBox = document.getElementById('backgroundUploadBox');
+                        if (backgroundUploadBox) {
+                            backgroundUploadBox.querySelector('p:first-child').textContent = 'Imagem de fundo carregada com sucesso!';
+                            console.log('[DEBUG] Texto do backgroundUploadBox atualizado');
+                        }
+                    }
+                }
             }
         }
         
         // Function to reset upload boxes to initial state
         function resetUploadBoxes() {
+            console.log('[DEBUG] resetUploadBoxes chamada');
+            // Get current customizations to check if images exist
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            console.log('[DEBUG] Customizações atuais:', customizations);
+            
             // Reset logo upload box
             const logoUploadBox = document.getElementById('logoUploadBox');
-            logoUploadBox.querySelector('p:first-child').textContent = 'Clique para fazer upload da logo';
-            document.getElementById('logoPreview').style.display = 'none';
+            console.log('[DEBUG] Elemento logoUploadBox:', logoUploadBox);
+            if (customizations.logo) {
+                console.log('[DEBUG] Logo existe:', customizations.logo);
+                if (logoUploadBox) {
+                    logoUploadBox.querySelector('p:first-child').textContent = 'Logo carregado com sucesso! Clique para substituir.';
+                    console.log('[DEBUG] Texto do logoUploadBox atualizado para substituir');
+                }
+                // Don't hide the preview if logo exists
+                const logoPreview = document.getElementById('logoPreview');
+                console.log('[DEBUG] Elemento logoPreview:', logoPreview);
+                if (logoPreview) {
+                    logoPreview.style.display = 'block';
+                    console.log('[DEBUG] LogoPreview display definido para block');
+                }
+            } else {
+                console.log('[DEBUG] Logo não existe');
+                if (logoUploadBox) {
+                    logoUploadBox.querySelector('p:first-child').textContent = 'Clique para fazer upload da logo';
+                    console.log('[DEBUG] Texto do logoUploadBox atualizado para upload');
+                }
+                const logoPreview = document.getElementById('logoPreview');
+                console.log('[DEBUG] Elemento logoPreview:', logoPreview);
+                if (logoPreview) {
+                    logoPreview.style.display = 'none';
+                    console.log('[DEBUG] LogoPreview display definido para none');
+                }
+            }
             
             // Reset background upload box
             const backgroundUploadBox = document.getElementById('backgroundUploadBox');
-            backgroundUploadBox.querySelector('p:first-child').textContent = 'Clique para fazer upload da imagem de fundo';
-            document.getElementById('backgroundPreview').style.display = 'none';
+            console.log('[DEBUG] Elemento backgroundUploadBox:', backgroundUploadBox);
+            if (customizations.background) {
+                console.log('[DEBUG] Background existe:', customizations.background);
+                if (backgroundUploadBox) {
+                    backgroundUploadBox.querySelector('p:first-child').textContent = 'Imagem de fundo carregada com sucesso! Clique para substituir.';
+                    console.log('[DEBUG] Texto do backgroundUploadBox atualizado para substituir');
+                }
+                // Don't hide the preview if background exists
+                const backgroundPreview = document.getElementById('backgroundPreview');
+                console.log('[DEBUG] Elemento backgroundPreview:', backgroundPreview);
+                if (backgroundPreview) {
+                    backgroundPreview.style.display = 'block';
+                    console.log('[DEBUG] BackgroundPreview display definido para block');
+                }
+            } else {
+                console.log('[DEBUG] Background não existe');
+                if (backgroundUploadBox) {
+                    backgroundUploadBox.querySelector('p:first-child').textContent = 'Clique para fazer upload da imagem de fundo';
+                    console.log('[DEBUG] Texto do backgroundUploadBox atualizado para upload');
+                }
+                const backgroundPreview = document.getElementById('backgroundPreview');
+                console.log('[DEBUG] Elemento backgroundPreview:', backgroundPreview);
+                if (backgroundPreview) {
+                    backgroundPreview.style.display = 'none';
+                    console.log('[DEBUG] BackgroundPreview display definido para none');
+                }
+            }
         }
         
         // Load establishment data on page load
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('[DEBUG] Iniciando carregamento da página');
             // Check if admin has proper access
             const adminAccess = localStorage.getItem('adminAccess');
             const establishmentData = localStorage.getItem('establishmentData');
             
+            console.log('[DEBUG] adminAccess:', adminAccess);
+            console.log('[DEBUG] establishmentData:', establishmentData);
+            
             if (!adminAccess || !establishmentData) {
                 // Redirect to login page if no proper authentication
+                console.log('[DEBUG] Redirecionando para login.html');
                 window.location.href = 'login.html';
                 return;
             }
             
             const data = JSON.parse(establishmentData);
+            console.log('[DEBUG] Dados do estabelecimento:', data);
             if (data && data.isAuthenticated) {
-                document.getElementById('adminName').textContent = 'Administrador - ' + data.establishmentName;
+                const adminNameElement = document.getElementById('adminName');
+                if (adminNameElement) {
+                    adminNameElement.textContent = 'Administrador - ' + data.establishmentName;
+                }
             } else {
                 // Redirect to login page if not properly authenticated
+                console.log('[DEBUG] Não autenticado, redirecionando para login.html');
                 window.location.href = 'login.html';
             }
             
             // Load existing customizations and show previews on page load
             // Load and show image previews if they exist
+            console.log('[DEBUG] Carregando customizações salvas');
             let savedCustomizations = null;
             
             // Try to use the centralized system first
             if (typeof loadCustomizations === 'function') {
+                console.log('[DEBUG] Usando loadCustomizations');
                 savedCustomizations = loadCustomizations();
             } else {
                 // Fallback to direct localStorage access
+                console.log('[DEBUG] Usando fallback para localStorage');
                 savedCustomizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
             }
+            
+            console.log('[DEBUG] Customizações carregadas:', savedCustomizations);
             
             if (savedCustomizations) {
                 const customizations = savedCustomizations;
                 
                 // Show logo preview if it exists
                 if (customizations.logo) {
+                    console.log('[DEBUG] Mostrando logo:', customizations.logo);
                     showImagePreview('logo', customizations.logo);
                 }
                 
                 // Show background preview if it exists
                 if (customizations.background) {
+                    console.log('[DEBUG] Mostrando background:', customizations.background);
                     showImagePreview('background', customizations.background);
                 }
                 
-                document.getElementById('establishmentName').value = customizations.establishmentName || '';
-                document.getElementById('establishmentTagline').value = customizations.establishmentTagline || '';
-                document.getElementById('establishmentAddress').value = customizations.establishmentAddress || '';
-                document.getElementById('establishmentPhone').value = customizations.establishmentPhone || '';
-                document.getElementById('establishmentHours').value = customizations.establishmentHours || '';
-                document.getElementById('primaryColor').value = customizations.primaryColor || '#e74c3c';
-                document.getElementById('secondaryColor').value = customizations.secondaryColor || '#3498db';
-                document.getElementById('facebook').value = customizations.facebook || '';
-                document.getElementById('instagram').value = customizations.instagram || '';
-                document.getElementById('whatsapp').value = customizations.whatsapp || '';
+                // Set form values
+                const establishmentNameElement = document.getElementById('establishmentName');
+                if (establishmentNameElement) {
+                    establishmentNameElement.value = customizations.establishmentName || '';
+                }
+                
+                const establishmentTaglineElement = document.getElementById('establishmentTagline');
+                if (establishmentTaglineElement) {
+                    establishmentTaglineElement.value = customizations.establishmentTagline || '';
+                }
+                
+                const establishmentAddressElement = document.getElementById('establishmentAddress');
+                if (establishmentAddressElement) {
+                    establishmentAddressElement.value = customizations.establishmentAddress || '';
+                }
+                
+                const establishmentPhoneElement = document.getElementById('establishmentPhone');
+                if (establishmentPhoneElement) {
+                    establishmentPhoneElement.value = customizations.establishmentPhone || '';
+                }
+                
+                const establishmentHoursElement = document.getElementById('establishmentHours');
+                if (establishmentHoursElement) {
+                    establishmentHoursElement.value = customizations.establishmentHours || '';
+                }
+                
+                const primaryColorElement = document.getElementById('primaryColor');
+                if (primaryColorElement) {
+                    primaryColorElement.value = customizations.primaryColor || '#e74c3c';
+                }
+                
+                const secondaryColorElement = document.getElementById('secondaryColor');
+                if (secondaryColorElement) {
+                    secondaryColorElement.value = customizations.secondaryColor || '#3498db';
+                }
+                
+                const facebookElement = document.getElementById('facebook');
+                if (facebookElement) {
+                    facebookElement.value = customizations.facebook || '';
+                }
+                
+                const instagramElement = document.getElementById('instagram');
+                if (instagramElement) {
+                    instagramElement.value = customizations.instagram || '';
+                }
+                
+                const whatsappElement = document.getElementById('whatsapp');
+                if (whatsappElement) {
+                    whatsappElement.value = customizations.whatsapp || '';
+                }
             }
             
             // Add event listeners for file inputs
-            document.getElementById('logoUpload').addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    uploadImage(e.target.files[0], 'logo');
-                }
-            });
+            const logoUploadElement = document.getElementById('logoUpload');
+            if (logoUploadElement) {
+                logoUploadElement.addEventListener('change', function(e) {
+                    console.log('[DEBUG] Logo upload change event triggered');
+                    if (e.target.files.length > 0) {
+                        uploadImage(e.target.files[0], 'logo');
+                    }
+                });
+            }
             
-            document.getElementById('backgroundUpload').addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    uploadImage(e.target.files[0], 'background');
-                }
-            });
+            const backgroundUploadElement = document.getElementById('backgroundUpload');
+            if (backgroundUploadElement) {
+                backgroundUploadElement.addEventListener('change', function(e) {
+                    console.log('[DEBUG] Background upload change event triggered');
+                    if (e.target.files.length > 0) {
+                        uploadImage(e.target.files[0], 'background');
+                    }
+                });
+            }
             
             // Add event listener to reset file inputs when clicked
-            document.getElementById('logoUploadBox').addEventListener('click', function() {
-                // Clear the file input
-                document.getElementById('logoUpload').value = '';
-            });
+            const logoUploadBoxElement = document.getElementById('logoUploadBox');
+            if (logoUploadBoxElement) {
+                logoUploadBoxElement.addEventListener('click', function() {
+                    console.log('[DEBUG] Logo upload box clicked');
+                    // Clear the file input
+                    const logoUploadInputElement = document.getElementById('logoUpload');
+                    if (logoUploadInputElement) {
+                        logoUploadInputElement.value = '';
+                    }
+                });
+            }
             
-            document.getElementById('backgroundUploadBox').addEventListener('click', function() {
-                // Clear the file input
-                document.getElementById('backgroundUpload').value = '';
-            });
+            const backgroundUploadBoxElement = document.getElementById('backgroundUploadBox');
+            if (backgroundUploadBoxElement) {
+                backgroundUploadBoxElement.addEventListener('click', function() {
+                    console.log('[DEBUG] Background upload box clicked');
+                    // Clear the file input
+                    const backgroundUploadInputElement = document.getElementById('backgroundUpload');
+                    if (backgroundUploadInputElement) {
+                        backgroundUploadInputElement.value = '';
+                    }
+                });
+            }
+            
+            console.log('[DEBUG] Página carregada com sucesso');
+            
+            // Forçar aplicação das customizações após um pequeno delay
+            setTimeout(() => {
+                console.log('[DEBUG] Forçando aplicação de customizações após delay');
+                const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+                console.log('[DEBUG] Customizações após delay:', customizations);
+                
+                // Aplicar background manualmente
+                if (customizations.background) {
+                    console.log('[DEBUG] Aplicando background manualmente:', customizations.background);
+                    document.body.style.backgroundImage = `url(${customizations.background})`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundRepeat = 'no-repeat';
+                    console.log('[DEBUG] Background aplicado manualmente');
+                }
+            }, 1000);
         });
         
         // Modal functions
