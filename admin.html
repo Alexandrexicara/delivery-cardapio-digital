@@ -5,11 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Cardápio Digital Universal</title>
     <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .footer-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .mini-banner-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .mini-banner {
+            width: 300px;
+            height: 250px;
+            background-color: #f9f9f9;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             /* background-image will be set by JavaScript */
             background-size: cover;
             background-attachment: fixed;
@@ -18,6 +63,11 @@
             position: relative;
             /* Ensure background is visible */
             background-blend-mode: normal;
+        }
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .container {
             max-width: 1200px;
@@ -115,8 +165,99 @@
         .orders-column {
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        
+        /* Responsividade para os containers de pedidos */
+        @media (max-width: 768px) {
+            .orders-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .orders-column {
+                padding: 20px;
+                min-height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .orders-column {
+                padding: 15px;
+                min-height: 350px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .orders-column {
+                padding: 30px;
+                min-height: 600px;
+            }
+        }
+        
+        /* Layout geral responsivo para a área de admin */
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 auto;
+                min-width: 120px;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: 100%;
+            }
+            
+            .content-section {
+                padding: 10px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .stat-card {
+                padding: 25px;
+            }
+            
+            .stat-value {
+                font-size: 36px;
+            }
+            
+            .content-section {
+                padding: 30px;
+            }
         }
         .column-header {
             display: flex;
@@ -129,10 +270,36 @@
         .order-card {
             border: 1px solid #eee;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             transition: box-shadow 0.3s;
             background-color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1em;
+        }
+        
+        /* Ajuste de responsividade para os cards de pedido */
+        @media (max-width: 768px) {
+            .order-card {
+                padding: 15px;
+                margin-bottom: 15px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .order-card {
+                padding: 12px;
+                margin-bottom: 12px;
+                font-size: 0.9em;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .order-card {
+                padding: 25px;
+                margin-bottom: 25px;
+                font-size: 1.2em;
+            }
         }
         .order-card:hover {
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -160,6 +327,22 @@
             justify-content: space-between;
             padding: 5px 0;
             border-bottom: 1px dashed #eee;
+        }
+        
+        /* Estilos para imagens de itens do cardápio */
+        .item-image {
+            height: 150px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .item-image-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
         }
         .order-total {
             font-weight: bold;
@@ -330,6 +513,12 @@
     </style>
 </head>
 <body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
     <div class="container">
         <header id="establishmentHeader">
             <div class="logo" id="establishmentLogo">
@@ -441,6 +630,18 @@
             <div class="customization-section">
                 <h3>Personalização & QR Code</h3>
                 <p>Gerencie a aparência do seu estabelecimento e o QR code do cardápio.</p>
+                
+                <!-- Banner promocional do sistema CARDÁPIO DIGITAL UNIVERSAL -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 10px 0; font-size: 18px;">📱 CARDÁPIO DIGITAL UNIVERSAL</h3>
+                    <p style="margin: 0 0 10px 0; font-size: 14px;">O sistema completo de pedidos automatizados para restaurantes e estabelecimentos comerciais</p>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin: 10px 0;">
+                        <div style="background-color: #4CAF50; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 16px;">R$ 500,00</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Investimento único com acesso vitalício</div>
+                    </div>
+                    <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.8;">Acesse em: http://172.24.154.187:3002/qr-management.html</p>
+                </div>
+                
                 <button class="btn btn-primary" onclick="window.location.href='qr-management.html'">Acessar Personalização</button>
                 <div class="url-display-box">
                     <p><strong>URL do Cardápio:</strong> <span id="menuUrl">Carregando...</span></p>
@@ -625,9 +826,28 @@
             </div>
         </section>
     </div>
+    </div>
 
     <div class="notification" id="notification">
         Nova notificação
+    </div>
+
+    <!-- Footer Banner Space -->
+    <div class="footer-banner">
+        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <!-- Mini Banner Container -->
+    <div class="mini-banner-container">
+        <div class="mini-banner">
+            <img src="public/img/banner1.png" alt="Banner Pequeno 1" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner2.png" alt="Banner Pequeno 2" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner3.png" alt="Banner Pequeno 3" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
     </div>
 
     <!-- Sistema de Customizações -->
@@ -678,21 +898,29 @@
             // Get establishment data to build the URL
             const establishmentData = JSON.parse(localStorage.getItem('establishmentData') || '{}');
             const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
-            
-            // Use establishment name or default
-            const establishmentName = customizations.establishmentName || establishmentData.establishmentName || 'meu-restaurante';
-            
-            // Create a URL-friendly version of the name
-            const urlName = establishmentName
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '') // Remove accents
-                .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
-                .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-            
-            const menuUrl = `https://cardapiodigital.com.br/${urlName}`;
+                    
+            // Check if we have a unique ID from the purchase, otherwise generate from name
+            let menuUrl;
+            if (establishmentData.uniqueId) {
+                // Use the unique ID that was generated during purchase
+                menuUrl = `https://${establishmentData.uniqueId}.cardapiodigital.com.br`;
+            } else {
+                // Fallback to generating from establishment name
+                const establishmentName = customizations.establishmentName || establishmentData.establishmentName || 'meu-restaurante';
+                        
+                // Create a URL-friendly version of the name
+                const urlName = establishmentName
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[̀-ͯ]/g, '') // Remove accents
+                    .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+                    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+                        
+                menuUrl = `https://${urlName}.cardapiodigital.com.br`;
+            }
+                    
             const menuUrlElement = document.getElementById('menuUrl');
-            
+                    
             if (menuUrlElement) {
                 menuUrlElement.textContent = menuUrl;
             }
@@ -991,16 +1219,110 @@
                     
                     // Load existing orders into the dashboard
                     var orders = data.orders || [];
+                                    
+                    // Group orders by table for initial dashboard display
+                    const groupedOrders = {};
                     for (var i = 0; i < orders.length; i++) {
                         var order = orders[i];
-                        addNewOrderToDashboard(order);
+                                        
+                        // Add to other sections
                         addNewOrderToOrdersSection(order);
                         addNewOrderToKitchenSection(order);
                         addNewOrderToCounterSection(order);
+                                        
                         // Add to payments section if payment is pending
                         if (order.paymentStatus === 'pending') {
                             addOrderToPaymentsSection(order);
                         }
+                                        
+                        // Group for dashboard display
+                        if (!groupedOrders[order.table]) {
+                            groupedOrders[order.table] = {
+                                orders: [],
+                                total: 0
+                            };
+                        }
+                        groupedOrders[order.table].orders.push(order);
+                        groupedOrders[order.table].total += order.total;
+                    }
+                    
+                    // Clear orders section and load grouped orders
+                    const ordersList = document.getElementById('ordersList');
+                    if (ordersList) {
+                        ordersList.innerHTML = '';
+                        
+                        // Group orders for the orders section as well
+                        const ordersGroupedByTable = {};
+                        orders.forEach(order => {
+                            if (!ordersGroupedByTable[order.table]) {
+                                ordersGroupedByTable[order.table] = {
+                                    orders: [],
+                                    total: 0,
+                                    items: [],
+                                    customer: order.customer,
+                                    status: order.status,
+                                    paymentStatus: order.paymentStatus
+                                };
+                            }
+                            ordersGroupedByTable[order.table].orders.push(order);
+                            ordersGroupedByTable[order.table].total += order.total;
+                            
+                            // Add items to the grouped order
+                            order.items.forEach(item => {
+                                // Check if item already exists in the grouped items
+                                const existingItem = ordersGroupedByTable[order.table].items.find(i => i.name === item.name && i.price === item.price);
+                                if (existingItem) {
+                                    existingItem.quantity += item.quantity;
+                                } else {
+                                    ordersGroupedByTable[order.table].items.push({
+                                        name: item.name,
+                                        quantity: item.quantity,
+                                        price: item.price
+                                    });
+                                }
+                            });
+                        });
+                        
+                        // Display grouped orders in the orders section
+                        for (const table in ordersGroupedByTable) {
+                            const tableData = ordersGroupedByTable[table];
+                            
+                            // Create a representative order object for display
+                            const representativeOrder = {
+                                id: tableData.orders.map(o => o.id).join(' | '),
+                                table: table,
+                                total: tableData.total,
+                                items: tableData.items,
+                                customer: tableData.customer,
+                                status: tableData.status,
+                                paymentStatus: tableData.paymentStatus,
+                                timestamp: tableData.orders[0].timestamp
+                            };
+                            
+                            const orderElement = createOrderCardHTML(representativeOrder);
+                            ordersList.innerHTML += orderElement;
+                        }
+                    }
+                                    
+                    // Display grouped orders in dashboard
+                    for (const table in groupedOrders) {
+                        const tableData = groupedOrders[table];
+                        const firstOrder = tableData.orders[0];
+                                        
+                        // Create a representative order object for display
+                        const representativeOrder = {
+                            id: tableData.orders.map(o => o.id).join(' | '),
+                            table: table,
+                            total: tableData.total,
+                            items: [],
+                            customer: firstOrder.customer,
+                            status: firstOrder.status,
+                            paymentStatus: firstOrder.paymentStatus,
+                            timestamp: firstOrder.timestamp
+                        };
+                                        
+                        // Add the grouped order to dashboard
+                        addNewOrderToDashboard(representativeOrder);
                     }
                     console.log('Carregados ' + orders.length + ' pedidos existentes');
                     
@@ -1011,7 +1333,6 @@
                 } else if (data.type === 'newOrder') {
                     // Add new order to all relevant sections
                     if (data.order) {
-                        addNewOrderToDashboard(data.order);
                         addNewOrderToOrdersSection(data.order);
                         addNewOrderToKitchenSection(data.order);
                         addNewOrderToCounterSection(data.order);
@@ -1019,6 +1340,9 @@
                         if (data.order.paymentStatus === 'pending') {
                             addOrderToPaymentsSection(data.order);
                         }
+                        
+                        // Add to dashboard with grouping
+                        addNewOrderToDashboard(data.order);
                         
                         // Update orders data for combined view
                         if (window.ordersData) {
@@ -1592,10 +1916,47 @@
         
         // Update payment status UI
         function updatePaymentStatusUI(orderId, paymentStatus) {
-            const paymentCard = document.getElementById(`payment-${orderId}`);
+            // Find the payment card by order ID
+            let paymentCard = document.getElementById(`payment-${orderId}`);
+            
+            // If direct ID doesn't work, try to find by order ID text content
+            if (!paymentCard) {
+                const paymentCards = document.querySelectorAll('#paymentsList .order-card');
+                for (const card of paymentCards) {
+                    const orderIdsElement = card.querySelector('.order-id');
+                    if (orderIdsElement && orderIdsElement.textContent.includes(orderId)) {
+                        paymentCard = card;
+                        break;
+                    }
+                }
+            }
+            
             if (paymentCard) {
                 if (paymentStatus === 'completed') {
-                    paymentCard.remove(); // Remove from pending payments
+                    // Check if this card contains multiple orders
+                    const orderIdsElement = paymentCard.querySelector('.order-id');
+                    if (orderIdsElement) {
+                        const allOrderIds = orderIdsElement.textContent.split(' | ').map(id => id.trim());
+                        
+                        // Remove the completed order from the list
+                        const remainingOrderIds = allOrderIds.filter(id => id !== orderId);
+                        
+                        if (remainingOrderIds.length > 0) {
+                            // Update the card to show remaining orders
+                            orderIdsElement.textContent = remainingOrderIds.join(' | ');
+                            
+                            // Update the confirm payment button to handle remaining orders
+                            const confirmButton = paymentCard.querySelector('button');
+                            if (confirmButton) {
+                                confirmButton.setAttribute('onclick', `confirmMultiplePayments('${remainingOrderIds.join(' | ')}')`);
+                            }
+                        } else {
+                            // No more orders in this card, remove it
+                            paymentCard.remove();
+                        }
+                    } else {
+                        paymentCard.remove(); // Remove from pending payments
+                    }
                 } else {
                     const paymentStatusElement = paymentCard.querySelector('.payment-status');
                     if (paymentStatusElement) {
@@ -1839,16 +2200,59 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 latestOrdersContainer.innerHTML = '';
             }
             
-            const orderElement = document.createElement('div');
-            orderElement.className = 'order-card';
-            orderElement.innerHTML = `
-                <div class="order-header">
-                    <div class="order-id">${order.id}</div>
-                    <div class="order-table">${order.table}</div>
-                </div>
-                <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
-            `;
-            latestOrdersContainer.prepend(orderElement);
+            // Group orders by table and sum the values
+            const existingOrders = Array.from(latestOrdersContainer.querySelectorAll('.order-card'));
+            
+            // Check if there's already an order from the same table
+            let tableOrderElement = null;
+            let existingTableOrder = null;
+            
+            for (const element of existingOrders) {
+                const tableElement = element.querySelector('.order-table');
+                if (tableElement && tableElement.textContent === order.table) {
+                    existingTableOrder = element;
+                    break;
+                }
+            }
+            
+            if (existingTableOrder) {
+                // Update existing table order
+                const totalElement = existingTableOrder.querySelector('.order-total');
+                if (totalElement) {
+                    // Extract current total from the element
+                    const currentTotalText = totalElement.textContent;
+                    const currentTotalMatch = currentTotalText.match(/R\$\s([\d,]+\.\d{2})/);
+                    let currentTotal = 0;
+                    if (currentTotalMatch) {
+                        currentTotal = parseFloat(currentTotalMatch[1].replace(',', '.'));
+                    }
+                    
+                    // Calculate new total
+                    const newTotal = currentTotal + order.total;
+                    
+                    // Update the total display
+                    totalElement.innerHTML = `Total: R$ ${newTotal.toFixed(2).replace('.', ',')} | Pedidos: ${parseInt(totalElement.getAttribute('data-order-count') || 1) + 1}`;
+                    totalElement.setAttribute('data-order-count', parseInt(totalElement.getAttribute('data-order-count') || 1) + 1);
+                    
+                    // Add the new order ID to the list
+                    const orderIdsElement = existingTableOrder.querySelector('.order-ids');
+                    if (orderIdsElement) {
+                        orderIdsElement.innerHTML += ` | ${order.id}`;
+                    }
+                }
+            } else {
+                // Create new table order element
+                const orderElement = document.createElement('div');
+                orderElement.className = 'order-card';
+                orderElement.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-ids">${order.id}</div>
+                        <div class="order-table">${order.table}</div>
+                    </div>
+                    <div class="order-total" data-order-count="1">Total: R$ ${order.total.toFixed(2).replace('.', ',')} | Pedidos: 1</div>
+                `;
+                latestOrdersContainer.prepend(orderElement);
+            }
         }
         
         // Add new order to orders section
@@ -1858,8 +2262,64 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 ordersList.innerHTML = '';
             }
             
-            const orderElement = createOrderCardHTML(order);
-            ordersList.innerHTML += orderElement;
+            // Group orders by table and sum the values
+            const existingOrders = Array.from(ordersList.querySelectorAll('.order-card'));
+            
+            // Check if there's already an order from the same table
+            let tableOrderElement = null;
+            let existingTableOrder = null;
+            
+            for (const element of existingOrders) {
+                const tableElement = element.querySelector('.order-table');
+                if (tableElement && tableElement.textContent === order.table) {
+                    existingTableOrder = element;
+                    break;
+                }
+            }
+            
+            if (existingTableOrder) {
+                // Update existing table order
+                const totalElement = existingTableOrder.querySelector('.order-total');
+                if (totalElement) {
+                    // Extract current total from the element
+                    const currentTotalText = totalElement.textContent;
+                    const currentTotalMatch = currentTotalText.match(/R\$\s([\d,]+\.\d{2})/);
+                    let currentTotal = 0;
+                    if (currentTotalMatch) {
+                        currentTotal = parseFloat(currentTotalMatch[1].replace(',', '.'));
+                    }
+                    
+                    // Calculate new total
+                    const newTotal = currentTotal + order.total;
+                    
+                    // Update the total display
+                    totalElement.innerHTML = `Total: R$ ${newTotal.toFixed(2).replace('.', ',')}`;
+                    
+                    // Add the new order ID to the list
+                    const orderIdsElement = existingTableOrder.querySelector('.order-id');
+                    if (orderIdsElement) {
+                        orderIdsElement.innerHTML += ` | ${order.id}`;
+                    }
+                    
+                    // Add the new items to the existing order display
+                    const itemsContainer = existingTableOrder.querySelector('.order-items');
+                    if (itemsContainer) {
+                        order.items.forEach(item => {
+                            const itemElement = document.createElement('div');
+                            itemElement.className = 'order-item';
+                            itemElement.innerHTML = `
+                                <div>${item.quantity}x ${item.name}</div>
+                                <div>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
+                            `;
+                            itemsContainer.appendChild(itemElement);
+                        });
+                    }
+                }
+            } else {
+                // Create new table order element
+                const orderElement = createOrderCardHTML(order);
+                ordersList.innerHTML += orderElement;
+            }
         }
         
         // Add new order to kitchen section
@@ -1897,22 +2357,69 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 paymentsList.innerHTML = '';
             }
             
-            const paymentCard = document.createElement('div');
-            paymentCard.className = 'order-card';
-            paymentCard.id = `payment-${order.id}`;
-            paymentCard.setAttribute('data-order-id', order.id); // Add data attribute for easy selection
-            paymentCard.innerHTML = `
-                <div class="order-header">
-                    <div class="order-id">${order.id}</div>
-                    <div class="order-table">${order.table}</div>
-                </div>
-                <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
-                <div class="payment-status payment-${order.paymentStatus}">Pagamento: ${getPaymentStatusText(order.paymentStatus)}</div>
-                <div class="order-actions">
-                     <button class="btn btn-success" onclick="confirmPayment('${order.id}')">Confirmar Pagamento</button>
-                </div>
-            `;
-            paymentsList.appendChild(paymentCard);
+            // Group orders by table and sum the values
+            const existingOrders = Array.from(paymentsList.querySelectorAll('.order-card'));
+            
+            // Check if there's already an order from the same table
+            let existingTableOrder = null;
+            
+            for (const element of existingOrders) {
+                const tableElement = element.querySelector('.order-table');
+                if (tableElement && tableElement.textContent === order.table) {
+                    existingTableOrder = element;
+                    break;
+                }
+            }
+            
+            if (existingTableOrder) {
+                // Update existing table order
+                const totalElement = existingTableOrder.querySelector('.order-total');
+                if (totalElement) {
+                    // Extract current total from the element
+                    const currentTotalText = totalElement.textContent;
+                    const currentTotalMatch = currentTotalText.match(/R\$\s([\d,]+\.\d{2})/);
+                    let currentTotal = 0;
+                    if (currentTotalMatch) {
+                        currentTotal = parseFloat(currentTotalMatch[1].replace(',', '.'));
+                    }
+                    
+                    // Calculate new total
+                    const newTotal = currentTotal + order.total;
+                    
+                    // Update the total display
+                    totalElement.innerHTML = `Total: R$ ${newTotal.toFixed(2).replace('.', ',')}`;
+                    
+                    // Add the new order ID to the list
+                    const orderIdsElement = existingTableOrder.querySelector('.order-id');
+                    if (orderIdsElement) {
+                        orderIdsElement.innerHTML += ` | ${order.id}`;
+                    }
+                    
+                    // Update the confirm payment button to handle multiple order IDs
+                    const confirmButton = existingTableOrder.querySelector('button');
+                    if (confirmButton) {
+                        confirmButton.setAttribute('onclick', `confirmMultiplePayments('${orderIdsElement.textContent.trim()}')`);
+                    }
+                }
+            } else {
+                // Create new table order element
+                const paymentCard = document.createElement('div');
+                paymentCard.className = 'order-card';
+                paymentCard.id = `payment-${order.id}`;
+                paymentCard.setAttribute('data-order-id', order.id); // Add data attribute for easy selection
+                paymentCard.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-table">${order.table}</div>
+                    </div>
+                    <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
+                    <div class="payment-status payment-${order.paymentStatus}">Pagamento: ${getPaymentStatusText(order.paymentStatus)}</div>
+                    <div class="order-actions">
+                         <button class="btn btn-success" onclick="confirmPayment('${order.id}')">Confirmar Pagamento</button>
+                    </div>
+                `;
+                paymentsList.appendChild(paymentCard);
+            }
         }
         
         // Create order card HTML
@@ -1984,6 +2491,41 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 orderId: orderId,
                 status: newStatus,
                 sector: section,
+                timestamp: new Date().toISOString()
+            };
+            
+            saveOrderAction(action);
+        }
+        
+        // Confirm payment for multiple orders
+        function confirmMultiplePayments(orderIdsString) {
+            // Split the order IDs string and confirm each one
+            const orderIds = orderIdsString.split(' | ').map(id => id.trim());
+            
+            orderIds.forEach(orderId => {
+                if (orderId) {
+                    confirmPayment(orderId);
+                }
+            });
+        }
+        
+        // Confirm payment for a single order
+        function confirmPayment(orderId) {
+            // Send update to server
+            if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                window.ws.send(JSON.stringify({
+                    type: 'updatePaymentStatus',
+                    orderId: orderId,
+                    paymentStatus: 'completed'
+                }));
+            }
+            
+            // Record action in history
+            const action = {
+                type: 'updatePaymentStatus',
+                orderId: orderId,
+                paymentStatus: 'completed',
+                sector: 'admin',
                 timestamp: new Date().toISOString()
             };
             

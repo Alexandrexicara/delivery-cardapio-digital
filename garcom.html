@@ -5,12 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garçom - Cardápio Digital Universal</title>
     <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .footer-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .mini-banner-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .mini-banner {
+            width: 300px;
+            height: 250px;
+            background-color: #f9f9f9;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
             color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .container {
             max-width: 1200px;
@@ -99,8 +149,99 @@
         .orders-column {
             background-color: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        
+        /* Responsividade para os containers de pedidos */
+        @media (max-width: 768px) {
+            .orders-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .orders-column {
+                padding: 20px;
+                min-height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .orders-column {
+                padding: 15px;
+                min-height: 350px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .orders-column {
+                padding: 30px;
+                min-height: 600px;
+            }
+        }
+        
+        /* Layout geral responsivo para a área de garçom */
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 auto;
+                min-width: 120px;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: 100%;
+            }
+            
+            .content-section {
+                padding: 10px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .stat-card {
+                padding: 25px;
+            }
+            
+            .stat-value {
+                font-size: 36px;
+            }
+            
+            .content-section {
+                padding: 30px;
+            }
         }
         .column-header {
             display: flex;
@@ -113,9 +254,35 @@
         .order-card {
             border: 1px solid #eee;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             transition: box-shadow 0.3s;
+            font-size: 1.1em;
+        }
+        
+        /* Ajuste de responsividade para os cards de pedido */
+        @media (max-width: 768px) {
+            .order-card {
+                padding: 15px;
+                margin-bottom: 15px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .order-card {
+                padding: 12px;
+                margin-bottom: 12px;
+                font-size: 0.9em;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .order-card {
+                padding: 25px;
+                margin-bottom: 25px;
+                font-size: 1.2em;
+            }
         }
         .order-card:hover {
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -143,6 +310,22 @@
             justify-content: space-between;
             padding: 5px 0;
             border-bottom: 1px dashed #eee;
+        }
+        
+        /* Estilos para imagens de itens do cardápio */
+        .item-image {
+            height: 150px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .item-image-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
         }
         .order-total {
             font-weight: bold;
@@ -269,6 +452,12 @@
     </style>
 </head>
 <body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
     <div class="container">
         <header id="establishmentHeader">
             <div class="logo" id="establishmentLogo">
@@ -401,6 +590,25 @@
                 <button type="submit" class="btn btn-success">Registrar</button>
             </form>
         </section>
+    </div>
+    </div>
+
+    <!-- Footer Banner Space -->
+    <div class="footer-banner">
+        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <!-- Mini Banner Container -->
+    <div class="mini-banner-container">
+        <div class="mini-banner">
+            <img src="public/img/banner1.png" alt="Banner Pequeno 1" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner2.png" alt="Banner Pequeno 2" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner3.png" alt="Banner Pequeno 3" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
     </div>
 
     <div class="notification" id="notification">

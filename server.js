@@ -1,4 +1,4 @@
-const hostname = '127.0.0.1';
+const hostname = '0.0.0.0'; // Aceita conexões de qualquer dispositivo na rede
 const httpPort = 3002; // Changed to 3002 as requested
 const http = require("http");
 const fs = require("fs");
@@ -54,6 +54,48 @@ app.post('/upload/:type', upload.single('image'), (req, res) => {
 
 // Serve static files
 app.use(express.static('.'));
+
+// Function to determine establishment based on subdomain
+function getEstablishmentIdFromSubdomain(req) {
+  const host = req.get('Host');
+  if (!host) return null;
+  
+  // Extract subdomain from host (assuming format: subdomain.cardapiodigital.com.br)
+  const parts = host.split('.');
+  if (parts.length >= 3 && parts[parts.length - 2] === 'cardapiodigital' && parts[parts.length - 1] === 'com.br') {
+    // This is a subdomain request
+    return parts[0];
+  }
+  
+  return null; // Default domain, no specific establishment
+}
+
+// Middleware to set establishment context based on subdomain
+app.use((req, res, next) => {
+  const establishmentId = getEstablishmentIdFromSubdomain(req);
+  if (establishmentId) {
+    req.establishmentId = establishmentId;
+    console.log(`[SERVER] Request for establishment: ${establishmentId}`);
+  }
+  next();
+});
+
+// Middleware to handle subdomain routing
+app.get('*', (req, res, next) => {
+  const establishmentId = req.establishmentId;
+  if (establishmentId) {
+    // This is a subdomain request, serve the user interface
+    console.log(`[SERVER] Serving usuario for establishment: ${establishmentId}`);
+    
+    // For now, we'll serve usuario.html for subdomain requests
+    // In a real implementation, you would validate that the establishment exists
+    res.sendFile(path.resolve('usuario.html'));
+    return;
+  }
+  
+  // If no subdomain, continue to next middleware (which will serve index.html for root path)
+  next();
+});
 
 // Fallback route for SPA - Only for root path
 app.get('/', (req, res) => {

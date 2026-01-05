@@ -6,18 +6,179 @@
     <title>Restaurante Sabores - Cardápio Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .footer-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .mini-banner-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .mini-banner {
+            width: 300px;
+            height: 250px;
+            background-color: #f9f9f9;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f9f9f9;
             color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             /* background-image will be set by JavaScript */
+        }
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Responsividade para a área de usuário */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                max-width: 100%;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 auto;
+                min-width: 100px;
+            }
+            
+            .menu-categories {
+                flex-direction: column;
+            }
+            
+            .category {
+                min-width: 100%;
+            }
+            
+            .menu-items {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: 100%;
+            }
+            
+            .menu-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-summary {
+                padding: 15px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .container {
+                padding: 25px;
+            }
+        }
+        
+        /* Layout geral responsivo para a área de usuário */
+        @media (max-width: 768px) {
+            .menu-items {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .cart {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: 0;
+                box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            }
+            
+            .cart-items {
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .menu-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart {
+                position: relative;
+            }
+            
+            .cart-header {
+                padding: 10px;
+            }
+            
+            .cart-items {
+                max-height: 150px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .menu-items {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 25px;
+            }
+            
+            .cart {
+                width: 350px;
+            }
         }
         header {
             /* background will be set by JavaScript */
@@ -66,6 +227,29 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        
+        /* Responsividade para os containers de conteúdo */
+        @media (max-width: 768px) {
+            .content-section {
+                padding: 15px;
+                min-height: 350px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content-section {
+                padding: 10px;
+                min-height: 300px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .content-section {
+                padding: 25px;
+                min-height: 500px;
+            }
         }
         .content-section.active {
             display: block;
@@ -173,6 +357,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         .item-details {
             padding: 15px;
@@ -367,7 +552,8 @@
         .item-image-placeholder {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            object-position: center;
         }
         .order-items-container {
             display: flex;
@@ -452,6 +638,12 @@
     </style>
 </head>
 <body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
     <div class="container">
         <header id="establishmentHeader">
             <div class="logo" id="establishmentLogo">
@@ -527,8 +719,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="cpf">CPF (Opcional)</label>
-                    <input type="text" id="cpf" placeholder="000.000.000-00">
+                    <label for="cpf">CPF *</label>
+                    <input type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14">
                 </div>
                 
                 <button type="submit" class="btn">Continuar</button>
@@ -731,11 +923,30 @@
             </div>
         </section>
     </div>
+    </div>
 
     <footer>
         <p>&copy; 2023 Restaurante Sabores. Todos os direitos reservados.</p>
         <p id="establishmentFooterInfo">Rua das Flores, 123 - Centro | Ter-Sex: 18h-23h | Sáb-Dom: 12h-23h</p>
     </footer>
+    
+    <!-- Footer Banner Space -->
+    <div class="footer-banner">
+        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <!-- Mini Banner Container -->
+    <div class="mini-banner-container">
+        <div class="mini-banner">
+            <img src="public/img/banner1.png" alt="Banner Pequeno 1" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner2.png" alt="Banner Pequeno 2" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner3.png" alt="Banner Pequeno 3" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+    </div>
 
     <!-- Sistema de Customizações -->
     <script src="customizations.js"></script>
@@ -801,15 +1012,24 @@
         const name = document.getElementById('fullName').value;
         const phone = document.getElementById('phone').value;
         const tableNumber = document.getElementById('tableNumber').value;
-        console.log('[DEBUG] Dados do formulário:', { name, phone, tableNumber });
-        if (!name || !phone || !tableNumber) {
+        const cpf = document.getElementById('cpf').value;
+        console.log('[DEBUG] Dados do formulário:', { name, phone, tableNumber, cpf });
+        
+        if (!name || !phone || !tableNumber || !cpf) {
             alert('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
+        
+        // Validar CPF
+        if (!validateCPF(cpf)) {
+            alert('CPF inválido. Por favor, digite um CPF válido.');
+            return;
+        }
+        
         const customerData = {
             fullName: name,
             phone: phone,
-            cpf: document.getElementById('cpf').value,
+            cpf: cpf,
             tableNumber: tableNumber
         };
         console.log('[DEBUG] Dados do cliente:', customerData);
@@ -1137,36 +1357,96 @@
             historyList.innerHTML = '<p>Nenhum pedido ou ação registrada.</p>';
             return;
         }
-
-        history.forEach(item => {
+        
+        // Filtrar apenas pedidos (excluindo chamadas de garçom)
+        const orders = history.filter(item => item.type !== 'callWaiter');
+        
+        // Agrupar pedidos por mesa
+        const groupedOrders = {};
+        orders.forEach(order => {
+            const table = order.table || 'Mesa Desconhecida'; // Supondo que o pedido tenha uma propriedade 'table'
+            if (!groupedOrders[table]) {
+                groupedOrders[table] = {
+                    orders: [],
+                    total: 0,
+                    items: [],
+                    status: order.status,
+                    timestamp: order.timestamp // Usar a data do pedido mais recente
+                };
+            }
+            groupedOrders[table].orders.push(order);
+            groupedOrders[table].total += (order.total || 0);
+            
+            // Adicionar itens ao agrupamento
+            if (order.items) {
+                order.items.forEach(item => {
+                    // Verificar se o item já existe no agrupamento
+                    const existingItem = groupedOrders[table].items.find(i => i.name === item.name);
+                    if (existingItem) {
+                        existingItem.quantity += item.quantity;
+                        existingItem.totalPrice += (item.price * item.quantity);
+                    } else {
+                        groupedOrders[table].items.push({
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price,
+                            totalPrice: item.price * item.quantity
+                        });
+                    }
+                });
+            }
+            
+            // Atualizar timestamp para o mais recente
+            if (new Date(order.timestamp) > new Date(groupedOrders[table].timestamp)) {
+                groupedOrders[table].timestamp = order.timestamp;
+            }
+        });
+        
+        // Exibir pedidos agrupados
+        for (const table in groupedOrders) {
+            const tableData = groupedOrders[table];
             const itemElement = document.createElement('div');
             itemElement.className = 'order-card';
             itemElement.style.marginBottom = '15px';
-
+            
+            const itemDate = new Date(tableData.timestamp);
+            const formattedDate = itemDate.toLocaleDateString('pt-BR') + ' ' + itemDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            
+            let itemsHTML = '';
+            tableData.items.forEach(item => {
+                itemsHTML += `<div class="order-item-element"><div>${item.name} <small>(x${item.quantity})</small></div><div>R$ ${item.totalPrice.toFixed(2).replace('.', ',')}</div></div>`;
+            });
+            
+            // Pegar os IDs dos pedidos agrupados
+            const orderIds = tableData.orders.map(order => order.id).join(' | ');
+            
+            itemElement.innerHTML = `
+                <div class="order-items-container"><div><strong>Pedido(s) ${orderIds}</strong></div><div>${formattedDate}</div></div>
+                <div class="order-status-margin"><strong>Mesa:</strong> ${table} | <strong>Status:</strong> <span class="order-status-color-${tableData.status}">${getStatusText(tableData.status)}</span></div>
+                <div class="order-items-margin"><strong>Itens:</strong><div class="order-items-details">${itemsHTML}</div></div>
+                <div class="order-total-right">Total Geral: R$ ${tableData.total.toFixed(2).replace('.', ',')}</div>`;
+            
+            historyList.appendChild(itemElement);
+        }
+        
+        // Exibir chamadas de garçom separadamente
+        const callWaiterActions = history.filter(item => item.type === 'callWaiter');
+        callWaiterActions.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'order-card';
+            itemElement.style.marginBottom = '15px';
+            
             const itemDate = new Date(item.timestamp);
             const formattedDate = itemDate.toLocaleDateString('pt-BR') + ' ' + itemDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-            if (item.type === 'callWaiter') {
-                itemElement.innerHTML = `
-                    <div class="order-items-container">
-                        <div><strong>Chamada de Garçom</strong></div><div>${formattedDate}</div>
-                    </div>
-                    <div class="order-status-margin">
-                        Você chamou o garçom para pagamento com <strong>${item.paymentMethod}</strong> para o pedido ${item.orderId}.
-                    </div>`;
-            } else {
-                let itemsHTML = '';
-                if(item.items) {
-                    item.items.forEach(prod => {
-                        itemsHTML += `<div class="order-item-element"><div>${prod.name} <small>(x${prod.quantity})</small></div><div>R$ ${(prod.price * prod.quantity).toFixed(2).replace('.', ',')}</div></div>`;
-                    });
-                }
-                itemElement.innerHTML = `
-                    <div class="order-items-container"><div><strong>Pedido ${item.id || 'N/A'}</strong></div><div>${formattedDate}</div></div>
-                    <div class="order-status-margin"><strong>Status:</strong> <span class="order-status-color-${item.status}">${getStatusText(item.status)}</span></div>
-                    <div class="order-items-margin"><strong>Itens:</strong><div class="order-items-details">${itemsHTML}</div></div>
-                    <div class="order-total-right">Total: R$ ${item.total ? item.total.toFixed(2).replace('.', ',') : '0,00'}</div>`;
-            }
+            
+            itemElement.innerHTML = `
+                <div class="order-items-container">
+                    <div><strong>Chamada de Garçom</strong></div><div>${formattedDate}</div>
+                </div>
+                <div class="order-status-margin">
+                    Você chamou o garçom para pagamento com <strong>${item.paymentMethod}</strong> para o pedido ${item.orderId}.
+                </div>`;
+            
             historyList.appendChild(itemElement);
         });
     }
@@ -1193,7 +1473,22 @@
             wsUrl = `${protocol}//${host}:${port}`;
         }
         
-        window.ws = new WebSocket(wsUrl);
+        // If accessing via subdomain, use the main domain for WebSocket connection
+        // since WebSocket connections might not work properly with subdomains in local setup
+        let finalWsUrl = wsUrl;
+        const hostname = window.location.hostname;
+        const domainParts = hostname.split('.');
+        
+        if (domainParts.length >= 3 && domainParts[domainParts.length - 2] === 'cardapiodigital' && domainParts[domainParts.length - 1] === 'com.br') {
+            // This is a subdomain request, potentially adjust WebSocket URL to main domain
+            // In a real production environment, you would use the same subdomain for WebSocket
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const port = window.location.port || '3002';
+            // Reconstruct the main domain without the subdomain
+            finalWsUrl = `${protocol}//${domainParts[domainParts.length - 2]}.${domainParts[domainParts.length - 1]}:${port}`;
+        }
+        
+        window.ws = new WebSocket(finalWsUrl);
 
         window.ws.onopen = () => {
             console.log('WebSocket conectado com sucesso na porta 3002.');
@@ -1241,6 +1536,70 @@
         };
     }
 
+    function validateCPF(cpf) {
+        // Remove caracteres não numéricos
+        cpf = cpf.replace(/[\s.-]*/g, '');
+        
+        // Verifica se tem 11 dígitos e não são todos iguais
+        if (cpf.length !== 11 || /^([0-9])\1{10}$/.test(cpf)) {
+            return false;
+        }
+        
+        let sum;
+        let remainder;
+        
+        // Primeiro dígito verificador
+        sum = 0;
+        for (let i = 1; i <= 9; i++) {
+            sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        }
+        remainder = (sum * 10) % 11;
+        if (remainder === 10 || remainder === 11) {
+            remainder = 0;
+        }
+        if (remainder !== parseInt(cpf.substring(9, 10))) {
+            return false;
+        }
+        
+        // Segundo dígito verificador
+        sum = 0;
+        for (let i = 1; i <= 10; i++) {
+            sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        }
+        remainder = (sum * 10) % 11;
+        if (remainder === 10 || remainder === 11) {
+            remainder = 0;
+        }
+        if (remainder !== parseInt(cpf.substring(10, 11))) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Função para formatar CPF automaticamente
+    function formatCPF() {
+        const cpfInput = document.getElementById('cpf');
+        if (cpfInput) {
+            cpfInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[\D]/g, ''); // Remove tudo que não é dígito
+                
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                // Aplica a máscara: 000.000.000-00
+                if (value.length > 6) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+                } else if (value.length > 3) {
+                    value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+                }
+                
+                e.target.value = value;
+            });
+        }
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
         const customerForm = document.getElementById('customerForm');
         if (customerForm) {
@@ -1249,8 +1608,29 @@
                 completeRegistration();
             });
         }
+        
+        // Aplicar formatação de CPF
+        formatCPF();
 
         console.log('[DEBUG] Iniciando carregamento da página usuário');
+        
+        // Check if this is accessed via a subdomain (establishment-specific URL)
+        const hostname = window.location.hostname;
+        const domainParts = hostname.split('.');
+        
+        if (domainParts.length >= 3 && domainParts[domainParts.length - 2] === 'cardapiodigital' && domainParts[domainParts.length - 1] === 'com.br') {
+            // This is a subdomain request - the subdomain is the establishment ID
+            const establishmentId = domainParts[0];
+            console.log('[DEBUG] Acessado via subdomínio:', establishmentId);
+            
+            // In a real implementation, you would fetch establishment-specific data
+            // For now, we'll just log the establishment ID
+            // The actual data would be stored with the establishment ID as context
+        }
+        
+        // Aplicar customizações imediatamente
+        applyCustomizationsToMenu();
+        
         // Carregar itens do menu
         loadMenuItems();
 
@@ -1260,8 +1640,6 @@
         } else {
             console.log('[DEBUG] Com dados do cliente, mostrando menu');
             showSection('menu');
-            console.log('[DEBUG] Aplicando customizações ao menu');
-            applyCustomizationsToMenu();
         }
 
         filterMenu('all');

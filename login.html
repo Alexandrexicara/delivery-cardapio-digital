@@ -5,15 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Cardápio Digital Universal</title>
     <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .footer-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .mini-banner-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .mini-banner {
+            width: 300px;
+            height: 250px;
+            background-color: #f9f9f9;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+        }
+        .login-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .login-container {
             background-color: white;
@@ -22,6 +77,89 @@
             padding: 40px;
             width: 100%;
             max-width: 400px;
+            box-sizing: border-box;
+        }
+        
+        /* Responsividade para o container de login */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 30px;
+                margin: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+                margin: 5px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .login-container {
+                padding: 45px;
+            }
+        }
+        
+        /* Layout geral responsivo para a área de login */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .login-container {
+                padding: 25px;
+            }
+            
+            .login-header h1 {
+                font-size: 24px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .login-container {
+                padding: 20px;
+                margin: 5px;
+            }
+            
+            .login-header h1 {
+                font-size: 20px;
+            }
+            
+            .form-group label {
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 10px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .login-header h1 {
+                font-size: 32px;
+            }
+            
+            .form-group {
+                margin-bottom: 30px;
+            }
+            
+            .btn {
+                padding: 15px;
+            }
         }
         .login-header {
             text-align: center;
@@ -90,11 +228,18 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>Cardápio Digital Universal</h1>
-            <p>Área Administrativa</p>
-        </div>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Cardápio Digital Universal</h1>
+                <p>Área Administrativa</p>
+            </div>
         
         <div id="errorMessage" class="error-message">
             <!-- Error messages will be displayed here -->
@@ -116,6 +261,26 @@
         
         <div class="forgot-password">
             <a href="#" onclick="showForgotPassword()">Esqueceu sua senha?</a>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Footer Banner Space -->
+    <div class="footer-banner">
+        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <!-- Mini Banner Container -->
+    <div class="mini-banner-container">
+        <div class="mini-banner">
+            <img src="public/img/banner1.png" alt="Banner Pequeno 1" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner2.png" alt="Banner Pequeno 2" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="mini-banner">
+            <img src="public/img/banner3.png" alt="Banner Pequeno 3" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </div>
 
