@@ -588,7 +588,7 @@
                         }
                         loadAllOrders();
                         // Show notification
-                        alert('Novo pedido recebido: ' + data.order.id);
+                        playTripleBeep(); // Som sonoro para novo pedido recebido
                         showNotification('Novo pedido recebido: ' + data.order.id);
                     }
                 } else if (data.type === 'statusUpdate') {
@@ -810,8 +810,110 @@
                 showNotification('Garçom foi notificado para buscar o pedido ' + orderId);
             } else {
                 console.error('[DEBUG] Balcão: WebSocket não está conectado');
-                alert('Erro: Não foi possível conectar ao servidor');
+                playTripleBeep(); // Som sonoro para erro de conexão
             }
+        }
+        
+        // Play sound with fallback
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.play().catch(e => {
+                    console.log("Sound play failed:", e);
+                    // Try alternative sound sources
+                    const sources = sound.querySelectorAll('source');
+                    for (let i = 0; i < sources.length; i++) {
+                        if (sources[i].src.startsWith('data:')) {
+                            // Create new audio element with data URI
+                            const fallbackAudio = new Audio(sources[i].src);
+                            fallbackAudio.play().catch(err => {
+                                console.log("Fallback sound also failed:", err);
+                                // Last resort: create a simple beep
+                                createBeepSound();
+                            });
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Play custom audio in loop for 30 seconds
+        function playLoopingNotification(duration = 30000) {
+            const sound = document.getElementById('bellSound');
+            if (sound) {
+                // Set up looping
+                sound.loop = true;
+                
+                // Store reference to stop function
+                window.stopNotificationSound = function() {
+                    sound.pause();
+                    sound.currentTime = 0;
+                    sound.loop = false;
+                    console.log("Custom audio manually stopped");
+                };
+                
+                // Play the sound
+                const playPromise = sound.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log("Custom audio playing in loop for " + (duration/1000) + " seconds");
+                        
+                        // Stop after specified duration
+                        setTimeout(() => {
+                            if (window.stopNotificationSound) {
+                                window.stopNotificationSound();
+                                delete window.stopNotificationSound;
+                            }
+                        }, duration);
+                    }).catch(error => {
+                        console.log("Failed to play custom audio:", error);
+                        // Fallback to beep sound
+                        createBeepSound();
+                    });
+                }
+            } else {
+                console.log("Custom audio element not found, using fallback");
+                createBeepSound();
+            }
+        }
+        
+        // Create a simple beep sound as last resort
+        function createBeepSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            } catch (e) {
+                console.log("Web Audio API not available, using alert as fallback");
+                // Ultimate fallback - visual indication
+                playTripleBeep(); // Som sonoro para nova notificação
+            }
+        }
+        
+        // Play triple beep sound
+        function playTripleBeep(soundId = 'bellSound') {
+            // Toca três toques sonoros com intervalos
+            playSound(soundId);
+            setTimeout(() => {
+                playSound(soundId);
+            }, 300);
+            setTimeout(() => {
+                playSound(soundId);
+            }, 600);
         }
         
         // Close day orders
@@ -824,10 +926,21 @@
                 // Clear orders from local data
                 window.ordersData = [];
                 
-                alert('Pedidos do dia fechados com sucesso!');
+                playTripleBeep(); // Som sonoro para pedidos fechados
             }
         }
     </script>
+    <!-- Audio elements for notifications -->
+    <audio id="fryingSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bellSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="delightSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    
     <script src="customizations.js"></script>
     <script>
         // Apply customizations when page loads

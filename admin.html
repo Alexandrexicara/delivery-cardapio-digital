@@ -932,7 +932,7 @@
             const establishmentData = localStorage.getItem('establishmentData');
             
             if (!adminAccess || !establishmentData) {
-                alert('Acesso não autorizado. Faça login primeiro.');
+                playTripleBeep(); // Som sonoro para acesso não autorizado
                 window.location.href = 'index.html';
                 return;
             }
@@ -991,11 +991,11 @@
             const menuUrl = `https://cardapiodigital.com.br/${urlName}`;
             
             navigator.clipboard.writeText(menuUrl).then(() => {
-                alert('URL copiada para a área de transferência!');
+                playTripleBeep(); // Som sonoro para URL copiada
             }).catch(err => {
                 console.error('Erro ao copiar URL: ', err);
                 // Fallback: show URL in alert
-                alert('URL do cardápio: ' + menuUrl);
+                playTripleBeep(); // Som sonoro para URL do cardápio
             });
         }
 
@@ -1151,7 +1151,7 @@
         
         // Edit waiter (placeholder)
         function editWaiter(waiterId) {
-            alert('Função de edição de garçom não implementada neste exemplo.');
+            playTripleBeep(); // Som sonoro para função não implementada
         }
         
         // Delete waiter (placeholder)
@@ -1357,7 +1357,7 @@
                         }
                         
                         // Show notification
-                        alert('Novo pedido recebido: ' + data.order.id);
+                        playTripleBeep(); // Som sonoro para novo pedido recebido
                         
                         // Add to notifications
                         addNotificationToDashboard('Novo pedido recebido: ' + data.order.id, data.order.id);
@@ -1406,11 +1406,11 @@
                     }
                     
                     if (notificationMessage) {
-                        alert(notificationMessage);
+                        playTripleBeep(); // Som sonoro para notificação de status
                     }
                 } else if (data.type === 'callWaiter') {
                     const message = `A Mesa ${data.table} está chamando o garçom para pagamento com ${data.paymentMethod}.`;
-                    alert(message);
+                    playTripleBeep(); // Som sonoro para chamada de garçom
                     addNotificationToDashboard(message, null); // No orderId needed for this notification
 
                     // Record action in history
@@ -1486,10 +1486,10 @@
                     }
                     
                     if (notificationMessage) {
-                        alert(notificationMessage);
+                        playTripleBeep(); // Som sonoro para notificação de pagamento
                     }
                 } else if (data.type === 'messageSent') {
-                    alert(data.message || 'Mensagem enviada com sucesso!');
+                    playTripleBeep(); // Som sonoro para mensagem enviada
                     // Clear the input field for the current order
                     const currentOrderId = getCurrentOrderId();
                     if (currentOrderId) {
@@ -1499,7 +1499,7 @@
                         }
                     }
                 } else if (data.type === 'messageError') {
-                    alert('Erro ao enviar mensagem: ' + data.message);
+                    playTripleBeep(); // Som sonoro para erro de mensagem
                 }
             };
             
@@ -1856,7 +1856,7 @@
             localStorage.setItem(`commission_percentage_${table}`, percentage);
             
             // Update the display
-            alert(`Porcentagem de comissão de ${parseFloat(percentage).toFixed(2).replace('.', ',')}% salva para a mesa ${table}`);
+            playTripleBeep(); // Som sonoro para comissão salva
             
             // Optionally refresh the display to show the updated commission
             if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
@@ -1873,14 +1873,14 @@
         // Process all payments
         function processAllPayments() {
             if (!window.ordersData || window.ordersData.length === 0) {
-                alert('Nenhum pedido para processar.');
+                playTripleBeep(); // Som sonoro para nenhum pedido
                 return;
             }
             
             const pendingOrders = window.ordersData.filter(order => order.paymentStatus === 'pending');
             
             if (pendingOrders.length === 0) {
-                alert('Não há pagamentos pendentes para processar.');
+                playTripleBeep(); // Som sonoro para nenhum pagamento pendente
                 return;
             }
             
@@ -1911,7 +1911,7 @@
                 displayCombinedOrders(window.ordersData);
             }
             
-            alert('Pagamentos processados com sucesso!');
+            playTripleBeep(); // Som sonoro para pagamentos processados
         }
         
         // Update payment status UI
@@ -1991,7 +1991,7 @@
                         }
                     }
                 }
-                alert(`Pagamento para o pedido ${orderId} confirmado.`);
+                playTripleBeep(); // Som sonoro para pagamento confirmado
             }
         }
 
@@ -1999,7 +1999,7 @@
         function processPixPayment(orderId, section) {
             const order = window.ordersData.find(o => o.id === orderId);
             if (!order) {
-                alert('Pedido não encontrado!');
+                playTripleBeep(); // Som sonoro para pedido não encontrado
                 return;
             }
             
@@ -2025,7 +2025,7 @@
             const tableOrders = window.ordersData.filter(order => order.table === table);
             
             if (tableOrders.length === 0) {
-                alert('Nenhum pedido encontrado para a mesa ' + table);
+                playTripleBeep(); // Som sonoro para nenhum pedido na mesa
                 return;
             }
             
@@ -2052,7 +2052,7 @@
                 
                 // We don't need to clear the commission percentage as it can be reused for future orders
                 
-                alert('Pagamento confirmado para a mesa ' + table);
+                playTripleBeep(); // Som sonoro para pagamento confirmado mesa
                 
                 // Refresh the display
                 if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
@@ -2065,7 +2065,7 @@
         function processCashPayment(orderId, section) {
             const order = window.ordersData.find(o => o.id === orderId);
             if (!order) {
-                alert('Pedido não encontrado!');
+                playTripleBeep(); // Som sonoro para pedido não encontrado
                 return;
             }
 
@@ -2086,7 +2086,7 @@
             if (amountPaidStr) {
                 const paid = parseFloat(amountPaidStr.replace(',', '.'));
                 if (isNaN(paid) || paid < totalWithCommission) {
-                    alert('Valor inválido ou insuficiente. O pagamento não foi processado.');
+                    playTripleBeep(); // Som sonoro para valor inválido
                     return;
                 }
 
@@ -2098,9 +2098,9 @@
                     
                     // We don't need to clear the commission percentage as it can be reused for future orders
                     
-                    alert('Pagamento confirmado e status atualizado!');
+                    playTripleBeep(); // Som sonoro para pagamento confirmado
                 } else {
-                    alert('Pagamento cancelado pelo administrador.');
+                    playTripleBeep(); // Som sonoro para pagamento cancelado
                 }
             }
         }
@@ -2109,7 +2109,7 @@
         function processCardPayment(orderId, section) {
             const order = window.ordersData.find(o => o.id === orderId);
             if (!order) {
-                alert('Pedido não encontrado!');
+                playTripleBeep(); // Som sonoro para pedido não encontrado
                 return;
             }
             
@@ -2130,7 +2130,7 @@
                     // We don't need to clear the commission percentage as it can be reused for future orders
                 }
             } else if (cardType !== null) {
-                alert('Tipo de cartão inválido. Por favor, insira Crédito ou Débito.');
+                playTripleBeep(); // Som sonoro para tipo de cartão inválido
             }
         }
         
@@ -2179,13 +2179,9 @@
             }
             
             if (order) {
-                alert(`Detalhes do pedido ${orderId}:
-Mesa: ${order.table}
-Status: ${getStatusText(order.status)}
-Pagamento: ${getPaymentStatusText(order.paymentStatus)}
-Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
+                playTripleBeep(); // Som sonoro para detalhes do pedido
             } else {
-                alert('Pedido não encontrado.');
+                playTripleBeep(); // Som sonoro para pedido não encontrado
             }
         }
         
@@ -2575,7 +2571,7 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
             const message = messageInput.value.trim();
             
             if (!message) {
-                alert('Por favor, digite uma mensagem.');
+                playTripleBeep(); // Som sonoro para mensagem obrigatória
                 return;
             }
             
@@ -2590,7 +2586,7 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                     message: message
                 }));
             } else {
-                alert('Erro de conexão. Não foi possível enviar a mensagem.');
+                playTripleBeep(); // Som sonoro para erro de conexão mensagem
             }
         }
         
@@ -2628,11 +2624,11 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
             const menuUrl = `https://cardapiodigital.com.br/${urlName}`;
             
             navigator.clipboard.writeText(menuUrl).then(() => {
-                alert('URL copiada para a área de transferência!');
+                playTripleBeep(); // Som sonoro para URL copiada
             }).catch(err => {
                 console.error('Erro ao copiar URL: ', err);
                 // Fallback: show URL in alert
-                alert('URL do cardápio: ' + menuUrl);
+                playTripleBeep(); // Som sonoro para URL do cardápio
             });
         }
         
@@ -2654,7 +2650,7 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
         function savePaymentCredentials() {
             const provider = document.getElementById('paymentProvider').value;
             if (!provider) {
-                alert('Por favor, selecione um provedor de pagamento.');
+                playTripleBeep(); // Som sonoro para provedor obrigatório
                 return;
             }
             
@@ -2687,14 +2683,14 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
             };
             
             localStorage.setItem('paymentConfiguration', JSON.stringify(paymentConfig));
-            alert('Credenciais salvas com sucesso!');
+            playTripleBeep(); // Som sonoro para credenciais salvas
         }
         
         // Test payment connection
         function testPaymentConnection() {
             const config = JSON.parse(localStorage.getItem('paymentConfiguration') || '{}');
             if (!config.provider || !config.credentials) {
-                alert('Nenhuma configuração de pagamento encontrada. Por favor, salve suas credenciais primeiro.');
+                playTripleBeep(); // Som sonoro para configuração de pagamento ausente
                 return;
             }
             
@@ -2759,9 +2755,9 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                     orderId: orderId,
                     message: 'Preparando em andamento'
                 }));
-                alert('Mensagem "Preparando em andamento" enviada com sucesso!');
+                playTripleBeep(); // Som sonoro para mensagem enviada
             } else {
-                alert('Erro de conexão. Não foi possível enviar a mensagem.');
+                playTripleBeep(); // Som sonoro para erro de conexão mensagem
             }
         }
         
@@ -2774,11 +2770,124 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                     orderId: orderId,
                     message: 'Pedido a caminho'
                 }));
-                alert('Mensagem "Pedido a caminho" enviada com sucesso!');
+                playTripleBeep(); // Som sonoro para mensagem enviada
             } else {
-                alert('Erro de conexão. Não foi possível enviar a mensagem.');
+                playTripleBeep(); // Som sonoro para erro de conexão mensagem
             }
         }
+        // Play sound with fallback
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.play().catch(e => {
+                    console.log("Sound play failed:", e);
+                    // Try alternative sound sources
+                    const sources = sound.querySelectorAll('source');
+                    for (let i = 0; i < sources.length; i++) {
+                        if (sources[i].src.startsWith('data:')) {
+                            // Create new audio element with data URI
+                            const fallbackAudio = new Audio(sources[i].src);
+                            fallbackAudio.play().catch(err => {
+                                console.log("Fallback sound also failed:", err);
+                                // Last resort: create a simple beep
+                                createBeepSound();
+                            });
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Play custom audio in loop for 30 seconds
+        function playLoopingNotification(duration = 30000) {
+            const sound = document.getElementById('bellSound');
+            if (sound) {
+                // Set up looping
+                sound.loop = true;
+                
+                // Store reference to stop function
+                window.stopNotificationSound = function() {
+                    sound.pause();
+                    sound.currentTime = 0;
+                    sound.loop = false;
+                    console.log("Custom audio manually stopped");
+                };
+                
+                // Play the sound
+                const playPromise = sound.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log("Custom audio playing in loop for " + (duration/1000) + " seconds");
+                        
+                        // Stop after specified duration
+                        setTimeout(() => {
+                            if (window.stopNotificationSound) {
+                                window.stopNotificationSound();
+                                delete window.stopNotificationSound;
+                            }
+                        }, duration);
+                    }).catch(error => {
+                        console.log("Failed to play custom audio:", error);
+                        // Fallback to beep sound
+                        createBeepSound();
+                    });
+                }
+            } else {
+                console.log("Custom audio element not found, using fallback");
+                createBeepSound();
+            }
+        }
+        
+        // Create a simple beep sound as last resort
+        function createBeepSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            } catch (e) {
+                console.log("Web Audio API not available, using alert as fallback");
+                // Ultimate fallback - visual indication
+                playTripleBeep(); // Som sonoro para nova notificação
+            }
+        }
+        
+        // Play triple beep sound
+        function playTripleBeep(soundId = 'bellSound') {
+            // Toca três toques sonoros com intervalos
+            playSound(soundId);
+            setTimeout(() => {
+                playSound(soundId);
+            }, 300);
+            setTimeout(() => {
+                playSound(soundId);
+            }, 600);
+        }
     </script>
+    
+    <!-- Audio elements for notifications -->
+    <audio id="fryingSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bellSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="delightSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    
 </body>
 </html>

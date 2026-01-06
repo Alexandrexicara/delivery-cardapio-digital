@@ -1016,13 +1016,13 @@
         console.log('[DEBUG] Dados do formulário:', { name, phone, tableNumber, cpf });
         
         if (!name || !phone || !tableNumber || !cpf) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
+            playTripleBeep(); // Som sonoro para campos obrigatórios
             return;
         }
         
         // Validar CPF
         if (!validateCPF(cpf)) {
-            alert('CPF inválido. Por favor, digite um CPF válido.');
+            playTripleBeep(); // Som sonoro para CPF inválido
             return;
         }
         
@@ -1197,33 +1197,33 @@
     function enableAutomaticPayment() {
         console.log('[DEBUG] Habilitando pagamento automático');
         localStorage.setItem('automaticPaymentEnabled', 'true');
-        alert('Pagamento automático habilitado! Recarregue a página para ver as mudanças.');
+        playTripleBeep(); // Som sonoro para pagamento automático habilitado
     }
     
     // Disable automatic payment (for testing)
     function disableAutomaticPayment() {
         console.log('[DEBUG] Desabilitando pagamento automático');
         localStorage.setItem('automaticPaymentEnabled', 'false');
-        alert('Pagamento automático desabilitado! Recarregue a página para ver as mudanças.');
+        playTripleBeep(); // Som sonoro para pagamento automático desabilitado
     }
     
     function copyPixKey() {
         const pixKeyElement = document.getElementById('pixKey');
         pixKeyElement.select();
         document.execCommand('copy');
-        alert('Chave PIX copiada!');
+        playTripleBeep(); // Som sonoro para chave PIX copiada
     }
 
     function submitPayment() {
         if (!document.getElementById('receipt').value) {
-            alert('Por favor, envie o comprovante de pagamento.');
+            playTripleBeep(); // Som sonoro para comprovante necessário
             return;
         }
         const orderId = document.getElementById('orderIdDisplay').textContent;
         if (window.ws && window.ws.readyState === WebSocket.OPEN && orderId) {
             window.ws.send(JSON.stringify({ type: 'updatePaymentStatus', orderId, paymentStatus: 'completed', updatedBy: 'customer' }));
         }
-        alert('Pagamento enviado com sucesso!');
+        playTripleBeep(); // Som sonoro para pagamento enviado
         showSection('status');
     }
 
@@ -1232,12 +1232,12 @@
         const orderId = document.getElementById('orderIdDisplay').textContent;
 
         if (!customerData || !customerData.tableNumber) {
-            alert('Não foi possível identificar sua mesa. Por favor, refaça o cadastro.');
+            playTripleBeep(); // Som sonoro para mesa não identificada
             showSection('registration');
             return;
         }
         if (!orderId || orderId === '#00-0000') {
-            alert('Você precisa ter um pedido ativo para chamar o garçom.');
+            playTripleBeep(); // Som sonoro para pedido inativo
             showSection('cart');
             return;
         }
@@ -1248,22 +1248,22 @@
             const action = { type: 'callWaiter', orderId: orderId, paymentMethod: method, timestamp: new Date().toISOString() };
             saveUserAction(action);
 
-            alert(`O garçom foi notificado e virá até sua mesa para o pagamento com ${method}.`);
+            playTripleBeep(); // Som sonoro para garçom notificado
         } else {
-            alert('Não foi possível notificar o garçom. Verifique sua conexão.');
+            playTripleBeep(); // Som sonoro para falha na notificação
         }
     }
 
     function sendOrder() {
         let customerData = JSON.parse(localStorage.getItem('customerData'));
         if (!customerData || !customerData.tableNumber) {
-            alert('Por favor, complete o cadastro antes de enviar o pedido.');
+            playTripleBeep(); // Som sonoro para cadastro incompleto
             showSection('registration');
             return;
         }
         const { subtotal, serviceFee, total, cartItems } = calculateCartTotal();
         if (cartItems.length === 0) {
-            alert('Seu carrinho está vazio.');
+            playTripleBeep(); // Som sonoro para carrinho vazio
             return;
         }
         const order = {
@@ -1283,12 +1283,12 @@
         if (window.ws && window.ws.readyState === WebSocket.OPEN) {
             window.ws.send(JSON.stringify({ type: 'submitOrder', order }));
             saveUserOrder(order);
-            alert('Pedido enviado com sucesso! Número: ' + order.id);
+            playTripleBeep(); // Som sonoro para pedido enviado
             showSection('status');
             document.getElementById('orderIdDisplay').textContent = order.id;
             updateOrderItemsStatus(order.items);
         } else {
-            alert('Erro de conexão. Não foi possível enviar o pedido.');
+            playTripleBeep(); // Som sonoro para erro de conexão
         }
     }
 
@@ -1312,7 +1312,7 @@
         
         if (['preparing', 'ready', 'delivered'].includes(status)) {
             playSound('bellSound');
-            alert(currentStatus.title);
+            playTripleBeep(); // Som sonoro para atualização de status
         }
     }
 
@@ -1460,6 +1460,17 @@
         const sound = document.getElementById(soundId);
         if (sound) sound.play().catch(e => console.log("Sound play prevented"));
     }
+    
+    function playTripleBeep(soundId = 'bellSound') {
+        // Toca três toques sonoros com intervalos
+        playSound(soundId);
+        setTimeout(() => {
+            playSound(soundId);
+        }, 300);
+        setTimeout(() => {
+            playSound(soundId);
+        }, 600);
+    }
 
     function connectWebSocket() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1506,7 +1517,7 @@
             if (message.type === 'updateStatus' && message.orderId === document.getElementById('orderIdDisplay').textContent) {
                 updateOrderStatusDisplay(message.status);
             } else if (message.type === 'clearHistory') {
-                alert('Pagamento confirmado pelo estabelecimento! Seu histórico será limpo para um novo pedido.');
+                playTripleBeep(); // Som sonoro para notificação de pagamento confirmado
                 localStorage.removeItem('userOrders');
                 localStorage.removeItem('userActions');
                 localStorage.removeItem('customerData'); // Also clear customer data for fresh start
@@ -1517,10 +1528,10 @@
                 console.log('Order confirmed:', message.orderId);
             } else if (message.type === 'callWaiterConfirmation') {
                 // Handle call waiter confirmation from server
-                alert(message.message || 'Garçom foi notificado e virá até sua mesa.');
+                playTripleBeep(); // Som sonoro para confirmação de chamada de garçom
             } else if (message.type === 'orderNotification') {
                 // Handle order notification messages from server
-                alert(message.message);
+                playTripleBeep(); // Som sonoro para notificação de pedido
                 
                 // Also update the status display
                 if (message.status) {
@@ -1528,7 +1539,7 @@
                 }
             } else if (message.type === 'adminMessage') {
                 // Handle admin message from server
-                alert('Mensagem do estabelecimento: ' + message.message);
+                playTripleBeep(); // Som sonoro para mensagem do estabelecimento
             } else if (message.type === 'existingOrders') {
                 console.log('Received existing orders for user:', message.orders.length);
                 // User will only see their own orders
