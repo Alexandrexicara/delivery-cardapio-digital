@@ -674,7 +674,7 @@
             </div>
             <div class="user-info">
                 <span id="waiterName">Garçom</span>
-                <button class="btn btn-danger" onclick="stopNotificationSound()" title="Parar som de notificação">🔇 Parar Som</button>
+                <button class="btn btn-danger" onclick="stopAllSounds()" title="Parar som de notificação">🔇 Parar Som</button>
                 <button class="btn btn-warning" onclick="logout()">Sair</button>
             </div>
         </header>
@@ -1274,7 +1274,19 @@
                 default: return '#7f8c8d';
             }
         }
-
+                
+        // Restore saved order statuses on page load
+        function restoreOrderStatuses() {
+            const savedStatuses = JSON.parse(localStorage.getItem('orderStatuses') || '{}');
+                    
+            // Aplicar status salvos aos pedidos existentes
+            Object.keys(savedStatuses).forEach(orderId => {
+                const savedStatus = savedStatuses[orderId];
+                // Atualizar UI com o status salvo
+                updateOrderStatusUI(orderId, savedStatus);
+            });
+        }
+                
         // Initialize WebSocket connection
         function initWebSocket() {
             // Check if we're already connected
@@ -1325,6 +1337,8 @@
                     window.ordersData = data.orders || [];
                     updateDashboardStats();
                     loadLatestOrders();
+                    // Restaurar status salvos após carregar pedidos
+                    setTimeout(restoreOrderStatuses, 100);
                 } else if (data.type === 'newOrder') {
                     // Add new order
                     if (data.order) {
@@ -1367,12 +1381,14 @@
                     switch (data.status) {
                         case 'preparing':
                             notificationMessage = 'Pedido ' + data.orderId + ' está em preparação';
+                            // Tocar som quando pedido entra em preparação
+                            playTripleBeep('bellSound');
                             break;
                         case 'ready':
                             notificationMessage = 'Pedido ' + data.orderId + ' está pronto - Notificar garçom para entrega';
                             addNotificationToDashboard('Pedido ' + data.orderId + ' está pronto para entrega', data.orderId);
-                            // Play sound and vibrate for ready orders
-                            playTripleBeep();
+                            // Tocar som e vibrate for ready orders
+                            playTripleBeep('delightSound');
                             break;
                         case 'delivered':
                             notificationMessage = 'Pedido ' + data.orderId + ' foi entregue ao cliente';
@@ -1472,8 +1488,13 @@
             };
         }
         
-        // Update order status in UI
+        // Update order status in UI with persistence
         function updateOrderStatusUI(orderId, status) {
+            // Salvar status no localStorage para persistência
+            const orderStatuses = JSON.parse(localStorage.getItem('orderStatuses') || '{}');
+            orderStatuses[orderId] = status;
+            localStorage.setItem('orderStatuses', JSON.stringify(orderStatuses));
+            
             const orderCards = document.querySelectorAll('.order-card');
             orderCards.forEach(card => {
                 const orderIdElement = card.querySelector('.order-id');
@@ -1494,13 +1515,19 @@
                             
                             // Add appropriate buttons based on status
                             if (order.status === 'pending') {
-                                actionsContainer.innerHTML += `<button class="btn btn-primary" onclick="notifyKitchen('${order.id}')">Notificar Cozinha</button>`;
+                                actionsContainer.innerHTML += `<button class="btn btn-primary" onclick="notifyKitchen('${order.id}')">Enviar para Cozinha</button>`;
                                 actionsContainer.innerHTML += `<button class="btn btn-info" onclick="viewOrder('${order.id}')">Ver Pedido</button>`;
                             } else if (order.status === 'preparing') {
                                 actionsContainer.innerHTML += `<button class="btn btn-warning" onclick="markAsDelivered('${order.id}')">Marcar como Entregue</button>`;
                                 actionsContainer.innerHTML += `<button class="btn btn-info" onclick="viewOrder('${order.id}')">Ver Pedido</button>`;
+                                actionsContainer.innerHTML += `<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
+                                    <strong>🔔 Status da Cozinha:</strong> Pedido em preparação
+                                </div>`;
                             } else if (order.status === 'ready') {
                                 actionsContainer.innerHTML += `<button class="btn btn-warning" onclick="markAsDelivered('${order.id}')">Marcar como Entregue</button>`;
+                                actionsContainer.innerHTML += `<div style="margin-top: 10px; padding: 10px; background: #d4edda; border: 1px solid #28a745; border-radius: 5px;">
+                                    <strong>✅ Status da Cozinha:</strong> Pedido pronto para entrega
+                                </div>`;
                             } else if (order.status === 'delivered') {
                                 actionsContainer.innerHTML += `<button class="btn btn-success" onclick="markAsCompleted('${order.id}')">Marcar como Concluído</button>`;
                             } else if (order.status === 'completed') {
