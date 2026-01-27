@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Sistema de Assinatura de Domínio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .danger { background-color: #f8d7da; border-color: #f5c6cb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste Sistema de Assinatura de Domínio</h1>
+        <p>Sistema de cobrança anual de R$ 60,00 para domínio</p>
+        
+        <div class="test-section">
+            <h2>📊 Informações da Assinatura</h2>
+            <div id="subscriptionInfo"></div>
+            <button onclick="checkSubscription()">Verificar Status</button>
+            <button onclick="resetSubscription()">Resetar Assinatura</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>⏰ Teste de Expiração</h2>
+            <button onclick="simulateNearExpiration()">Simular 15 dias para expirar</button>
+            <button onclick="simulateExpiration()">Simular expiração</button>
+            <button onclick="simulatePastExpiration()">Simular expirado há 5 dias</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>💳 Teste de Pagamento</h2>
+            <button onclick="testPaymentProcess()">Testar Processo de Pagamento</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Dados Armazenados</h2>
+            <div id="localStorageData"></div>
+            <button onclick="showLocalStorage()">Mostrar localStorage</button>
+        </div>
+    </div>
+
+    <script>
+        const DOMINIO_VALOR = 60.00;
+        const AVISO_DIAS = 30;
+        
+        // Funções do sistema de assinatura (cópia do admin.html)
+        function inicializarAssinatura() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            
+            if (!dadosEstabelecimento.assinatura) {
+                const dataCompra = dadosEstabelecimento.purchaseDate ? new Date(dadosEstabelecimento.purchaseDate) : new Date();
+                const dataVencimento = new Date(dataCompra);
+                dataVencimento.setFullYear(dataVencimento.getFullYear() + 1);
+                
+                dadosEstabelecimento.assinatura = {
+                    valorDominio: DOMINIO_VALOR,
+                    dataCompra: dataCompra.toISOString(),
+                    dataVencimento: dataVencimento.toISOString(),
+                    ultimoPagamento: dataCompra.toISOString(),
+                    statusPagamento: 'pago',
+                    avisoMostrado: false
+                };
+                
+                localStorage.setItem('establishmentData', JSON.stringify(dadosEstabelecimento));
+                showResult('Assinatura inicializada com sucesso!', 'success');
+            }
+        }
+        
+        function verificarStatusAssinatura() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            if (!dadosEstabelecimento.assinatura) {
+                inicializarAssinatura();
+                return verificarStatusAssinatura();
+            }
+            
+            const assinatura = dadosEstabelecimento.assinatura;
+            const agora = new Date();
+            const dataVencimento = new Date(assinatura.dataVencimento);
+            const diasParaVencer = Math.ceil((dataVencimento - agora) / (1000 * 60 * 60 * 24));
+            
+            return {
+                isValida: agora < dataVencimento,
+                diasParaVencer: diasParaVencer,
+                periodoAviso: diasParaVencer <= AVISO_DIAS && diasParaVencer > 0,
+                expirada: diasParaVencer <= 0,
+                assinatura: assinatura
+            };
+        }
+        
+        function checkSubscription() {
+            const status = verificarStatusAssinatura();
+            const infoDiv = document.getElementById('subscriptionInfo');
+            
+            let className = 'success';
+            let message = '';
+            
+            if (status.expirada) {
+                className = 'danger';
+                message = `❌ DOMÍNIO EXPIRADO!<br>
+                          Dias desde expiração: ${Math.abs(status.diasParaVencer)}<br>
+                          Valor da renovação: R$ ${DOMINIO_VALOR.toFixed(2)}`;
+            } else if (status.periodoAviso) {
+                className = 'warning';
+                message = `⚠️ DOMÍNIO PRÓXIMO AO VENCIMENTO!<br>
+                          Dias restantes: ${status.diasParaVencer}<br>
+                          Valor da renovação: R$ ${DOMINIO_VALOR.toFixed(2)}`;
+            } else {
+                message = `✅ DOMÍNIO VÁLIDO<br>
+                          Dias restantes: ${status.diasParaVencer}<br>
+                          Data de vencimento: ${new Date(status.assinatura.dataVencimento).toLocaleDateString('pt-BR')}`;
+            }
+            
+            infoDiv.innerHTML = `<div class="result ${className}">${message}</div>`;
+        }
+        
+        function resetSubscription() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            delete dadosEstabelecimento.assinatura;
+            localStorage.setItem('establishmentData', JSON.stringify(dadosEstabelecimento));
+            showResult('Assinatura resetada com sucesso!', 'success');
+            checkSubscription();
+        }
+        
+        function simulateNearExpiration() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 15); // 15 dias no futuro
+            
+            dadosEstabelecimento.assinatura.dataVencimento = futureDate.toISOString();
+            localStorage.setItem('establishmentData', JSON.stringify(dadosEstabelecimento));
+            
+            showResult('Simulado: 15 dias para expirar', 'warning');
+            checkSubscription();
+        }
+        
+        function simulateExpiration() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const today = new Date();
+            
+            dadosEstabelecimento.assinatura.dataVencimento = today.toISOString();
+            localStorage.setItem('establishmentData', JSON.stringify(dadosEstabelecimento));
+            
+            showResult('Simulado: expiração hoje', 'warning');
+            checkSubscription();
+        }
+        
+        function simulatePastExpiration() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const pastDate = new Date();
+            pastDate.setDate(pastDate.getDate() - 5); // 5 dias atrás
+            
+            dadosEstabelecimento.assinatura.dataVencimento = pastDate.toISOString();
+            localStorage.setItem('establishmentData', JSON.stringify(dadosEstabelecimento));
+            
+            showResult('Simulado: expirado há 5 dias', 'danger');
+            checkSubscription();
+        }
+        
+        function testPaymentProcess() {
+            const dadosEstabelecimento = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            const agora = new Date();
+            const novaDataVencimento = new Date(agora);
+            novaDataVencimento.setFullYear(novaDataVencimento.getFullYear() + 1);
+            
+            dadosEstabelecimento.assinatura = {
+                valorDominio: DOMINIO_VALOR,
+                dataCompra: dadosEstabelecimento.assinatura.dataCompra,
+                dataVencimento: novaDataVencimento.toISOString(),
+                ultimoPagamento: agora.toISOString(),
+                statusPagamento: 'pago',
+                avisoMostrado: false
+            };
+            
+            localStorage.setItem('establishmentData', JSON.stringify(dadosEstabelecimento));
+            
+            showResult(`✅ Pagamento simulado com sucesso!<br>
+                       Nova data de vencimento: ${novaDataVencimento.toLocaleDateString('pt-BR')}<br>
+                       Valor: R$ ${DOMINIO_VALOR.toFixed(2)}`, 'success');
+            checkSubscription();
+        }
+        
+        function showLocalStorage() {
+            const dados = localStorage.getItem('establishmentData');
+            const dataDiv = document.getElementById('localStorageData');
+            
+            if (dados) {
+                const formattedData = JSON.stringify(JSON.parse(dados), null, 2);
+                dataDiv.innerHTML = `<pre class="result success">${formattedData}</pre>`;
+            } else {
+                dataDiv.innerHTML = '<div class="result danger">Nenhum dado encontrado no localStorage</div>';
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = message;
+            document.body.appendChild(resultDiv);
+            
+            setTimeout(() => {
+                if (resultDiv.parentNode) {
+                    resultDiv.remove();
+                }
+            }, 3000);
+        }
+        
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Criar dados de estabelecimento de exemplo se não existirem
+            if (!localStorage.getItem('establishmentData')) {
+                const establishmentData = {
+                    establishmentName: 'Restaurante Teste',
+                    adminName: 'Admin Teste',
+                    purchaseDate: new Date().toISOString(),
+                    isAuthenticated: true
+                };
+                localStorage.setItem('establishmentData', JSON.stringify(establishmentData));
+            }
+            
+            checkSubscription();
+        });
+    </script>
+</body>
+</html>

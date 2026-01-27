@@ -223,6 +223,7 @@
             font-size: 14px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -292,31 +293,53 @@
             <h2>QR Code do Estabelecimento</h2>
             <p>Este é o QR code único para todo o seu estabelecimento. Imprima e posicione em todas as mesas.</p>
             
-            <!-- Banner promocional do sistema CARDÁPIO DIGITAL UNIVERSAL -->
+            <!-- Informações sobre domínios -->
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                <h3 style="margin: 0 0 10px 0; font-size: 18px;">📱 CARDÁPIO DIGITAL UNIVERSAL</h3>
-                <p style="margin: 0 0 10px 0; font-size: 14px;">O sistema completo de pedidos automatizados para restaurantes e estabelecimentos comerciais</p>
+                <h3 style="margin: 0 0 10px 0; font-size: 18px;">🌐 cardapiodigital.com.br</h3>
+                <p style="margin: 0 0 10px 0; font-size: 14px;">Domínio do sistema - Seu portal de acesso</p>
                 <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin: 10px 0;">
                     <div style="background-color: #4CAF50; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 16px;">R$ 500,00</div>
                     <div style="font-size: 12px; opacity: 0.9;">Investimento único com acesso vitalício</div>
                 </div>
-                <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.8;">Acesse em: http://172.24.154.187:3002/qr-management.html</p>
+                <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.8;">Domínio do sistema: https://cardapiodigital.com.br</p>
+            </div>
+            
+            <!-- Informações sobre domínio do estabelecimento -->
+            <div style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 10px 0; font-size: 18px;">Domínio Personalizado</h3>
+                <p style="margin: 0 0 10px 0; font-size: 14px;">Domínio do seu estabelecimento - R$ 60,00/ano</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin: 10px 0;">
+                    <div style="background-color: #f39c12; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 16px;">R$ 60,00</div>
+                    <div style="font-size: 12px; opacity: 0.9;">Taxa anual de hospedagem</div>
+                </div>
+                <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.8;">Exemplo: https://seu-restaurante.cardapiodigital.com.br</p>
+            </div>
+            
+            <!-- Informações sobre o sistema de pagamento e bloqueio -->
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; border-left: 4px solid #3498db;">
+                <h3 style="color: #2c3e50; margin: 0 0 10px 0;">Funcionamento do Sistema</h3>
+                <p style="margin: 10px 0;">
+                    <strong>Primeiro ano:</strong> Gratuito após a compra do sistema<br>
+                    <strong>Renovação anual:</strong> R$ 60,00 para manter o domínio ativo<br>
+                    <strong>Avisos:</strong> Você receberá alertas 30 dias antes do vencimento<br>
+                    <strong>Bloqueio:</strong> O acesso é bloqueado após o vencimento até a renovação
+                </p>
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-                <div style="display: inline-block; padding: 30px; background-color: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <h3>QR Code Único</h3>
-                    <div style="width: 200px; height: 200px; background-color: #f8f9fa; margin: 20px auto; display: flex; align-items: center; justify-content: center; border: 2px solid #3498db;">
-                        <span style="font-size: 24px; font-weight: bold; color: #3498db;">QR CODE</span>
+                <div style="display: inline-block; padding: 20px; background-color: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3>QR Code do Estabelecimento</h3>
+                    <div id="qrcode-container" style="width: 150px; height: 150px; margin: 15px auto; display: flex; align-items: center; justify-content: center; border: 2px solid #3498db;">
+                        <div id="qrcode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
                     </div>
-                    <p style="font-size: 14px; color: #7f8c8d;">
-                        https://cardapiodigital.com.br/restaurante-sabores
+                    <p style="font-size: 12px; color: #7f8c8d;">
+                        <span id="current-url">https://cardapiodigital.com.br/restaurante-sabores</span>
                     </p>
-                    <button class="btn" onclick="copyToClipboard('https://cardapiodigital.com.br/restaurante-sabores')" style="margin: 10px;">
+                    <button class="btn" onclick="copyToClipboard(document.getElementById('current-url').textContent)" style="margin: 8px; padding: 8px 16px; font-size: 14px;">
                         Copiar URL
                     </button>
-                    <button class="btn btn-warning" style="margin: 10px;">
-                        Imprimir QR Code
+                    <button class="btn btn-warning" onclick="printQRCode()" style="margin: 8px; padding: 8px 16px; font-size: 14px;">
+                        Imprimir QR
                     </button>
                 </div>
             </div>
@@ -515,7 +538,7 @@
 
     <script src="customizations.js"></script>
     <script>
-        // Tab navigation
+        // Ensure showSection is available globally first
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('.content-section').forEach(section => {
@@ -543,6 +566,8 @@
                 tabs[sectionMap[sectionId]].classList.add('active');
             }
         }
+        
+// Função showSection movida para o início do script para garantir disponibilidade
         
         // Customization functions using the centralized system
         function saveCustomization() {
@@ -1260,24 +1285,118 @@
                 dashboardUrlElement.innerHTML = `<strong>URL do Cardápio:</strong> ${menuUrl}`;
             }
             
-            // Update the QR code section URLs
-            // Find the QR code URL element by its content
-            const qrUrlElements = document.querySelectorAll('#tables p');
-            for (let p of qrUrlElements) {
-                if (p.textContent.includes('cardapiodigital.com.br')) {
-                    p.textContent = menuUrl;
-                }
+            // Update the QR code section URL
+            const currentUrlElement = document.getElementById('current-url');
+            if (currentUrlElement) {
+                currentUrlElement.textContent = menuUrl;
             }
             
-            // Update the copy button's functionality
-            const copyButtons = document.querySelectorAll('#tables .btn');
-            copyButtons.forEach(button => {
-                if (button.textContent.includes('Copiar') || button.onclick || button.getAttribute('onclick')) {
-                    // Update the onclick attribute to use the dynamic URL
-                    button.setAttribute('onclick', `copyToClipboard("${menuUrl}")`);
-                }
+            // Generate QR code
+            generateQRCode(menuUrl);
+        }
+        
+        // Generate QR code
+        function generateQRCode(url) {
+            // Clear existing QR code
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            
+            // Create canvas element for QR code
+            const canvas = document.createElement('canvas');
+            canvas.id = 'qr-canvas';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            qrcodeDiv.appendChild(canvas);
+            
+            // Create a container for the QR code
+            const qrContainer = document.createElement('div');
+            qrContainer.id = 'real-qrcode';
+            qrcodeDiv.appendChild(qrContainer);
+            
+            // Generate QR code using the library
+            new QRCode(qrContainer, {
+                text: url,
+                width: 140,
+                height: 140,
+                colorDark: "#1e3a8a", // Azul escuro para destaque
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
             });
         }
+        
+        // Simple QR code drawing function
+        function drawQRCode(canvas, text) {
+            const ctx = canvas.getContext('2d');
+            const size = 150; // Canvas size
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Clear canvas
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Simple representation of QR code - in real implementation, would use proper QR library
+            // For demonstration purposes, we'll create a simplified pattern
+            ctx.fillStyle = 'black';
+            
+            // Draw a simple pattern representing a QR code
+            // This is a simplified version - in real application, would use proper QR code library
+            
+            // Draw border squares
+            const squareSize = size / 7;
+            
+            // Top-left corner square
+            ctx.fillRect(0, 0, squareSize * 2, squareSize * 2);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(squareSize * 0.5, squareSize * 0.5, squareSize, squareSize);
+            
+            // Top-right corner square
+            ctx.fillStyle = 'black';
+            ctx.fillRect(size - squareSize * 2, 0, squareSize * 2, squareSize * 2);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(size - squareSize * 1.5, squareSize * 0.5, squareSize, squareSize);
+            
+            // Bottom-left corner square
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, size - squareSize * 2, squareSize * 2, squareSize * 2);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(squareSize * 0.5, size - squareSize * 1.5, squareSize, squareSize);
+            
+            // Draw some internal pattern
+            ctx.fillStyle = 'black';
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    if ((i + j) % 2 === 0) {
+                        ctx.fillRect(
+                            squareSize * 2 + i * (size / 7), 
+                            squareSize * 2 + j * (size / 7), 
+                            size / 14, 
+                            size / 14
+                        );
+                    }
+                }
+            }
+        }
+        
+// Fixed printQRCode function using simple string concatenation
+function printQRCode() {
+    const currentUrl = document.getElementById('current-url').textContent;
+    const printWindow = window.open('', '_blank');
+    
+    var html = '<!DOCTYPE html><html><head>';
+    html += '<title>QR Code - ' + currentUrl + '</title>';
+    html += '<style>body{font-family:Arial,sans-serif;margin:20px;text-align:center}.banner{background:#667eea;color:white;padding:15px;border-radius:10px;margin:20px 0}#print-qr{width:300px;height:300px;margin:0 auto;border:2px solid #333}.url{margin:15px 0;word-break:break-all}</style>';
+    html += '<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>';
+    html += '</head><body>';
+    html += '<div class="banner"><h3>🌐 cardapiodigital.com.br</h3><p>Seu portal de acesso - R$ 500,00 vitalício</p></div>';
+    html += '<h2>QR Code do Estabelecimento</h2>';
+    html += '<div><div id="print-qr"></div><div class="url">' + currentUrl + '</div></div>';
+    html += '<script>setTimeout(function(){if(typeof QRCode!=="undefined"){new QRCode(document.getElementById("print-qr"),{text:"' + currentUrl + '",width:300,height:300,colorDark:"#1e3a8a",colorLight:"#ffffff"});setTimeout(function(){window.print();window.close();},1000);}},500);<\/script>';
+    html += '</body></html>';
+    
+    printWindow.document.write(html);
+    printWindow.document.close();
+}
         
         // Close modals when clicking outside
         window.onclick = function(event) {
@@ -1285,4 +1404,12 @@
                 event.target.style.display = 'none';
             }
         }
+        
+        // Atualizar o QR code quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(updateMenuUrl, 1000); // Aguardar um pouco para garantir que tudo esteja carregado
+        });
+        
+        // Atualizar o QR code periodicamente para garantir que esteja sempre atualizado
+        setInterval(updateMenuUrl, 30000); // Atualizar a cada 30 segundos
     </script></body></html>

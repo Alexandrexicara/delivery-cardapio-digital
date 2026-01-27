@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Notificações de Pagamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { border-color: #28a745; background-color: #f8fff8; }
+        .error { border-color: #dc3545; background-color: #fff8f8; }
+        .info { border-color: #17a2b8; background-color: #f8fdff; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .log {
+            background-color: #333;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Notificações de Pagamento</h1>
+        <p>Este teste verifica se as notificações de "Chamar Garçom" e "Fechar Mesa" estão funcionando corretamente.</p>
+        
+        <div class="test-section info">
+            <h3>📋 Pré-requisitos</h3>
+            <ul>
+                <li>Servidor deve estar rodando na porta 3001</li>
+                <li>WebSocket deve estar conectado</li>
+                <li>Dados do cliente (mesa) devem estar configurados</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Configuração Inicial</h3>
+            <button onclick="setupTestData()">Configurar Dados de Teste</button>
+            <button onclick="connectWebSocket()">Conectar WebSocket</button>
+            <button onclick="checkConnection()">Verificar Conexão</button>
+            <div id="connectionStatus" class="status">Status: Não conectado</div>
+        </div>
+
+        <div class="test-section success">
+            <h3>🔔 Teste de Notificações</h3>
+            <button onclick="testCallWaiter()">Chamar Garçom</button>
+            <button onclick="testCloseTable()">Fechar Mesa</button>
+            <button onclick="testOldPaymentMethods()">Métodos Antigos (PIX/Cartão/Dinheiro)</button>
+        </div>
+
+        <div class="test-section error">
+            <h3>🧹 Limpeza</h3>
+            <button onclick="clearTestData()">Limpar Dados de Teste</button>
+            <button onclick="disconnectWebSocket()">Desconectar WebSocket</button>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Log de Eventos</h3>
+            <div id="log" class="log">Aguardando eventos...</div>
+            <button onclick="clearLog()">Limpar Log</button>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let isConnected = false;
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[TEST LOG] ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = 'Log limpo...\n';
+        }
+
+        function updateConnectionStatus(status, className) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = `Status: ${status}`;
+            statusElement.className = `status ${className}`;
+        }
+
+        function setupTestData() {
+            log('Configurando dados de teste...');
+            
+            // Configurar dados do cliente
+            const customerData = {
+                name: 'Cliente Teste',
+                tableNumber: '5',
+                phone: '(11) 99999-9999'
+            };
+            
+            localStorage.setItem('customerData', JSON.stringify(customerData));
+            log('✓ Dados do cliente configurados (Mesa 5)');
+            
+            // Configurar pedido de teste
+            document.getElementById('orderIdDisplay').textContent = '#12-3456';
+            log('✓ Número do pedido configurado (#12-3456)');
+        }
+
+        function connectWebSocket() {
+            log('Conectando WebSocket...');
+            
+            if (ws) {
+                ws.close();
+            }
+            
+            ws = new WebSocket('ws://localhost:3001');
+            
+            ws.onopen = function() {
+                isConnected = true;
+                log('✓ WebSocket conectado com sucesso!');
+                updateConnectionStatus('Conectado', 'success');
+            };
+            
+            ws.onmessage = function(event) {
+                log(`← Mensagem recebida: ${event.data}`);
+                try {
+                    const message = JSON.parse(event.data);
+                    log(`Tipo de mensagem: ${message.type}`);
+                } catch (e) {
+                    log(`Erro ao parsear mensagem: ${e.message}`);
+                }
+            };
+            
+            ws.onerror = function(error) {
+                log(`✗ Erro no WebSocket: ${error.message}`);
+                updateConnectionStatus('Erro de conexão', 'error');
+            };
+            
+            ws.onclose = function() {
+                isConnected = false;
+                log('WebSocket desconectado');
+                updateConnectionStatus('Desconectado', 'error');
+            };
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                log('WebSocket desconectado manualmente');
+            }
+        }
+
+        function checkConnection() {
+            if (isConnected && ws && ws.readyState === WebSocket.OPEN) {
+                log('✓ Conexão WebSocket está ativa');
+                updateConnectionStatus('Conectado', 'success');
+            } else {
+                log('✗ Conexão WebSocket inativa');
+                updateConnectionStatus('Desconectado', 'error');
+            }
+        }
+
+        function testCallWaiter() {
+            log('Testando função "Chamar Garçom"...');
+            
+            if (!isConnected) {
+                log('✗ WebSocket não conectado!');
+                return;
+            }
+            
+            const customerData = JSON.parse(localStorage.getItem('customerData'));
+            const orderId = '#12-3456';
+            
+            if (!customerData || !customerData.tableNumber) {
+                log('✗ Dados do cliente não configurados!');
+                return;
+            }
+            
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const message = {
+                    type: 'callWaiter',
+                    table: customerData.tableNumber,
+                    paymentMethod: 'chamar_garcom',
+                    orderId: orderId,
+                    message: 'Cliente solicitando atendimento na mesa'
+                };
+                
+                ws.send(JSON.stringify(message));
+                log('✓ Mensagem "Chamar Garçom" enviada!');
+                log(`Dados: Mesa ${customerData.tableNumber}, Pedido ${orderId}`);
+            } else {
+                log('✗ WebSocket não está aberto!');
+            }
+        }
+
+        function testCloseTable() {
+            log('Testando função "Fechar Mesa"...');
+            
+            if (!isConnected) {
+                log('✗ WebSocket não conectado!');
+                return;
+            }
+            
+            const customerData = JSON.parse(localStorage.getItem('customerData'));
+            const orderId = '#12-3456';
+            
+            if (!customerData || !customerData.tableNumber) {
+                log('✗ Dados do cliente não configurados!');
+                return;
+            }
+            
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const message = {
+                    type: 'closeTable',
+                    table: customerData.tableNumber,
+                    orderId: orderId,
+                    message: 'Cliente solicitando fechamento da mesa'
+                };
+                
+                ws.send(JSON.stringify(message));
+                log('✓ Mensagem "Fechar Mesa" enviada!');
+                log(`Dados: Mesa ${customerData.tableNumber}, Pedido ${orderId}`);
+            } else {
+                log('✗ WebSocket não está aberto!');
+            }
+        }
+
+        function testOldPaymentMethods() {
+            log('Testando métodos de pagamento antigos...');
+            
+            if (!isConnected) {
+                log('✗ WebSocket não conectado!');
+                return;
+            }
+            
+            const customerData = JSON.parse(localStorage.getItem('customerData'));
+            const orderId = '#12-3456';
+            
+            // Testar PIX
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'callWaiterForPayment',
+                    table: customerData.tableNumber,
+                    paymentMethod: 'pix',
+                    orderId: orderId
+                }));
+                log('✓ Mensagem PIX enviada');
+            }
+            
+            // Testar Cartão
+            setTimeout(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'callWaiterForPayment',
+                        table: customerData.tableNumber,
+                        paymentMethod: 'cartão',
+                        orderId: orderId
+                    }));
+                    log('✓ Mensagem Cartão enviada');
+                }
+            }, 1000);
+            
+            // Testar Dinheiro
+            setTimeout(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'callWaiterForPayment',
+                        table: customerData.tableNumber,
+                        paymentMethod: 'dinheiro',
+                        orderId: orderId
+                    }));
+                    log('✓ Mensagem Dinheiro enviada');
+                }
+            }, 2000);
+        }
+
+        function clearTestData() {
+            localStorage.removeItem('customerData');
+            document.getElementById('orderIdDisplay').textContent = '#00-0000';
+            log('✓ Dados de teste limpos');
+        }
+
+        // Elemento oculto para simular o ID do pedido
+        document.body.innerHTML += '<div id="orderIdDisplay" style="display: none;">#00-0000</div>';
+
+        log('Sistema de teste iniciado. Configure os dados e conecte o WebSocket para começar.');
+    </script>
+</body>
+</html>

@@ -208,6 +208,69 @@
             box-sizing: border-box;
         }
         
+        /* Estilos para aviso de domínio */
+        .domain-warning {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            padding: 40px 20px;
+            margin: 40px 0;
+        }
+        
+        .warning-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .warning-icon {
+            font-size: 4em;
+            flex-shrink: 0;
+        }
+        
+        .warning-content h2 {
+            margin-top: 0;
+        }
+        
+        .warning-features {
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        
+        .check-mark {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .warning-note {
+            margin-top: 20px;
+        }
+        
+        /* Responsividade para o aviso de domínio */
+        @media (max-width: 768px) {
+            .warning-container {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .warning-icon {
+                font-size: 3em;
+            }
+        }
+        
         /* Responsividade para o formulário de compra */
         @media (max-width: 768px) {
             .purchase-form {
@@ -407,6 +470,50 @@
             <button class="btn" onclick="showPurchaseForm()">Adquirir Sistema</button>
             <button class="btn btn-secondary" onclick="window.location.href='login.html'">Login Administrativo</button>
         </div>
+
+        <!-- Aviso sobre domínio -->
+        <section class="domain-warning">
+            <div class="warning-container">
+                <div class="warning-icon">🌐</div>
+                <div class="warning-content">
+                    <h2 style="color: #27ae60; margin-bottom: 15px;">Domínio Personalizado Incluso</h2>
+                    <div class="warning-details">
+                        <p style="font-size: 18px; margin-bottom: 15px;">
+                            <strong>Valor anual do domínio: R$ 60,00</strong>
+                        </p>
+                        <div class="warning-features">
+                            <div class="feature-item">
+                                <span class="check-mark">✓</span>
+                                <span>Domínio personalizado no formato: seu-restaurante.cardapiodigital.com.br</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="check-mark">✓</span>
+                                <span>Aviso automático 30 dias antes do vencimento</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="check-mark">✓</span>
+                                <span>Contagem regressiva de dias restantes</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="check-mark">✓</span>
+                                <span>Bloqueio automático após vencimento</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="check-mark">✓</span>
+                                <span>Liberação imediata após pagamento</span>
+                            </div>
+                        </div>
+                        <div class="warning-note">
+                            <p style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 20px;">
+                                <strong>Importante:</strong> O domínio é renovado anualmente. Após a compra inicial do sistema,
+                                você receberá um domínio gratuito pelo primeiro ano. A partir do segundo ano,
+                                será cobrado R$ 60,00 anualmente para manter o domínio ativo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section id="features" class="features">
             <div class="feature-card">
@@ -633,7 +740,16 @@
                 paymentMethod: paymentMethod,
                 purchaseDate: new Date().toISOString(),
                 isAuthenticated: true,
-                uniqueId: uniqueId
+                uniqueId: uniqueId,
+                // Inicializar assinatura do domínio
+                assinatura: {
+                    valorDominio: 60.00, // R$ 60,00 anualmente
+                    dataCompra: new Date().toISOString(),
+                    dataVencimento: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+                    ultimoPagamento: new Date().toISOString(),
+                    statusPagamento: 'pago',
+                    avisoMostrado: false
+                }
             };
             
             localStorage.setItem('establishmentData', JSON.stringify(establishmentData));

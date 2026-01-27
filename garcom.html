@@ -436,6 +436,224 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
+        
+        /* Extended Table Assignment Styles */
+        .blocks-navigation {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .block-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .block-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .block-btn:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .block-btn.active {
+            background-color: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .block-btn.has-tables {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .table-block-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .block-info {
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .tables-grid-container {
+            margin: 20px 0;
+        }
+        
+        .tables-grid-extended {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        
+        .table-cell {
+            background-color: white;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .table-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .table-cell.selected {
+            background-color: #27ae60;
+            color: white;
+            border-color: #27ae60;
+            transform: scale(1.05);
+        }
+        
+        .table-cell.assigned {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .block-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            justify-content: center;
+        }
+        
+        .my-assigned-tables-summary {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .summary-info {
+            display: flex;
+            gap: 30px;
+            margin: 15px 0;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .tables-tags-extended {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .table-tag-extended {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tag-block-number {
+            background-color: rgba(255,255,255,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        @media (max-width: 768px) {
+            .block-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .block-info {
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .tables-grid-extended {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+                gap: 6px;
+            }
+            
+            .table-cell {
+                padding: 10px 3px;
+                font-size: 12px;
+            }
+            
+            .block-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .summary-info {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tables-grid-extended {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .block-buttons {
+                justify-content: center;
+            }
+            
+            .block-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -485,6 +703,13 @@
                 <div class="stat-card">
                     <div>Entregues</div>
                     <div class="stat-value stat-delivered" id="deliveredCount">0</div>
+                </div>
+                <!-- Botão de parar sons -->
+                <div class="stat-card" style="background: #f8d7da; border-color: #f5c6cb;">
+                    <div>Controle de Sons</div>
+                    <button class="btn btn-danger" onclick="stopAllSounds()" style="width: 100%; padding: 10px; font-weight: bold;">
+                        🛑 PARAR TODOS OS SONS
+                    </button>
                 </div>
             </div>
             
@@ -578,6 +803,52 @@
                 <button type="submit" class="btn btn-success">Registrar</button>
             </form>
         </section>
+
+        <section id="tables" class="content-section">
+            <h2>Atribuição de Mesas</h2>
+            <p>Selecione as mesas que você irá atender marcando com X</p>
+            
+            <div class="blocks-navigation">
+                <h3>Selecionar Bloco de Mesas:</h3>
+                <div class="block-buttons" id="blockButtons">
+                    <!-- Botões de blocos serão gerados aqui -->
+                </div>
+            </div>
+            
+            <div class="table-block-container">
+                <div class="block-header">
+                    <h3 id="currentBlockTitle">Bloco 1 - Mesas 001 a 100</h3>
+                    <div class="block-info">
+                        <span>Total de mesas: <span id="totalTablesInBlock">100</span></span>
+                        <span>Selecionadas: <span id="selectedTablesCount">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="tables-grid-container">
+                    <div id="tablesGrid" class="tables-grid-extended">
+                        <!-- Mesas do bloco atual serão carregadas aqui -->
+                    </div>
+                </div>
+                
+                <div class="block-actions">
+                    <button id="selectAllInBlock" class="btn btn-primary">Marcar Todas deste Bloco</button>
+                    <button id="clearAllInBlock" class="btn btn-warning">Desmarcar Todas deste Bloco</button>
+                    <button id="saveTableAssignment" class="btn btn-success">Salvar Atribuição</button>
+                    <button id="clearTableAssignment" class="btn btn-danger">Limpar Tudo</button>
+                </div>
+            </div>
+            
+            <div class="my-assigned-tables-summary">
+                <h3>Minhas Mesas Atribuídas</h3>
+                <div class="summary-info">
+                    <div>Blocos ativos: <span id="activeBlocksCount">0</span></div>
+                    <div>Total de mesas: <span id="totalAssignedTables">0</span></div>
+                </div>
+                <div id="myAssignedTablesDisplay" class="tables-tags-extended">
+                    <p>Nenhuma mesa atribuída ainda. Selecione as mesas marcando com X.</p>
+                </div>
+            </div>
+        </section>
     </div>
     </div>
 
@@ -625,6 +896,9 @@
             
             // Load waiter name
             loadWaiterName();
+            
+            // Initialize table assignment system
+            initTableAssignment();
             
             // Handle form submission
             document.getElementById('waiterRegistrationForm').addEventListener('submit', function(e) {
@@ -684,6 +958,264 @@
             alert('Cadastro realizado com sucesso!');
             loadWaiterName();
             showTab('dashboard');
+        }
+        
+        // Extended Table Assignment System with Blocks
+        let assignedTables = [];
+        let currentBlock = 1;
+        const totalBlocks = 10; // 10 blocos no total (1 visível + 9 ocultos)
+        const tablesPerBlock = 100;
+        
+        // Initialize table assignment system
+        function initTableAssignment() {
+            // Load assigned tables from localStorage
+            loadAssignedTables();
+            
+            // Render block navigation
+            renderBlockNavigation();
+            
+            // Render current block
+            renderCurrentBlock();
+            
+            // Render assigned tables summary
+            renderMyAssignedTables();
+            
+            // Add event listeners
+            document.getElementById('saveTableAssignment').addEventListener('click', saveTableAssignment);
+            document.getElementById('clearTableAssignment').addEventListener('click', clearTableAssignment);
+            document.getElementById('selectAllInBlock').addEventListener('click', selectAllInCurrentBlock);
+            document.getElementById('clearAllInBlock').addEventListener('click', clearAllInCurrentBlock);
+        }
+        
+        // Render block navigation buttons
+        function renderBlockNavigation() {
+            const container = document.getElementById('blockButtons');
+            container.innerHTML = '';
+            
+            for (let blockNum = 1; blockNum <= totalBlocks; blockNum++) {
+                const button = document.createElement('button');
+                button.className = 'block-btn';
+                button.textContent = `Bloco ${blockNum}`;
+                
+                // Check if this block has assigned tables
+                const blockStart = (blockNum - 1) * tablesPerBlock + 1;
+                const blockEnd = blockNum * tablesPerBlock;
+                const hasTables = assignedTables.some(table => {
+                    const tableNum = parseInt(table.replace('Mesa ', ''));
+                    return tableNum >= blockStart && tableNum <= blockEnd;
+                });
+                
+                if (hasTables) {
+                    button.classList.add('has-tables');
+                }
+                
+                if (blockNum === currentBlock) {
+                    button.classList.add('active');
+                }
+                
+                button.addEventListener('click', () => switchToBlock(blockNum));
+                container.appendChild(button);
+            }
+        }
+        
+        // Switch to a different block
+        function switchToBlock(blockNum) {
+            currentBlock = blockNum;
+            renderBlockNavigation();
+            renderCurrentBlock();
+        }
+        
+        // Render current block tables
+        function renderCurrentBlock() {
+            const blockStart = (currentBlock - 1) * tablesPerBlock + 1;
+            const blockEnd = currentBlock * tablesPerBlock;
+            
+            // Update block title
+            document.getElementById('currentBlockTitle').textContent = 
+                `Bloco ${currentBlock} - Mesas ${blockStart.toString().padStart(3, '0')} a ${blockEnd.toString().padStart(3, '0')}`;
+            
+            // Update totals
+            document.getElementById('totalTablesInBlock').textContent = tablesPerBlock;
+            
+            // Render tables grid
+            const container = document.getElementById('tablesGrid');
+            container.innerHTML = '';
+            
+            let selectedCount = 0;
+            
+            for (let tableNum = blockStart; tableNum <= blockEnd; tableNum++) {
+                const tableName = `Mesa ${tableNum.toString().padStart(3, '0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'table-cell';
+                cell.textContent = 'X';
+                
+                // Check if selected
+                if (assignedTables.includes(tableName)) {
+                    cell.classList.add('selected');
+                    selectedCount++;
+                }
+                
+                cell.addEventListener('click', () => toggleTableSelection(tableName));
+                container.appendChild(cell);
+            }
+            
+            document.getElementById('selectedTablesCount').textContent = selectedCount;
+        }
+        
+        // Toggle table selection
+        function toggleTableSelection(tableName) {
+            const index = assignedTables.indexOf(tableName);
+            if (index > -1) {
+                // Remove table
+                assignedTables.splice(index, 1);
+            } else {
+                // Add table
+                assignedTables.push(tableName);
+            }
+            
+            // Re-render current block and summary
+            renderCurrentBlock();
+            renderMyAssignedTables();
+            renderBlockNavigation();
+        }
+        
+        // Select all tables in current block
+        function selectAllInCurrentBlock() {
+            const blockStart = (currentBlock - 1) * tablesPerBlock + 1;
+            const blockEnd = currentBlock * tablesPerBlock;
+            
+            for (let tableNum = blockStart; tableNum <= blockEnd; tableNum++) {
+                const tableName = `Mesa ${tableNum.toString().padStart(3, '0')}`;
+                if (!assignedTables.includes(tableName)) {
+                    assignedTables.push(tableName);
+                }
+            }
+            
+            renderCurrentBlock();
+            renderMyAssignedTables();
+            renderBlockNavigation();
+        }
+        
+        // Clear all tables in current block
+        function clearAllInCurrentBlock() {
+            const blockStart = (currentBlock - 1) * tablesPerBlock + 1;
+            const blockEnd = currentBlock * tablesPerBlock;
+            
+            assignedTables = assignedTables.filter(tableName => {
+                const tableNum = parseInt(tableName.replace('Mesa ', ''));
+                return tableNum < blockStart || tableNum > blockEnd;
+            });
+            
+            renderCurrentBlock();
+            renderMyAssignedTables();
+            renderBlockNavigation();
+        }
+        
+        // Load assigned tables from localStorage
+        function loadAssignedTables() {
+            const currentWaiterId = localStorage.getItem('currentWaiterId');
+            if (currentWaiterId) {
+                const savedAssignment = localStorage.getItem(`tableAssignment_${currentWaiterId}`);
+                if (savedAssignment) {
+                    assignedTables = JSON.parse(savedAssignment);
+                }
+            }
+        }
+        
+        // Save assigned tables to localStorage
+        function saveTableAssignment() {
+            const currentWaiterId = localStorage.getItem('currentWaiterId');
+            if (currentWaiterId) {
+                localStorage.setItem(`tableAssignment_${currentWaiterId}`, JSON.stringify(assignedTables));
+                alert('Atribuição de mesas salva com sucesso!');
+                renderMyAssignedTables();
+                renderBlockNavigation();
+                
+                // Notify server about table assignment
+                if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                    window.ws.send(JSON.stringify({
+                        type: 'tableAssignment',
+                        waiterId: currentWaiterId,
+                        tables: assignedTables
+                    }));
+                }
+            }
+        }
+        
+        // Clear table assignment
+        function clearTableAssignment() {
+            if (confirm('Tem certeza que deseja limpar todas as mesas atribuídas?')) {
+                assignedTables = [];
+                renderCurrentBlock();
+                renderMyAssignedTables();
+                renderBlockNavigation();
+                
+                const currentWaiterId = localStorage.getItem('currentWaiterId');
+                if (currentWaiterId) {
+                    localStorage.removeItem(`tableAssignment_${currentWaiterId}`);
+                }
+            }
+        }
+        
+        // Render my assigned tables display with blocks
+        function renderMyAssignedTables() {
+            const container = document.getElementById('myAssignedTablesDisplay');
+            const activeBlocksSpan = document.getElementById('activeBlocksCount');
+            const totalTablesSpan = document.getElementById('totalAssignedTables');
+            
+            if (assignedTables.length === 0) {
+                container.innerHTML = '<p>Nenhuma mesa atribuída ainda. Selecione as mesas marcando com X.</p>';
+                activeBlocksSpan.textContent = '0';
+                totalTablesSpan.textContent = '0';
+                return;
+            }
+            
+            // Group tables by blocks
+            const blocksWithTables = {};
+            assignedTables.forEach(table => {
+                const tableNum = parseInt(table.replace('Mesa ', ''));
+                const blockNum = Math.ceil(tableNum / tablesPerBlock);
+                if (!blocksWithTables[blockNum]) {
+                    blocksWithTables[blockNum] = [];
+                }
+                blocksWithTables[blockNum].push(table);
+            });
+            
+            container.innerHTML = '';
+            let totalTables = 0;
+            
+            // Create tags grouped by blocks
+            Object.keys(blocksWithTables).sort((a,b) => a-b).forEach(blockNum => {
+                const tablesInBlock = blocksWithTables[blockNum];
+                totalTables += tablesInBlock.length;
+                
+                tablesInBlock.forEach(table => {
+                    const tagElement = document.createElement('div');
+                    tagElement.className = 'table-tag-extended';
+                    tagElement.innerHTML = `
+                        <span class="tag-block-number">Bloco ${blockNum}</span>
+                        <span>${table}</span>
+                    `;
+                    container.appendChild(tagElement);
+                });
+            });
+            
+            activeBlocksSpan.textContent = Object.keys(blocksWithTables).length;
+            totalTablesSpan.textContent = totalTables;
+        }
+        
+        // Check if waiter is assigned to a specific table
+        function isTableAssignedToWaiter(table) {
+            return assignedTables.includes(table);
+        }
+        
+        // Filter orders based on assigned tables
+        function filterOrdersByAssignedTables(orders) {
+            if (assignedTables.length === 0) {
+                return orders; // If no tables assigned, show all orders
+            }
+            
+            return orders.filter(order => assignedTables.includes(order.table));
         }
 
         // Logout
@@ -805,11 +1337,8 @@
                         addNewOrderToDashboard(data.order);
                         updateDashboardStats();
                         
-                        // Show notification
-                        alert('Novo pedido recebido: ' + data.order.id);
-                        addNotificationToDashboard('Novo pedido recebido: ' + data.order.id, data.order.id);
-                        // Play sound and vibrate for new order
-                        playNotificationSoundAndVibrate();
+                        // APENAS som sonoro EM LOOP - 30 segundos
+                        playLoopingNotification();
                     }
                 } else if (data.type === 'statusUpdate') {
                     // Update status
@@ -843,7 +1372,7 @@
                             notificationMessage = 'Pedido ' + data.orderId + ' está pronto - Notificar garçom para entrega';
                             addNotificationToDashboard('Pedido ' + data.orderId + ' está pronto para entrega', data.orderId);
                             // Play sound and vibrate for ready orders
-                            playNotificationSoundAndVibrate();
+                            playTripleBeep();
                             break;
                         case 'delivered':
                             notificationMessage = 'Pedido ' + data.orderId + ' foi entregue ao cliente';
@@ -856,23 +1385,51 @@
                     }
                     
                     if (notificationMessage) {
-                        alert(notificationMessage);
-                        // Play sound and vibrate for status updates
-                        playNotificationSoundAndVibrate();
+                        // APENAS som sonoro EM LOOP - 30 segundos
+                        playLoopingNotification();
                     }
                 } else if (data.type === 'notifyWaiterForDelivery') {
-                    // Notification from kitchen/counter that an order is ready for delivery
-                    const message = data.message || `Pedido ${data.orderId} está pronto para entrega. Favor buscar na cozinha/balcão.`;
-                    alert(message);
-                    addNotificationToDashboard(message, data.orderId);
-                    // Play sound and vibrate for delivery notification
-                    playNotificationSoundAndVibrate();
+                    // APENAS som sonoro EM LOOP - 30 segundos
+                    playLoopingNotification();
                 } else if (data.type === 'callWaiter') {
-                    const message = `A Mesa ${data.table} está chamando o garçom para pagamento com ${data.paymentMethod}.`;
-                    alert(message);
-                    addNotificationToDashboard(message, null);
-                    // Play sound and vibrate for waiter call
-                    playNotificationSoundAndVibrate();
+                    console.log('[DEBUG] RECEBENDO callWaiter:', data);
+                    // Registrar chamada permanente no painel do garçom
+                    const callType = data.paymentMethod === 'chamar_garcom' ? 'CONVERSA/ATENDIMENTO' : 'PAGAMENTO';
+                    const message = `📞 MESA ${data.table} CHAMANDO!`;
+                    const details = `Tipo: ${callType} | Pedido: ${data.orderId} | Hora: ${new Date().toLocaleTimeString()}`;
+                    
+                    // Adicionar notificação VISUAL permanente
+                    addPersistentCallNotification(message, details, data.table, data.orderId);
+                    
+                    // Tocar som EM LOOP por 30 segundos (COMO ESTAVA FUNCIONANDO)
+                    console.log('[DEBUG] Tocando som para mesa:', data.table);
+                    playLoopingNotification();
+                } else if (data.type === 'paymentStatusUpdate') {
+                    // Handle payment status updates
+                    if (window.ordersData) {
+                        const order = window.ordersData.find(o => o.id === data.orderId);
+                        if (order) {
+                            order.paymentStatus = data.paymentStatus;
+                            
+                            // APENAS som sonoro EM LOOP - 30 segundos
+                            if (data.paymentStatus === 'completed') {
+                                playLoopingNotification(); // Som sonoro para pagamento confirmado
+                            }
+                        }
+                    }
+                    updateDashboardStats();
+                } else if (data.type === 'requestPayment') {
+                    console.log('[DEBUG] RECEBENDO requestPayment:', data);
+                    // Registrar solicitação de fechamento permanente
+                    const message = `💳 MESA ${data.table} SOLICITANDO FECHAMENTO!`;
+                    const details = `Tipo: FECHAMENTO DE CONTA | Pedido: ${data.orderId} | Hora: ${new Date().toLocaleTimeString()}`;
+                    
+                    // Adicionar notificação VISUAL permanente
+                    addPersistentCallNotification(message, details, data.table, data.orderId);
+                    
+                    // Tocar som EM LOOP por 30 segundos (COMO ESTAVA FUNCIONANDO)
+                    console.log('[DEBUG] Tocando som para mesa:', data.table);
+                    playLoopingNotification();
                 } else if (data.type === 'orderRemoved') {
                     // Remove the order card from UI
                     console.log(`Removing order ${data.orderId} from UI`);
@@ -1011,28 +1568,100 @@
             });
         }
         
-        // Add new order to dashboard
+        // Add new order to dashboard (maintaining proper sorting)
         function addNewOrderToDashboard(order) {
-            const latestOrdersContainer = document.getElementById('latestOrders');
-            if (latestOrdersContainer.querySelector('p')) {
-                latestOrdersContainer.innerHTML = '';
+            // Check if order belongs to assigned tables
+            if (assignedTables.length > 0 && !assignedTables.includes(order.table)) {
+                return; // Don't show orders from unassigned tables
             }
             
-            const orderElement = document.createElement('div');
-            orderElement.className = 'order-card';
-            orderElement.innerHTML = `
-                <div class="order-header">
-                    <div class="order-id">${order.id}</div>
-                    <div class="order-table">${order.table}</div>
-                </div>
-                <div class="order-total">Total: R$ ${order.total.toFixed(2).replace('.', ',')}</div>
-            `;
-            latestOrdersContainer.prepend(orderElement);
+            // Add to orders data if not already present
+            if (window.ordersData && !window.ordersData.find(o => o.id === order.id)) {
+                window.ordersData.push(order);
+            }
+            
+            // Reload latest orders to maintain proper sorting
+            loadLatestOrders();
         }
         
-        // Add notification to dashboard
+        // Add persistent call notification that stays until manually cleared by waiter
+        function addPersistentCallNotification(message, details, table, orderId) {
+            // Criar container de notificações persistentes se não existir
+            let container = document.getElementById('persistentCallNotifications');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'persistentCallNotifications';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    width: 380px;
+                    z-index: 10000;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                `;
+                document.body.appendChild(container);
+            }
+            
+            // Criar elemento de notificação
+            const notificationElement = document.createElement('div');
+            notificationElement.style.cssText = `
+                background: #fff3cd;
+                border: 2px solid #ffc107;
+                margin-bottom: 15px;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: slideInRight 0.3s ease-out;
+            `;
+            
+            notificationElement.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: bold; color: #856404; font-size: 16px; margin-bottom: 5px;">${message}</div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 3px;">${details}</div>
+                        <div style="font-size: 12px; color: #999;">Mesa: ${table} | Pedido: ${orderId}</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove();" 
+                            style="background: #dc3545; color: white; border: none; border-radius: 50%; 
+                                   width: 25px; height: 25px; cursor: pointer; font-size: 16px; 
+                                   display: flex; align-items: center; justify-content: center;"
+                            title="Fechar notificação">
+                        ×
+                    </button>
+                </div>
+            `;
+            
+            // Adicionar ao topo do container
+            container.prepend(notificationElement);
+            
+            console.log('[DEBUG] Notificação de chamada persistente adicionada:', { message, table, orderId });
+        }
+        
+        // Adicionar animação CSS
+        if (!document.getElementById('slideInAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'slideInAnimation';
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Add notification to dashboard (mantido para compatibilidade)
         function addNotificationToDashboard(message, orderId) {
             const notificationsContainer = document.getElementById('notifications');
+            if (!notificationsContainer) return;
+            
             const notificationElement = document.createElement('div');
             notificationElement.className = 'order-card';
             notificationElement.style.marginBottom = '10px';
@@ -1048,7 +1677,7 @@
             showNotification(message);
             
             // Play sound and vibrate
-            playNotificationSoundAndVibrate();
+            playTripleBeep();
             
             // Remove notification after 10 seconds
             setTimeout(() => {
@@ -1069,102 +1698,197 @@
             }, 5000);
         }
         
-        // Play sound with fallback
+        // Play sound with enhanced cache handling
         function playSound(soundId) {
             const sound = document.getElementById(soundId);
             if (sound) {
+                // Try to play from cache first
                 sound.play().catch(e => {
-                    console.log("Sound play failed:", e);
-                    // Try alternative sound sources
-                    const sources = sound.querySelectorAll('source');
-                    for (let i = 0; i < sources.length; i++) {
-                        if (sources[i].src.startsWith('data:')) {
-                            // Create new audio element with data URI
-                            const fallbackAudio = new Audio(sources[i].src);
-                            fallbackAudio.play().catch(err => {
-                                console.log("Fallback sound also failed:", err);
-                                // Last resort: create a simple beep
-                                createBeepSound();
-                            });
-                            break;
-                        }
-                    }
+                    console.log("Cache sound failed, using fallback:", e.message);
+                    
+                    // Clear cache references and force fresh load
+                    sound.load();
+                    
+                    // Try again with fresh load
+                    setTimeout(() => {
+                        sound.play().catch(fallbackError => {
+                            console.log("Fresh load also failed:", fallbackError.message);
+                            // Try alternative sound sources
+                            const sources = sound.querySelectorAll('source');
+                            let fallbackUsed = false;
+                            
+                            for (let i = 0; i < sources.length; i++) {
+                                if (sources[i].src && !sources[i].src.includes('cache')) {
+                                    // Create new audio element to bypass cache
+                                    const fallbackAudio = new Audio();
+                                    fallbackAudio.src = sources[i].src + '?t=' + Date.now(); // Cache busting
+                                    fallbackAudio.play().catch(err => {
+                                        console.log("Alternative source failed:", err.message);
+                                        // Last resort: create a simple beep
+                                        createBeepSound();
+                                    }).then(() => {
+                                        fallbackUsed = true;
+                                    });
+                                    break;
+                                }
+                            }
+                            
+                            // If no alternative worked, use beep
+                            if (!fallbackUsed) {
+                                setTimeout(() => {
+                                    if (!fallbackUsed) {
+                                        createBeepSound();
+                                    }
+                                }, 100);
+                            }
+                        });
+                    }, 100);
                 });
             }
         }
         
-        // Play custom audio in loop for 30 seconds
+        // Play triple beep sound
+        function playTripleBeep(soundId = 'bellSound') {
+            // Toca três toques sonoros com intervalos
+            playSound(soundId);
+            setTimeout(() => {
+                playSound(soundId);
+            }, 300);
+            setTimeout(() => {
+                playSound(soundId);
+            }, 600);
+        }
+        
+        // Play custom audio in loop for 30 seconds - GARÇOM COM LOOP CONTÍNUO DE 30 SEGUNDOS
         function playLoopingNotification(duration = 30000) {
-            const sound = document.getElementById('bellSound');
+            console.log('[DEBUG] GARÇOM: Tocando loop contínuo de 30 segundos com seu áudio');
+            
+            // USAR EXCLUSIVAMENTE seu arquivo de áudio em LOOP
+            const sound = new Audio();
+            sound.src = 'public/img/audio/ti62duxfbrf-bells-sfx-7.mp3?t=' + Date.now();
+            
             if (sound) {
-                // Set up looping
+                // Configurar LOOP CONTÍNUO por 30 segundos
                 sound.loop = true;
+                sound.volume = 1.0;
                 
                 // Store reference to stop function
                 window.stopNotificationSound = function() {
-                    sound.pause();
-                    sound.currentTime = 0;
-                    sound.loop = false;
-                    console.log("Custom audio manually stopped");
+                    try {
+                        sound.pause();
+                        sound.currentTime = 0;
+                        sound.loop = false;
+                        console.log("Loop do garçom interrompido manualmente");
+                    } catch (e) {
+                        console.log("Erro ao parar loop do garçom:", e);
+                    }
                 };
                 
-                // Play the sound
+                // Play the sound with loop
+                console.log('[DEBUG] GARÇOM: Iniciando loop contínuo com seu áudio');
                 const playPromise = sound.play();
                 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        console.log("Custom audio playing in loop for " + (duration/1000) + " seconds");
+                        console.log("GARÇOM: Loop contínuo iniciado - tocará por 30 segundos");
                         
-                        // Stop after specified duration
+                        // Parar automaticamente após 30 segundos
                         setTimeout(() => {
-                            if (window.stopNotificationSound) {
-                                window.stopNotificationSound();
+                            if (window.stopNotificationSound && typeof window.stopNotificationSound === 'function') {
+                                const tempStopFunction = window.stopNotificationSound;
                                 delete window.stopNotificationSound;
+                                try {
+                                    tempStopFunction();
+                                } catch (e) {
+                                    console.log('Erro ao parar loop automático do garçom:', e);
+                                }
                             }
                         }, duration);
                     }).catch(error => {
-                        console.log("Failed to play custom audio:", error);
-                        // Fallback to beep sound
-                        createBeepSound();
+                        console.log("Falha ao tocar loop do garçom:", error);
+                        // Fallback: tocar o áudio 3 vezes
+                        playYourAudioThreeTimes();
                     });
+                } else {
+                    console.log("Play promise undefined, usando fallback");
+                    playYourAudioThreeTimes();
                 }
             } else {
-                console.log("Custom audio element not found, using fallback");
-                createBeepSound();
+                console.log("Elemento de áudio não criado, usando fallback");
+                playYourAudioThreeTimes();
             }
         }
         
-        // Stop notification sound manually
-        function stopNotificationSound() {
-            if (window.stopNotificationSound) {
-                window.stopNotificationSound();
+        // Stop all sounds manually
+        function stopAllSounds() {
+            console.log('[DEBUG] Parando todos os sons...');
+            
+            // Parar Web Audio API (oscillators)
+            if (window.oscillatorList && window.oscillatorList.length > 0) {
+                window.oscillatorList.forEach(osc => {
+                    try {
+                        osc.stop();
+                    } catch (e) {
+                        console.log('[DEBUG] Erro ao parar oscillator:', e);
+                    }
+                });
+                window.oscillatorList = [];
+                console.log('[DEBUG] Oscillators parados');
+            }
+            
+            // Parar HTML5 Audio
+            if (window.stopNotificationSound && typeof window.stopNotificationSound === 'function') {
+                try {
+                    window.stopNotificationSound();
+                    console.log('[DEBUG] HTML5 Audio parado');
+                } catch (e) {
+                    console.log('[DEBUG] Erro ao parar HTML5 Audio:', e);
+                }
                 delete window.stopNotificationSound;
             }
+            
+            // Parar qualquer áudio pendente
+            const allAudioElements = document.querySelectorAll('audio');
+            allAudioElements.forEach(audio => {
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } catch (e) {
+                    console.log('[DEBUG] Erro ao parar áudio element:', e);
+                }
+            });
+            
+            console.log('[DEBUG] Todos os sons foram interrompidos');
+            alert('🔊 Todos os sons foram parados!');
         }
         
-        // Create a simple beep sound as last resort
-        function createBeepSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 0.5);
-            } catch (e) {
-                console.log("Web Audio API not available, using alert as fallback");
-                // Ultimate fallback - visual indication
-                alert("Nova notificação!");
-            }
+        // Play your audio three times as fallback
+        function playYourAudioThreeTimes() {
+            console.log('[DEBUG] Tocando seu áudio 3 vezes como fallback');
+            
+            // Tocar seu áudio 3 vezes com intervalos
+            const sound = new Audio();
+            sound.src = 'public/img/audio/ti62duxfbrf-bells-sfx-7.mp3?t=' + Date.now();
+            
+            sound.play().catch(e => {
+                console.log('[DEBUG] Falha ao tocar seu áudio:', e);
+            });
+            
+            setTimeout(() => {
+                const sound2 = new Audio();
+                sound2.src = 'public/img/audio/ti62duxfbrf-bells-sfx-7.mp3?t=' + Date.now();
+                sound2.play().catch(e => {
+                    console.log('[DEBUG] Falha ao tocar segundo toque:', e);
+                });
+            }, 300);
+            
+            setTimeout(() => {
+                const sound3 = new Audio();
+                sound3.src = 'public/img/audio/ti62duxfbrf-bells-sfx-7.mp3?t=' + Date.now();
+                sound3.play().catch(e => {
+                    console.log('[DEBUG] Falha ao tocar terceiro toque:', e);
+                });
+            }, 600);
         }
         
         // Vibrate device if possible
@@ -1178,26 +1902,7 @@
             }
         }
         
-        // Play sound and vibrate for notifications
-        function playNotificationSoundAndVibrate() {
-            // Play custom audio in loop for 30 seconds
-            playLoopingNotification(30000);
-            
-            // Vibrate device
-            vibrateDevice();
-            
-            // Additional visual feedback
-            setTimeout(() => {
-                // Add a brief visual indication that a notification occurred
-                const notification = document.getElementById('notification');
-                if (notification) {
-                    notification.style.backgroundColor = '#e74c3c';
-                    setTimeout(() => {
-                        notification.style.backgroundColor = '#e67e22';
-                    }, 300);
-                }
-            }, 10);
-        }
+
         
         // View order
         function viewOrder(orderId) {
@@ -1264,7 +1969,8 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
             const statusFilter = document.getElementById('statusFilter').value;
             const tableFilter = document.getElementById('tableFilter').value;
             
-            return window.ordersData.filter(order => {
+            // First apply basic filters
+            let filteredOrders = window.ordersData.filter(order => {
                 // Status filter
                 if (statusFilter && order.status !== statusFilter) return false;
                 
@@ -1273,6 +1979,11 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                 
                 return true;
             });
+            
+            // Then filter by assigned tables
+            filteredOrders = filterOrdersByAssignedTables(filteredOrders);
+            
+            return filteredOrders;
         }
         
         // Create order card HTML
@@ -1318,12 +2029,10 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
                     </div>
                     <div class="order-actions">
                         ${order.status === 'pending' ? `<button class="btn btn-primary" onclick="notifyKitchen('${order.id}')">Notificar Cozinha</button>` : ''}
-                        ${order.status === 'preparing' ? `<button class="btn btn-warning" onclick="markAsDelivered('${order.id}')">Marcar como Entregue</button>` : ''}
-                        ${order.status === 'ready' ? `<button class="btn btn-warning" onclick="markAsDelivered('${order.id}')">Marcar como Entregue</button>` : ''}
+                        ${(order.status === 'preparing' || order.status === 'ready') ? `<button class="btn btn-warning" onclick="markAsDelivered('${order.id}')">Marcar como Entregue</button>` : ''}
                         ${order.status === 'delivered' ? `<button class="btn btn-success" onclick="markAsCompleted('${order.id}')">Marcar como Concluído</button>` : ''}
                         ${order.status === 'completed' ? `<button class="btn btn-info" onclick="viewOrder('${order.id}')">Ver Pedido</button>` : ''}
-                        ${(order.status === 'pending' || order.status === 'preparing') ? `<button class="btn btn-info" onclick="viewOrder('${order.id}')">Ver Pedido</button>` : ''}
-
+                        ${(order.status === 'pending' || order.status === 'preparing' || order.status === 'ready') ? `<button class="btn btn-info" onclick="viewOrder('${order.id}')">Ver Pedido</button>` : ''}
                     </div>
                 </div>
             `;
@@ -1435,6 +2144,60 @@ Total: R$ ${order.total.toFixed(2).replace('.', ',')}`);
     <script>
         // Apply customizations when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Sistema de assinatura do domínio - verificar antes de continuar
+            const establishmentData = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+            
+            if (establishmentData.assinatura) {
+                const agora = new Date();
+                const dataVencimento = new Date(establishmentData.assinatura.dataVencimento);
+                const diasParaVencer = Math.ceil((dataVencimento - agora) / (1000 * 60 * 60 * 24));
+                
+                if (diasParaVencer <= 0) {
+                    // Mostrar aviso de domínio expirado
+                    const overlay = document.createElement('div');
+                    overlay.id = 'dominioExpirado';
+                    overlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.9);
+                        z-index: 10001;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        backdrop-filter: blur(5px);
+                    `;
+                    
+                    overlay.innerHTML = `
+                        <div style="
+                            background: white;
+                            padding: 40px;
+                            border-radius: 15px;
+                            text-align: center;
+                            max-width: 500px;
+                            margin: 20px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                        ">
+                            <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
+                            <h2 style="color: #e74c3c; margin-bottom: 20px;">Acesso Bloqueado</h2>
+                            <p style="font-size: 18px; margin-bottom: 30px; line-height: 1.6;">
+                                O domínio deste estabelecimento expirou.
+                                <br><br>
+                                Entre em contato com o administrador para renovar a assinatura.
+                            </p>
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                <p style="margin: 0; font-size: 20px; font-weight: bold; color: #e74c3c;">Valor da Renovação: R$ 60,00</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(overlay);
+                    return; // Interromper carregamento da página
+                }
+            }
+            
             applyCustomizationsToMenu();
         });
     </script>

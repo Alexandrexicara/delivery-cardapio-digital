@@ -310,6 +310,33 @@
         .btn-card:hover {
             background-color: #2980b9;
         }
+        
+        /* Estilos para os novos botões de pagamento */
+        .btn-waiter {
+            background-color: #ffc107;
+            color: #212529;
+            border: 2px solid #e0a800;
+            font-weight: bold;
+        }
+        
+        .btn-waiter:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-close {
+            background-color: #dc3545;
+            color: white;
+            border: 2px solid #c82333;
+            font-weight: bold;
+        }
+        
+        .btn-close:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
         .menu-categories {
             display: flex;
             flex-wrap: wrap;
@@ -796,17 +823,16 @@
             <p>Escolha sua forma de pagamento</p>
             
             <div class="payment-options">
-                <div class="payment-option" onclick="selectPayment('pix', event)">
-                    <h3>PIX</h3>
-                    <p>Pagamento imediato via PIX</p>
+                <div class="payment-option" onclick="callWaiterDirectly()">
+                    <h3>Chamar Garçom</h3>
+                    <p>Tire dúvidas ou converse com o garçom</p>
+                    <button class="btn btn-waiter" style="margin-top: 10px; width: 100%;">Chamar Garçom</button>
                 </div>
-                <div class="payment-option" onclick="selectPayment('card', event)">
-                    <h3>Cartão</h3>
-                    <p>Cartão de crédito/débito</p>
+                <div class="payment-option">
+                    <!-- Espaço reservado - vazio conforme solicitado -->
                 </div>
                 <div class="payment-option" onclick="selectPayment('cash', event)">
-                    <h3>Dinheiro</h3>
-                    <p>Pagamento em dinheiro no local</p>
+                    <!-- Espaço reservado para futura função -->
                 </div>
             </div>
             
@@ -1226,6 +1252,150 @@
         playTripleBeep(); // Som sonoro para pagamento enviado
         showSection('status');
     }
+    
+    // Nova função: Chamar garçom diretamente
+    function callWaiterDirectly() {
+        console.log('[DEBUG] Chamando garçom diretamente');
+        const customerData = JSON.parse(localStorage.getItem('customerData'));
+        const orderId = document.getElementById('orderIdDisplay').textContent;
+
+        console.log('[DEBUG] Dados do cliente:', customerData);
+        console.log('[DEBUG] Número do pedido:', orderId);
+
+        // Testar som imediatamente
+        console.log('[DEBUG] Testando som...');
+        testSound();
+
+        if (!customerData || !customerData.tableNumber) {
+            console.log('[DEBUG] Erro: Mesa não identificada');
+            // Tocar som de erro 3 vezes
+            playTripleBeep('bellSound');
+            showSection('registration');
+            return;
+        }
+        if (!orderId || orderId === '#00-0000') {
+            console.log('[DEBUG] Erro: Pedido inativo');
+            // Tocar som de erro 3 vezes
+            playTripleBeep('bellSound');
+            showSection('cart');
+            return;
+        }
+
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            console.log('[DEBUG] Enviando mensagem para garçom');
+            window.ws.send(JSON.stringify({ 
+                type: 'callWaiter', 
+                table: customerData.tableNumber, 
+                paymentMethod: 'chamar_garcom', 
+                orderId: orderId,
+                message: 'Cliente solicitando atendimento na mesa '
+            }));
+            
+            const action = { 
+                type: 'callWaiter', 
+                orderId: orderId, 
+                paymentMethod: 'chamar_garcom', 
+                timestamp: new Date().toISOString() 
+            };
+            saveUserAction(action);
+
+            // Tocar som de confirmação 3 vezes
+            playTripleBeep('delightSound');
+            alert('Garçom foi notificado e irá até sua mesa!');
+            console.log('[DEBUG] Notificação enviada com sucesso');
+        } else {
+            console.log('[DEBUG] Erro: Conexão WebSocket não disponível');
+            // Tocar som de erro 3 vezes
+            playTripleBeep('fryingSound');
+            alert('Erro na conexão. Tente novamente.');
+        }
+    }
+    
+    // Nova função: Solicitar pagamento/conta
+    function requestPayment() {
+        console.log('[DEBUG] Solicitando pagamento/conta');
+        const customerData = JSON.parse(localStorage.getItem('customerData'));
+        const orderId = document.getElementById('orderIdDisplay').textContent;
+
+        console.log('[DEBUG] Dados do cliente:', customerData);
+        console.log('[DEBUG] Número do pedido:', orderId);
+
+        // Testar som imediatamente
+        console.log('[DEBUG] Testando som...');
+        testSound();
+
+        if (!customerData || !customerData.tableNumber) {
+            console.log('[DEBUG] Erro: Mesa não identificada');
+            // Tocar som de erro 3 vezes
+            playTripleBeep('bellSound');
+            showSection('registration');
+            return;
+        }
+        if (!orderId || orderId === '#00-0000') {
+            console.log('[DEBUG] Erro: Pedido inativo');
+            // Tocar som de erro 3 vezes
+            playTripleBeep('bellSound');
+            showSection('cart');
+            return;
+        }
+
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            console.log('[DEBUG] Enviando solicitação de pagamento');
+            console.log('[DEBUG] Dados enviados:', { 
+                type: 'requestPayment', 
+                table: customerData.tableNumber, 
+                orderId: orderId,
+                message: 'Cliente solicitando conta e pagamento'
+            });
+            window.ws.send(JSON.stringify({ 
+                type: 'requestPayment', 
+                table: customerData.tableNumber, 
+                orderId: orderId,
+                message: 'Cliente solicitando conta e pagamento'
+            }));
+            
+            const action = { 
+                type: 'requestPayment', 
+                orderId: orderId, 
+                timestamp: new Date().toISOString() 
+            };
+            saveUserAction(action);
+
+            // Tocar som de confirmação 3 vezes
+            playTripleBeep('delightSound');
+            alert('Solicitação de pagamento enviada! O garçom irá trazer a conta.');
+            console.log('[DEBUG] Solicitação de pagamento enviada com sucesso');
+        } else {
+            console.log('[DEBUG] Erro: Conexão WebSocket não disponível');
+            // Tocar som de erro 3 vezes
+            playTripleBeep('fryingSound');
+            alert('Erro na conexão. Tente novamente.');
+        }
+    }
+    
+    // Função de teste para verificar se os sons estão funcionando
+    function testSound() {
+        console.log('[DEBUG] Executando teste de som');
+        try {
+            // Testar cada som disponível
+            const sounds = ['fryingSound', 'bellSound', 'delightSound'];
+            sounds.forEach((soundId, index) => {
+                setTimeout(() => {
+                    const sound = document.getElementById(soundId);
+                    if (sound) {
+                        console.log(`[DEBUG] Tocando som: ${soundId}`);
+                        sound.play().catch(e => {
+                            console.log(`[DEBUG] Erro ao tocar ${soundId}:`, e);
+                        });
+                    } else {
+                        console.log(`[DEBUG] Elemento de áudio não encontrado: ${soundId}`);
+                    }
+                }, index * 500);
+            });
+        } catch (error) {
+            console.log('[DEBUG] Erro no teste de som:', error);
+        }
+    }
 
     function callWaiterForPayment(method) {
         const customerData = JSON.parse(localStorage.getItem('customerData'));
@@ -1612,6 +1782,60 @@
     }
     
     document.addEventListener('DOMContentLoaded', function() {
+        // Sistema de assinatura do domínio - verificar antes de continuar
+        const establishmentData = JSON.parse(localStorage.getItem('establishmentData') || '{}');
+        
+        if (establishmentData.assinatura) {
+            const agora = new Date();
+            const dataVencimento = new Date(establishmentData.assinatura.dataVencimento);
+            const diasParaVencer = Math.ceil((dataVencimento - agora) / (1000 * 60 * 60 * 24));
+            
+            if (diasParaVencer <= 0) {
+                // Mostrar aviso de domínio expirado
+                const overlay = document.createElement('div');
+                overlay.id = 'dominioExpirado';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.9);
+                    z-index: 10001;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    backdrop-filter: blur(5px);
+                `;
+                
+                overlay.innerHTML = `
+                    <div style="
+                        background: white;
+                        padding: 40px;
+                        border-radius: 15px;
+                        text-align: center;
+                        max-width: 500px;
+                        margin: 20px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    ">
+                        <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
+                        <h2 style="color: #e74c3c; margin-bottom: 20px;">Acesso Bloqueado</h2>
+                        <p style="font-size: 18px; margin-bottom: 30px; line-height: 1.6;">
+                            O domínio deste estabelecimento expirou.
+                            <br><br>
+                            Entre em contato com o administrador para renovar a assinatura.
+                        </p>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <p style="margin: 0; font-size: 20px; font-weight: bold; color: #e74c3c;">Valor da Renovação: R$ 60,00</p>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(overlay);
+                return; // Interromper carregamento da página
+            }
+        }
+        
         const customerForm = document.getElementById('customerForm');
         if (customerForm) {
             customerForm.addEventListener('submit', (event) => {

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Completo de Sons - Todos os Setores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .sector {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #4CAF50;
+        }
+        .sector h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .playing {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .test-area {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .log {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 Teste Completo de Sons - Todos os Setores</h1>
+    
+    <div class="test-area">
+        <h2>🧪 Controles de Teste</h2>
+        <button onclick="testAllSectors()">Enviar Notificação para Todos os Setores</button>
+        <button onclick="testIndividualSectors()">Testar Setores Individualmente</button>
+        <button onclick="clearLog()">Limpar Log</button>
+        <div class="log" id="log"></div>
+    </div>
+
+    <div class="sector" id="adminSector">
+        <h3>🏢 Administração</h3>
+        <div class="status disconnected" id="adminStatus">Desconectado</div>
+        <button onclick="simulateAdminAction()">Simular Ação Admin</button>
+    </div>
+
+    <div class="sector" id="kitchenSector">
+        <h3>🍳 Cozinha</h3>
+        <div class="status disconnected" id="kitchenStatus">Desconectado</div>
+        <button onclick="simulateKitchenAction()">Simular Pedido Cozinha</button>
+    </div>
+
+    <div class="sector" id="counterSector">
+        <h3>🏪 Balcão</h3>
+        <div class="status disconnected" id="counterStatus">Desconectado</div>
+        <button onclick="simulateCounterAction()">Simular Pedido Balcão</button>
+    </div>
+
+    <div class="sector" id="waiterSector">
+        <h3>👨‍🍳 Garçom</h3>
+        <div class="status disconnected" id="waiterStatus">Desconectado</div>
+        <button onclick="simulateWaiterAction()">Simular Chamada Garçom</button>
+    </div>
+
+    <script>
+        let ws = null;
+        const logElement = document.getElementById('log');
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateStatus(sectorId, status, message) {
+            const element = document.getElementById(sectorId + 'Status');
+            element.className = 'status ' + status;
+            element.textContent = message;
+        }
+
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                log('WebSocket já conectado');
+                return;
+            }
+
+            ws = new WebSocket('ws://localhost:3001');
+            
+            ws.onopen = function() {
+                log('✅ Conectado ao servidor WebSocket');
+                updateAllStatus('connected', 'Conectado');
+            };
+
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                log(`📥 Recebido: ${data.type}`);
+                
+                // Simular sons para cada setor
+                simulateSoundForAllSectors(data.type);
+            };
+
+            ws.onclose = function() {
+                log('❌ Conexão WebSocket fechada');
+                updateAllStatus('disconnected', 'Desconectado');
+            };
+
+            ws.onerror = function(error) {
+                log(`❌ Erro WebSocket: ${error.message}`);
+            };
+        }
+
+        function updateAllStatus(status, message) {
+            ['admin', 'kitchen', 'counter', 'waiter'].forEach(sector => {
+                updateStatus(sector, status, message);
+            });
+        }
+
+        function simulateSoundForAllSectors(notificationType) {
+            const sectors = ['Admin', 'Cozinha', 'Balcão', 'Garçom'];
+            sectors.forEach(sector => {
+                const sectorId = sector.toLowerCase().replace('ç', 'c').replace('ã', 'a');
+                updateStatus(sectorId, 'playing', `🔊 ${sector}: TRIPLE BEEP (${notificationType})`);
+                
+                // Reset status after 3 seconds
+                setTimeout(() => {
+                    updateStatus(sectorId, 'connected', 'Conectado');
+                }, 3000);
+            });
+            
+            log(`🎵 Todos os setores reproduziram sons para: ${notificationType}`);
+        }
+
+        function testAllSectors() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                connectWebSocket();
+                setTimeout(() => sendTestNotification(), 1000);
+            } else {
+                sendTestNotification();
+            }
+        }
+
+        function sendTestNotification() {
+            const testMessage = JSON.stringify({
+                type: 'newOrder',
+                order: {
+                    id: '#TEST-' + Date.now(),
+                    table: 'Mesa TESTE',
+                    items: [{ name: 'Item Teste', quantity: 1, price: 25.90 }],
+                    total: 25.90,
+                    timestamp: new Date().toISOString()
+                }
+            });
+
+            ws.send(testMessage);
+            log('📤 Enviado: notificação de novo pedido para todos os setores');
+        }
+
+        function testIndividualSectors() {
+            log('🧪 Testando setores individualmente...');
+            
+            const tests = [
+                { type: 'newOrder', description: 'Novo Pedido' },
+                { type: 'statusUpdate', description: 'Atualização de Status' },
+                { type: 'callWaiter', description: 'Chamada de Garçom' }
+            ];
+
+            tests.forEach((test, index) => {
+                setTimeout(() => {
+                    const message = JSON.stringify({
+                        type: test.type,
+                        orderId: '#TEST-' + Date.now(),
+                        status: 'preparing',
+                        table: 'Mesa ' + (index + 1)
+                    });
+                    
+                    ws.send(message);
+                    log(`📤 Enviado: ${test.description}`);
+                }, index * 2000);
+            });
+        }
+
+        function simulateAdminAction() {
+            log('🏢 Simulando ação administrativa...');
+            const message = JSON.stringify({
+                type: 'paymentStatusUpdate',
+                orderId: '#ADMIN-TEST',
+                paymentStatus: 'completed'
+            });
+            ws.send(message);
+        }
+
+        function simulateKitchenAction() {
+            log('🍳 Simulando pedido para cozinha...');
+            const message = JSON.stringify({
+                type: 'statusUpdate',
+                orderId: '#KITCHEN-TEST',
+                status: 'ready'
+            });
+            ws.send(message);
+        }
+
+        function simulateCounterAction() {
+            log('🏪 Simulando pedido para balcão...');
+            const message = JSON.stringify({
+                type: 'notifyWaiterForDelivery',
+                orderId: '#COUNTER-TEST',
+                table: 'Mesa 10'
+            });
+            ws.send(message);
+        }
+
+        function simulateWaiterAction() {
+            log('👨‍🍳 Simulando chamada de garçom...');
+            const message = JSON.stringify({
+                type: 'callWaiter',
+                table: 'Mesa 15',
+                paymentMethod: 'PIX'
+            });
+            ws.send(message);
+        }
+
+        function clearLog() {
+            logElement.innerHTML = '';
+        }
+
+        // Iniciar conexão automaticamente
+        window.onload = function() {
+            log('🚀 Iniciando teste de sons para todos os setores...');
+            connectWebSocket();
+        };
+    </script>
+</body>
+</html>

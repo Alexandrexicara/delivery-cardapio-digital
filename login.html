@@ -351,6 +351,24 @@
                 // Successful login
                 localStorage.setItem('adminAccess', 'true');
                 
+                // Initialize subscription if not exists
+                if (!data.assinatura) {
+                    const now = new Date();
+                    const expirationDate = new Date(now);
+                    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+                    
+                    data.assinatura = {
+                        valorDominio: 60.00, // R$ 60,00 anualmente
+                        dataCompra: now.toISOString(),
+                        dataVencimento: expirationDate.toISOString(),
+                        ultimoPagamento: now.toISOString(),
+                        statusPagamento: 'pago',
+                        avisoMostrado: false
+                    };
+                    
+                    localStorage.setItem('establishmentData', JSON.stringify(data));
+                }
+                
                 // Redirect to admin panel
                 window.location.href = 'admin.html';
             } else {
