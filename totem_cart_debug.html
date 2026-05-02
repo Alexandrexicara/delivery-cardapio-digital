@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Carrinho - Totem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .log-entry {
+            font-family: monospace;
+            font-size: 12px;
+            padding: 5px;
+            margin: 5px 0;
+            background: #f0f0f0;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+        .success { border-left-color: #27ae60; background: #e8f5e9; }
+        .error { border-left-color: #e74c3c; background: #fce4ec; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        
+        .cart-preview {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .status-ok {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status-error {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug do Carrinho - Totem</h1>
+    
+    <div class="test-section">
+        <h2>Status dos Elementos do Carrinho</h2>
+        <button onclick="checkCartElements()">Verificar Elementos</button>
+        <button onclick="openTotemWithDebug()">Abrir Totem com Debug</button>
+        <button onclick="simulateAddToCart()">Simular Adição ao Carrinho</button>
+        <div id="elementStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Log Detalhado</h2>
+        <div id="logContainer"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Estrutura HTML do Carrinho</h2>
+        <p>Verifique se estes elementos existem no totem.html:</p>
+        <pre id="htmlStructure"></pre>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('logContainer').appendChild(logEntry);
+            console.log('[DEBUG]', message);
+        }
+
+        function checkCartElements() {
+            log('Verificando elementos do carrinho no localStorage...', 'info');
+            
+            const statusDiv = document.getElementById('elementStatus');
+            statusDiv.innerHTML = '';
+            
+            // Verificar se menuItems existe
+            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            if (menuItems.length > 0) {
+                statusDiv.innerHTML += `<div><span class="status-ok">✓</span> Menu items: ${menuItems.length} encontrados</div>`;
+                log(`Menu items: ${menuItems.length} itens`, 'success');
+            } else {
+                statusDiv.innerHTML += `<div><span class="status-error">✗</span> Menu items: Nenhum item encontrado</div>`;
+                log('Menu items: VAZIO!', 'error');
+            }
+            
+            // Verificar estrutura HTML esperada
+            const expectedHTML = `
+<div class="cart-summary" style="margin-top: 20px;">
+    <div class="cart-header">
+        <div class="cart-title">🛒 Seu Pedido</div>
+        <div class="cart-count" id="cartCount">0</div>
+    </div>
+    <div class="cart-items" id="cartItems">
+        <!-- Itens do carrinho aqui -->
+    </div>
+    <div class="cart-total">
+        <span class="total-label">Total:</span>
+        <span class="total-value" id="cartTotal">R$ 0,00</span>
+    </div>
+</div>`;
+            
+            document.getElementById('htmlStructure').textContent = expectedHTML;
+            
+            log('Elementos verificados! Abra o totem e teste.', 'success');
+        }
+
+        function openTotemWithDebug() {
+            log('Abrindo totem.html... Mantenha esta aba aberta para ver logs', 'info');
+            
+            // Salvar flag para debug
+            localStorage.setItem('totemDebugMode', 'true');
+            
+            const newWindow = window.open('totem.html', '_blank');
+            
+            setTimeout(() => {
+                log('IMPORTANTE: No totem, abra o Console (F12) para ver os logs detalhados!', 'warning');
+                log('Procure por mensagens começando com [TOTEM]', 'warning');
+            }, 1000);
+        }
+
+        function simulateAddToCart() {
+            log('Simulando adição ao carrinho...', 'info');
+            
+            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            if (menuItems.length === 0) {
+                log('Nenhum item no menu para simular!', 'error');
+                return;
+            }
+            
+            // Simular carrinho
+            const testCart = [
+                {
+                    id: menuItems[0].id,
+                    name: menuItems[0].name,
+                    price: menuItems[0].price,
+                    quantity: 1
+                }
+            ];
+            
+            log(`Carrinho simulado: ${testCart.length} item(s)`, 'success');
+            log(`Item: ${testCart[0].name}`, 'success');
+            log(`Preço: R$ ${testCart[0].price.toFixed(2)}`, 'success');
+            
+            alert('Carrinho simulado criado!\n\nAgora:\n1. Abra o totem.html\n2. Clique em um produto\n3. Veja se o carrinho aparece\n4. Confira o console (F12) para logs [TOTEM]');
+        }
+
+        // Instruções de Debug
+        function showDebugInstructions() {
+            log('='.repeat(60), 'info');
+            log('INSTRUÇÕES PARA DEBUG DO CARRINHO:', 'warning');
+            log('1. Clique em "Abrir Totem com Debug"', 'info');
+            log('2. No totem, pressione F12 para abrir o console', 'info');
+            log('3. Procure por mensagens [TOTEM]', 'info');
+            log('4. Clique em um produto', 'info');
+            log('5. Verifique se aparece:', 'info');
+            log('   - [TOTEM] addToCart() chamado', 'info');
+            log('   - [TOTEM] updateCart() chamado', 'info');
+            log('   - [TOTEM] Carrinho atualizado com X itens', 'info');
+            log('6. Se não aparecer, veja o erro no console', 'info');
+            log('='.repeat(60), 'info');
+        }
+
+        window.onload = function() {
+            log('Página de debug carregada', 'success');
+            showDebugInstructions();
+            checkCartElements();
+        };
+    </script>
+</body>
+</html>

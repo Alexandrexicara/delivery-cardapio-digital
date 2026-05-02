@@ -19,6 +19,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
+// 🔥 NOVAS ROTAS DE PAGAMENTO E DELIVERY
+app.use("/pagamento", require("./routes/pagamento"));
+app.use("/entrega", require("./routes/entrega"));
+app.use("/vendedor", require("./routes/vendedor"));
+app.use("/motoboy", require("./routes/motoboy"));
+app.use("/google-pay", require("./routes/google-pay"));
+app.use("/anti-chargeback", require("./routes/antiChargeback"));
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -95,6 +103,35 @@ app.get('*', (req, res, next) => {
   
   // If no subdomain, continue to next middleware (which will serve index.html for root path)
   next();
+});
+
+// ✅ INJETAR MYGATEWAY AUTOMATICAMENTE EM PÁGINAS HTML
+app.get('*.html', (req, res) => {
+  const filePath = path.join(__dirname, req.path);
+  
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      return res.sendFile(filePath);
+    }
+    
+    let html = data;
+    
+    // Verificar se já tem o auto-loader
+    if (!html.includes('mygateway-autoloader.js')) {
+      // Inserir antes de </head>
+      const autoLoaderScript = `
+    <!-- MyGateway Auto Loader -->
+    <script src="mygateway-autoloader.js"></script>`;
+      
+      if (html.includes('</head>')) {
+        html = html.replace('</head>', autoLoaderScript + '\n  </head>');
+        console.log(`[SERVER] ✅ MyGateway injetado em ${req.path}`);
+      }
+    }
+    
+    res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+    res.send(html);
+  });
 });
 
 // Fallback route for SPA - Only for root path
@@ -505,6 +542,185 @@ wss.on('connection', (ws) => {
               message: 'Pedido não encontrado.'
           }));
         }
+      } else if (data.type === 'motoboyLogin') {
+        // Handle motoboy login
+        console.log('[DELIVERY] Motoboy logged in:', data.motoboyInfo);
+        ws.role = 'motoboy';
+        ws.motoboyInfo = data.motoboyInfo;
+        
+        // Send existing delivery orders to motoboy
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        ws.send(JSON.stringify({
+          type: 'existingDeliveryOrders',
+          orders: deliveryOrders.filter(o => o.status === 'pending' || o.status === 'accepted')
+        }));
+        
+        // Broadcast to admins that a motoboy is available
+        broadcastToAdmins({
+          type: 'motoboyAvailable',
+          motoboyInfo: data.motoboyInfo
+        });
+        
+      } else if (data.type === 'submitDeliveryOrder') {
+        // Handle new delivery order
+        console.log('[DELIVERY] Novo pedido de delivery recebido:', data.order);
+        
+        // Store in localStorage for persistence
+        const existingOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        existingOrders.push(data.order);
+        localStorage.setItem('deliveryOrders', JSON.stringify(existingOrders));
+        
+        // Broadcast to all motoboys
+        broadcastToMotoboys({
+          type: 'newDeliveryOrder',
+          order: data.order
+        });
+        
+        // Also broadcast to admins
+        broadcastToAdmins({
+          type: 'newDeliveryOrder',
+          order: data.order
+        });
+        
+        // Send confirmation back
+        ws.send(JSON.stringify({
+          type: 'deliveryOrderConfirmation',
+          orderId: data.order.id
+        }));
+        
+      } else if (data.type === 'acceptDeliveryOrder') {
+        // Motoboy accepts delivery order
+        console.log('[DELIVERY] Motoboy aceitou pedido:', data.orderId);
+        
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        const order = deliveryOrders.find(o => o.id === data.orderId);
+        
+        if (order) {
+          order.status = 'accepted';
+          order.motoboyName = data.motoboyName;
+          order.motoboyPhone = data.motoboyPhone;
+          localStorage.setItem('deliveryOrders', JSON.stringify(deliveryOrders));
+          
+          // Notify customer
+          broadcastToCustomer(data.orderId, {
+            type: 'orderAccepted',
+            orderId: data.orderId,
+            motoboyName: data.motoboyName,
+            motoboyPhone: data.motoboyPhone
+          });
+          
+          // Notify admins
+          broadcastToAdmins({
+            type: 'orderAccepted',
+            orderId: data.orderId,
+            motoboyName: data.motoboyName
+          });
+        }
+        
+      } else if (data.type === 'startDeliveryOrder') {
+        // Motoboy starts delivery
+        console.log('[DELIVERY] Motoboy iniciou entrega:', data.orderId);
+        
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        const order = deliveryOrders.find(o => o.id === data.orderId);
+        
+        if (order) {
+          order.status = 'delivering';
+          localStorage.setItem('deliveryOrders', JSON.stringify(deliveryOrders));
+          
+          // Notify customer
+          broadcastToCustomer(data.orderId, {
+            type: 'orderDelivering',
+            orderId: data.orderId,
+            motoboyName: order.motoboyName,
+            estimatedTime: order.estimatedTime
+          });
+          
+          // Notify admins
+          broadcastToAdmins({
+            type: 'orderDelivering',
+            orderId: data.orderId
+          });
+        }
+        
+      } else if (data.type === 'updateMotoboyLocation') {
+        // Motoboy enviou atualização de localização
+        console.log('[DELIVERY] Atualização de localização do motoboy:', data);
+        
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        const order = deliveryOrders.find(o => o.id === data.orderId);
+        
+        if (order) {
+          // Salvar localização no localStorage
+          order.motoboyLocation = {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            timestamp: new Date().toISOString()
+          };
+          localStorage.setItem('deliveryOrders', JSON.stringify(deliveryOrders));
+          
+          // Enviar para o cliente
+          broadcastToCustomer(data.orderId, {
+            type: 'motoboyLocationUpdate',
+            orderId: data.orderId,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            motoboyName: order.motoboyName,
+            motoboyPhone: order.motoboyPhone,
+            status: order.status
+          });
+        }
+        
+      } else if (data.type === 'requestMotoboyLocation') {
+        // Cliente solicitou localização do motoboy
+        console.log('[DELIVERY] Cliente solicitou localização do motoboy:', data.orderId);
+        
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        const order = deliveryOrders.find(o => o.id === data.orderId);
+        
+        if (order && order.motoboyLocation) {
+          // Enviar última localização conhecida
+          broadcastToCustomer(data.orderId, {
+            type: 'motoboyLocationUpdate',
+            orderId: data.orderId,
+            latitude: order.motoboyLocation.latitude,
+            longitude: order.motoboyLocation.longitude,
+            motoboyName: order.motoboyName,
+            motoboyPhone: order.motoboyPhone,
+            status: order.status
+          });
+        }
+        
+      } else if (data.type === 'completeDeliveryOrder') {
+        // Motoboy completes delivery
+        console.log('[DELIVERY] Motoboy completou entrega:', data.orderId);
+        
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        const order = deliveryOrders.find(o => o.id === data.orderId);
+        
+        if (order) {
+          order.status = 'completed';
+          order.completedAt = new Date().toISOString();
+          localStorage.setItem('deliveryOrders', JSON.stringify(deliveryOrders));
+          
+          // Notify customer
+          broadcastToCustomer(data.orderId, {
+            type: 'orderCompleted',
+            orderId: data.orderId
+          });
+          
+          // Notify admins
+          broadcastToAdmins({
+            type: 'orderCompleted',
+            orderId: data.orderId
+          });
+        }
+      } else if (data.type === 'heartbeat') {
+        // Respond to heartbeat to keep connection alive
+        ws.send(JSON.stringify({
+          type: 'heartbeat',
+          timestamp: new Date().toISOString()
+        }));
       } else {
         console.log('Unknown message type:', data.type);
       }
@@ -529,3 +745,35 @@ server.listen(httpPort, hostname, () => {
 });
 
 // The order simulation has been removed for production use.
+
+// Helper functions for delivery communication
+function broadcastToMotoboys(message) {
+  const messageStr = JSON.stringify(message);
+  clients.forEach((client, id) => {
+    if (client.role === 'motoboy' && client.readyState === WebSocket.OPEN) {
+      client.send(messageStr);
+    }
+  });
+}
+
+function broadcastToAdmins(message) {
+  const messageStr = JSON.stringify(message);
+  clients.forEach((client, id) => {
+    if (client.role === 'admin' && client.readyState === WebSocket.OPEN) {
+      client.send(messageStr);
+    }
+  });
+}
+
+function broadcastToCustomer(orderId, message) {
+  // Find the customer who owns this order
+  const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+  const order = deliveryOrders.find(o => o.id === orderId);
+  
+  if (order && order.clientId) {
+    const customerClient = clients.get(order.clientId);
+    if (customerClient && customerClient.readyState === WebSocket.OPEN) {
+      customerClient.send(JSON.stringify(message));
+    }
+  }
+}

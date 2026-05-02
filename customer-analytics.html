@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics de Clientes - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .header-subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .customer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .customer-table th,
+        .customer-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .customer-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .customer-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .customer-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .customer-cpf {
+            font-family: monospace;
+            color: #7f8c8d;
+        }
+        
+        .visit-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .last-visit {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .loyalty-badge {
+            background: #27ae60;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .order-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .order-id {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .order-date {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .order-customer {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .order-items {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .order-total {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 1.1em;
+        }
+        
+        .payment-method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .payment-card {
+            background: #3498db;
+            color: white;
+        }
+        
+        .payment-pix {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .payment-money {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.1em;
+        }
+        
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .export-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e1e8ed;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="header-title">📊 Analytics de Clientes</div>
+                <div class="header-subtitle">Estatísticas e histórico de clientes</div>
+            </div>
+            <a href="admin.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Voltar ao Admin
+            </a>
+        </header>
+
+        <!-- Estatísticas Gerais -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="totalCustomers">0</div>
+                <div class="stat-label">Total de Clientes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-value" id="returningCustomers">0</div>
+                <div class="stat-label">Clientes Recorrentes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value" id="avgVisits">0</div>
+                <div class="stat-label">Média de Visitas</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalRevenue">R$ 0</div>
+                <div class="stat-label">Faturamento Total</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="avgTicket">R$ 0</div>
+                <div class="stat-label">Ticket Médio</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="newCustomersToday">0</div>
+                <div class="stat-label">Novos Clientes Hoje</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-grid">
+            <!-- Clientes Cadastrados -->
+            <div class="section-card">
+                <div class="section-title">
+                    👥 Clientes Cadastrados
+                    <button class="export-btn" onclick="exportCustomers()">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="customerSearch" placeholder="Buscar por nome ou CPF..." onkeyup="searchCustomers()">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Filtrar por:</label>
+                        <select id="customerFilter" onchange="filterCustomers()">
+                            <option value="all">Todos</option>
+                            <option value="new">Novos (7 dias)</option>
+                            <option value="returning">Recorrentes</option>
+                            <option value="loyal">Fieis (+5 visitas)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Ordenar por:</label>
+                        <select id="customerSort" onchange="sortCustomers()">
+                            <option value="name">Nome</option>
+                            <option value="visits">Visitas</option>
+                            <option value="lastVisit">Última visita</option>
+                            <option value="registration">Data de cadastro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table class="customer-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Visitas</th>
+                                <th>Última Visita</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <!-- Preenchido por JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="customerPagination">
+                    <!-- Preenchido por JavaScript -->
+                </div>
+            </div>
+
+            <!-- Histórico de Pedidos -->
+            <div class="section-card">
+                <div class="section-title">
+                    📋 Histórico de Pedidos
+                    <button class="export-btn" onclick="exportOrders()">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                </div>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Data:</label>
+                        <input type="date" id="orderDateFilter" onchange="filterOrders()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="orderStatusFilter" onchange="filterOrders()">
+                            <option value="">Todos</option>
+                            <option value="confirmed">Confirmado</option>
+                            <option value="preparing">Preparando</option>
+                            <option value="ready">Pronto</option>
+                            <option value="delivered">Entregue</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Pagamento:</label>
+                        <select id="orderPaymentFilter" onchange="filterOrders()">
+                            <option value="">Todos</option>
+                            <option value="card">Cartão</option>
+                            <option value="pix">PIX</option>
+                            <option value="money">Dinheiro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="ordersList">
+                    <!-- Preenchido por JavaScript -->
+                </div>
+                
+                <div class="pagination" id="orderPagination">
+                    <!-- Preenchido por JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos e Insights -->
+        <div class="section-card">
+            <div class="section-title">
+                📈 Insights e Tendências
+            </div>
+            
+            <div class="main-grid">
+                <div>
+                    <h3>📊 Top 10 Clientes</h3>
+                    <div id="topCustomersChart" class="chart-container">
+                        <div class="chart-placeholder">
+                            📈 Gráfico de clientes mais frequentes
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>💰 Faturamento Mensal</h3>
+                    <div id="revenueChart" class="chart-container">
+                        <div class="chart-placeholder">
+                            📈 Gráfico de faturamento mensal
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-grid" style="margin-top: 30px;">
+                <div>
+                    <h3>🍽️ Produtos Mais Vendidos</h3>
+                    <div id="topProductsChart" class="chart-container">
+                        <div class="chart-placeholder">
+                            📈 Gráfico de produtos mais vendidos
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>🕒 Horários de Pico</h3>
+                    <div id="peakHoursChart" class="chart-container">
+                        <div class="chart-placeholder">
+                            📈 Gráfico de horários de pico
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let customers = [];
+        let orders = [];
+        let filteredCustomers = [];
+        let filteredOrders = [];
+        let currentPageCustomers = 1;
+        let currentPageOrders = 1;
+        const itemsPerPage = 10;
+
+        // Carregar dados
+        function loadData() {
+            try {
+                customers = JSON.parse(localStorage.getItem('customers') || '[]');
+                orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                
+                filteredCustomers = [...customers];
+                filteredOrders = [...orders];
+                
+                updateStats();
+                renderCustomers();
+                renderOrders();
+                generateCharts();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            const totalCustomers = customers.length;
+            const returningCustomers = customers.filter(c => c.visitCount > 1).length;
+            const avgVisits = totalCustomers > 0 ? 
+                (customers.reduce((sum, c) => sum + (c.visitCount || 1), 0) / totalCustomers).toFixed(1) : 0;
+            
+            const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+            const avgTicket = orders.length > 0 ? (totalRevenue / orders.length).toFixed(2) : 0;
+            
+            const today = new Date().toDateString();
+            const newCustomersToday = customers.filter(c => 
+                new Date(c.registrationDate).toDateString() === today
+            ).length;
+            
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('returningCustomers').textContent = returningCustomers;
+            document.getElementById('avgVisits').textContent = avgVisits;
+            document.getElementById('totalRevenue').textContent = `R$ ${totalRevenue.toFixed(2)}`;
+            document.getElementById('avgTicket').textContent = `R$ ${avgTicket}`;
+            document.getElementById('newCustomersToday').textContent = newCustomersToday;
+        }
+
+        // Renderizar clientes
+        function renderCustomers() {
+            const tbody = document.getElementById('customerTableBody');
+            const start = (currentPageCustomers - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageCustomers = filteredCustomers.slice(start, end);
+            
+            if (pageCustomers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">Nenhum cliente encontrado</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = pageCustomers.map(customer => {
+                const isReturning = customer.visitCount > 1;
+                const isLoyal = customer.visitCount >= 5;
+                const lastVisit = customer.lastVisit ? 
+                    new Date(customer.lastVisit).toLocaleDateString('pt-BR') : 'N/A';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="customer-name">${customer.nome}</div>
+                            <div class="customer-cpf">${customer.cpf}</div>
+                            ${customer.telefone ? `<div style="font-size: 0.9em; color: #7f8c8d;">${customer.telefone}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="visit-badge">${customer.visitCount || 1} visitas</span>
+                            ${isLoyal ? '<span class="loyalty-badge">Fiel</span>' : ''}
+                        </td>
+                        <td>
+                            <div class="last-visit">${lastVisit}</div>
+                            ${isReturning ? '<div style="font-size: 0.8em; color: #27ae60;">Cliente recorrente</div>' : ''}
+                        </td>
+                        <td>
+                            <button class="export-btn" style="padding: 6px 12px; font-size: 0.8em;" onclick="viewCustomerDetails('${customer.cpf}')">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            updatePagination('customer');
+        }
+
+        // Renderizar pedidos
+        function renderOrders() {
+            const container = document.getElementById('ordersList');
+            const start = (currentPageOrders - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageOrders = filteredOrders.slice(start, end);
+            
+            if (pageOrders.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">Nenhum pedido encontrado</p>';
+                return;
+            }
+            
+            container.innerHTML = pageOrders.map(order => {
+                const orderDate = new Date(order.date);
+                const paymentClass = `payment-${order.paymentMethod}`;
+                const paymentText = {
+                    'card': 'Cartão',
+                    'pix': 'PIX',
+                    'money': 'Dinheiro'
+                }[order.paymentMethod] || order.paymentMethod;
+                
+                return `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <div class="order-id">#${order.id}</div>
+                            <div class="order-date">${orderDate.toLocaleDateString('pt-BR')} ${orderDate.toLocaleTimeString('pt-BR')}</div>
+                        </div>
+                        <div class="order-customer">
+                            <strong>${order.customerName}</strong> - Mesa ${order.mesa}
+                            <span class="payment-method ${paymentClass}">${paymentText}</span>
+                        </div>
+                        <div class="order-items">
+                            ${order.items.map(item => `${item.name} x${item.quantity}`).join(', ')}
+                        </div>
+                        <div class="order-total">Total: R$ ${order.total.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            updatePagination('order');
+        }
+
+        // Atualizar paginação
+        function updatePagination(type) {
+            const container = type === 'customer' ? 
+                document.getElementById('customerPagination') : 
+                document.getElementById('orderPagination');
+            
+            const items = type === 'customer' ? filteredCustomers : filteredOrders;
+            const totalPages = Math.ceil(items.length / itemsPerPage);
+            const currentPage = type === 'customer' ? currentPageCustomers : currentPageOrders;
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Botão anterior
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="changePage('${type}', ${currentPage - 1})">←</button>`;
+            }
+            
+            // Páginas
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                const active = i === currentPage ? 'active' : '';
+                html += `<button class="page-btn ${active}" onclick="changePage('${type}', ${i})">${i}</button>`;
+            }
+            
+            // Próxima
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage('${type}', ${currentPage + 1})">→</button>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Mudar página
+        function changePage(type, page) {
+            if (type === 'customer') {
+                currentPageCustomers = page;
+                renderCustomers();
+            } else {
+                currentPageOrders = page;
+                renderOrders();
+            }
+        }
+
+        // Buscar clientes
+        function searchCustomers() {
+            const searchTerm = document.getElementById('customerSearch').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                filteredCustomers = [...customers];
+            } else {
+                filteredCustomers = customers.filter(customer => 
+                    customer.nome.toLowerCase().includes(searchTerm) ||
+                    customer.cpf.includes(searchTerm)
+                );
+            }
+            
+            currentPageCustomers = 1;
+            renderCustomers();
+        }
+
+        // Filtrar clientes
+        function filterCustomers() {
+            const filterType = document.getElementById('customerFilter').value;
+            const today = new Date();
+            const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            switch (filterType) {
+                case 'new':
+                    filteredCustomers = customers.filter(c => 
+                        new Date(c.registrationDate) >= sevenDaysAgo
+                    );
+                    break;
+                case 'returning':
+                    filteredCustomers = customers.filter(c => c.visitCount > 1);
+                    break;
+                case 'loyal':
+                    filteredCustomers = customers.filter(c => c.visitCount >= 5);
+                    break;
+                default:
+                    filteredCustomers = [...customers];
+            }
+            
+            currentPageCustomers = 1;
+            renderCustomers();
+        }
+
+        // Ordenar clientes
+        function sortCustomers() {
+            const sortBy = document.getElementById('customerSort').value;
+            
+            switch (sortBy) {
+                case 'name':
+                    filteredCustomers.sort((a, b) => a.nome.localeCompare(b.nome));
+                    break;
+                case 'visits':
+                    filteredCustomers.sort((a, b) => (b.visitCount || 1) - (a.visitCount || 1));
+                    break;
+                case 'lastVisit':
+                    filteredCustomers.sort((a, b) => {
+                        const dateA = a.lastVisit ? new Date(a.lastVisit) : new Date(0);
+                        const dateB = b.lastVisit ? new Date(b.lastVisit) : new Date(0);
+                        return dateB - dateA;
+                    });
+                    break;
+                case 'registration':
+                    filteredCustomers.sort((a, b) => 
+                        new Date(b.registrationDate) - new Date(a.registrationDate)
+                    );
+                    break;
+            }
+            
+            currentPageCustomers = 1;
+            renderCustomers();
+        }
+
+        // Filtrar pedidos
+        function filterOrders() {
+            const dateFilter = document.getElementById('orderDateFilter').value;
+            const statusFilter = document.getElementById('orderStatusFilter').value;
+            const paymentFilter = document.getElementById('orderPaymentFilter').value;
+            
+            filteredOrders = orders.filter(order => {
+                if (dateFilter) {
+                    const orderDate = new Date(order.date).toISOString().split('T')[0];
+                    if (orderDate !== dateFilter) return false;
+                }
+                
+                if (statusFilter && order.status !== statusFilter) return false;
+                
+                if (paymentFilter && order.paymentMethod !== paymentFilter) return false;
+                
+                return true;
+            });
+            
+            currentPageOrders = 1;
+            renderOrders();
+        }
+
+        // Ver detalhes do cliente
+        function viewCustomerDetails(cpf) {
+            const customer = customers.find(c => c.cpf === cpf);
+            if (!customer) return;
+            
+            const customerOrders = orders.filter(o => o.customerCpf === cpf);
+            const totalSpent = customerOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+            
+            const details = `
+                📋 Detalhes do Cliente
+                
+                👤 Nome: ${customer.nome}
+                📄 CPF: ${customer.cpf}
+                📞 Telefone: ${customer.telefone || 'Não informado'}
+                📅 Cadastro: ${new Date(customer.registrationDate).toLocaleDateString('pt-BR')}
+                🔄 Visitas: ${customer.visitCount || 1}
+                💰 Total gasto: R$ ${totalSpent.toFixed(2)}
+                🎯 Ticket médio: R$ ${customerOrders.length > 0 ? (totalSpent / customerOrders.length).toFixed(2) : '0,00'}
+                
+                📋 Histórico de Pedidos: ${customerOrders.length} pedidos
+            `;
+            
+            alert(details);
+        }
+
+        // Exportar clientes
+        function exportCustomers() {
+            let csv = 'Nome,CPF,Telefone,Data de Cadastro,Visitas,Última Visita\n';
+            
+            filteredCustomers.forEach(customer => {
+                csv += `"${customer.nome}","${customer.cpf}","${customer.telefone || ''}","${new Date(customer.registrationDate).toLocaleDateString('pt-BR')}","${customer.visitCount || 1}","${customer.lastVisit ? new Date(customer.lastVisit).toLocaleDateString('pt-BR') : ''}"\n`;
+            });
+            
+            downloadCSV(csv, 'clientes.csv');
+        }
+
+        // Exportar pedidos
+        function exportOrders() {
+            let csv = 'ID,Cliente,CPF,Mesa,Data,Status,Pagamento,Total,Itens\n';
+            
+            filteredOrders.forEach(order => {
+                const items = order.items.map(item => `${item.name}(${item.quantity})`).join(';');
+                csv += `${order.id},"${order.customerName}","${order.customerCpf}",${order.mesa},"${new Date(order.date).toLocaleString('pt-BR')}","${order.status}","${order.paymentMethod}",${order.total},"${items}"\n`;
+            });
+            
+            downloadCSV(csv, 'pedidos.csv');
+        }
+
+        // Download CSV
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // Gerar gráficos (placeholders)
+        function generateCharts() {
+            // Top 10 clientes
+            const topCustomers = customers
+                .sort((a, b) => (b.visitCount || 1) - (a.visitCount || 1))
+                .slice(0, 10);
+            
+            const topCustomersHTML = topCustomers.map((customer, index) => `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                    <span>${index + 1}. ${customer.nome}</span>
+                    <strong>${customer.visitCount || 1} visitas</strong>
+                </div>
+            `).join('');
+            
+            document.getElementById('topCustomersChart').innerHTML = `
+                <div style="text-align: left;">
+                    ${topCustomersHTML || '<p style="color: #999;">Nenhum cliente encontrado</p>'}
+                </div>
+            `;
+            
+            // Produtos mais vendidos
+            const productSales = {};
+            orders.forEach(order => {
+                order.items.forEach(item => {
+                    if (!productSales[item.name]) {
+                        productSales[item.name] = 0;
+                    }
+                    productSales[item.name] += item.quantity;
+                });
+            });
+            
+            const topProducts = Object.entries(productSales)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10);
+            
+            const topProductsHTML = topProducts.map(([name, quantity], index) => `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                    <span>${index + 1}. ${name}</span>
+                    <strong>${quantity} vendidos</strong>
+                </div>
+            `).join('');
+            
+            document.getElementById('topProductsChart').innerHTML = `
+                <div style="text-align: left;">
+                    ${topProductsHTML || '<p style="color: #999;">Nenhum produto encontrado</p>'}
+                </div>
+            `;
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadData();
+        };
+    </script>
+</body>
+</html>

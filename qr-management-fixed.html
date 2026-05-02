@@ -283,14 +283,6 @@
             
             <button class="btn btn-success" onclick="openAddItemModal()">+ Adicionar Item</button>
             
-            <!-- 📋 LISTA DE PRODUTOS CADASTRADOS -->
-            <div style="margin-top: 30px;">
-                <h3>📋 Produtos Cadastrados</h3>
-                <div id="menuItemsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
-                    <!-- Produtos serão carregados aqui -->
-                </div>
-            </div>
-            
             <div style="margin-top: 20px;">
                 <h3>Categorias</h3>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 15px 0;">
@@ -299,15 +291,6 @@
                     <div style="background-color: #f8f9fa; padding: 10px 15px; border-radius: 20px;">Pratos Principais</div>
                     <div style="background-color: #f8f9fa; padding: 10px 15px; border-radius: 20px;">Sobremesas</div>
                     <div style="background-color: #3498db; color: white; padding: 10px 15px; border-radius: 20px; cursor: pointer;" onclick="openAddCategoryModal()">+ Nova Categoria</div>
-                </div>
-            </div>
-            
-            <!-- 🏪 SEÇÃO DE VITRINE (ATÉ 8 PRODUTOS) -->
-            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #27ae60;">
-                <h3 style="color: #27ae60; margin-bottom: 15px;">🏪 Vitrine do Index</h3>
-                <p style="color: #666; margin-bottom: 15px;">Selecione até 8 produtos para aparecer na página principal (index.html)</p>
-                <div id="vitrineProducts" style="margin-top: 15px;">
-                    <!-- Produtos da vitrine serão carregados aqui -->
                 </div>
             </div>
         </section>
@@ -478,8 +461,59 @@
             
             <div class="modal-buttons">
                 <button class="btn" onclick="closeModal('addTableModal')">Cancelar</button>
-                </div>
+                <button class="btn btn-success" onclick="addTable()">Adicionar Mesa</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addItemModal')">&times;</span>
+            <h2>Adicionar Item ao Cardápio</h2>
+            
+            <div class="form-group">
+                <label for="itemName">Nome do Item</label>
+                <input type="text" id="itemName" placeholder="Ex: Feijoada Completa">
+            </div>
+            
+            <div class="form-group">
+                <label for="itemCategory">Categoria</label>
+                <select id="itemCategory">
+                    <option value="main">Pratos Principais</option>
+                    <option value="appetizer">Porções</option>
+                    <option value="drink">Bebidas</option>
+                    <option value="dessert">Sobremesas</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="itemSector">Setor de Preparo</label>
+                <select id="itemSector">
+                    <option value="kitchen">Cozinha</option>
+                    <option value="counter">Balcão</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="itemPrice">Preço (R$)</label>
+                <input type="number" id="itemPrice" step="0.01" placeholder="Ex: 29.90">
+            </div>
+            
+            <div class="form-group">
+                <label for="itemDescription">Descrição</label>
+                <textarea id="itemDescription" placeholder="Descrição do item" style="width: 100%; height: 80px;"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="itemImage">Imagem do Produto</label>
+                <div style="border: 2px dashed #ddd; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; min-height: 120px; display: flex; flex-direction: column; justify-content: center;" onclick="document.getElementById('itemImage').click()">
+                    <p>Clique para fazer upload da imagem do produto</p>
+                    <p style="font-size: 12px; color: #7f8c8d;">(Formatos: JPG, PNG - Tamanho recomendado: 300x300px)</p>
+                </div>
+                <input type="file" id="itemImage" accept="image/*" style="display: none;">
+            </div>
+            
             <div class="modal-buttons">
                 <button class="btn" onclick="closeModal('addItemModal')">Cancelar</button>
                 <button class="btn btn-success" onclick="addItem()">Adicionar Item</button>
@@ -490,61 +524,6 @@
     <footer>
         <p>Cardápio Digital Universal &copy; 2025 - Sistema de pedidos automatizado</p>
     </footer>
-
-    <!-- Add Item Modal -->
-    <div id="addItemModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addItemModal')">&times;</span>
-            <h3>Adicionar Item ao Cardápio</h3>
-            <form id="addItemForm">
-                <div class="form-group">
-                    <label for="itemName">Nome do Item</label>
-                    <input type="text" id="itemName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="itemPrice">Preço</label>
-                    <input type="number" id="itemPrice" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="itemCategory">Categoria</label>
-                    <select id="itemCategory" required>
-                        <option value="">Selecione uma categoria</option>
-                        <option value="appetizer">🥗 Entradas</option>
-                        <option value="main">🍽️ Pratos Principais</option>
-                        <option value="drink">🥤 Bebidas</option>
-                        <option value="dessert">🍰 Sobremesas</option>
-                        <option value="outros">📦 Outros</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="itemSector">Setor</label>
-                    <select id="itemSector" required>
-                        <option value="">Selecione um setor</option>
-                        <option value="kitchen">🍳 Cozinha</option>
-                        <option value="counter">🥤 Balcão</option>
-                        <option value="bar">🍺 Bar</option>
-                        <option value="grill">🔥 Churrasqueira</option>
-                        <option value="others">📦 Outros</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="itemDescription">Descrição</label>
-                    <textarea id="itemDescription" rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="itemImage">Imagem (opcional)</label>
-                    <input type="file" id="itemImage" accept="image/*">
-                </div>
-                
-                <button type="button" class="btn btn-success" onclick="addItem()">+ Adicionar Item</button>
-            </form>
-        </div>
-    </div>
 
     <!-- Add Category Modal -->
     <div id="addCategoryModal" class="modal">
@@ -965,19 +944,9 @@
             console.log('[DEBUG] adminAccess:', adminAccess);
             console.log('[DEBUG] establishmentData:', establishmentData);
             
-            // Aceita admin OU creator (isAuthenticated)
-            let hasAuth = false;
-            if (adminAccess && establishmentData) {
-                hasAuth = true;
-            } else if (establishmentData) {
-                try {
-                    const data = JSON.parse(establishmentData);
-                    hasAuth = data && data.isAuthenticated;
-                } catch(e) {}
-            }
-            
-            if (!hasAuth) {
-                alert('⚠️ É necessário fazer login!');
+            if (!adminAccess || !establishmentData) {
+                // Redirect to login page if no proper authentication
+                console.log('[DEBUG] Redirecionando para login.html');
                 window.location.href = 'login.html';
                 return;
             }
@@ -1272,273 +1241,24 @@
             document.getElementById('itemPrice').value = '';
             document.getElementById('itemDescription').value = '';
             document.getElementById('itemImage').value = '';
-            
-            // Refresh displays
-            loadMenuItems();
-            loadVitrineProducts();
+        
+            // Forçar atualização visual do DOM para garantir que mudanças sejam visíveis
+            document.body.offsetHeight; // Trigger reflow
         }
         
-        // 📋 CARREGAR E MOSTRAR PRODUTOS CADASTRADOS
-        function loadMenuItems() {
-            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            const menuItemsList = document.getElementById('menuItemsList');
-            
-            if (!menuItemsList) return;
-            
-            if (menuItems.length === 0) {
-                menuItemsList.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Nenhum produto cadastrado ainda. Clique em "+ Adicionar Item" para começar.</p>';
-                return;
-            }
-            
-            let html = '';
-            menuItems.forEach(item => {
-                html += `
-                    <div style="border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: white; position: relative;">
-                        <div style="display: flex; gap: 15px; align-items: start;">
-                            <div style="width: 80px; height: 80px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                ${item.image ? 
-                                    `<img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">` : 
-                                    `<div style="font-size: 30px; color: #ccc;">🍽️</div>`
-                                }
-                            </div>
-                            <div style="flex: 1;">
-                                <h4 style="margin: 0 0 5px 0; color: #333;">${item.name}</h4>
-                                <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;">${item.description || 'Sem descrição'}</p>
-                                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-                                    <span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 12px; font-size: 12px;">${item.category || 'Sem categoria'}</span>
-                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 3px 8px; border-radius: 12px; font-size: 12px;">${item.sector || 'Cozinha'}</span>
-                                    <span style="background: #e8f5e8; color: #388e3c; font-weight: bold; padding: 3px 8px; border-radius: 12px; font-size: 12px;">R$ ${parseFloat(item.price || 0).toFixed(2)}</span>
-                                </div>
-                                <div style="display: flex; gap: 8px;">
-                                    <button onclick="editMenuItem(${item.id})" style="background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                                        ✏️ Editar
-                                    </button>
-                                    <button onclick="deleteMenuItem(${item.id})" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                                        🗑️ Apagar
-                                    </button>
-                                    <button onclick="addToVitrine(${item.id})" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                                        🏪 Adicionar à Vitrine
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            menuItemsList.innerHTML = html;
-            console.log('[MENU] Carregados', menuItems.length, 'produtos cadastrados');
-        }
-        
-        // ✏️ EDITAR PRODUTO
-        function editMenuItem(itemId) {
-            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            const item = menuItems.find(p => p.id === itemId);
-            
-            if (!item) {
-                alert('Produto não encontrado!');
-                return;
-            }
-            
-            // Preencher o formulário com os dados do produto
-            document.getElementById('itemName').value = item.name;
-            document.getElementById('itemPrice').value = item.price;
-            document.getElementById('itemDescription').value = item.description || '';
-            document.getElementById('itemCategory').value = item.category || '';
-            document.getElementById('itemSector').value = item.sector || '';
-            
-            // Mudar o botão para "Atualizar"
-            const addButton = document.querySelector('button[onclick="addItem()"]');
-            if (addButton) {
-                addButton.textContent = '💾 Atualizar Produto';
-                addButton.setAttribute('onclick', `updateMenuItem(${itemId})`);
-            }
-            
-            // Abrir o modal
-            openAddItemModal();
-        }
-        
-        // 💾 ATUALIZAR PRODUTO
-        function updateMenuItem(itemId) {
-            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            const itemIndex = menuItems.findIndex(p => p.id === itemId);
-            
-            if (itemIndex === -1) {
-                alert('Produto não encontrado!');
-                return;
-            }
-            
-            // Atualizar dados do produto
-            menuItems[itemIndex] = {
-                ...menuItems[itemIndex],
-                name: document.getElementById('itemName').value,
-                price: document.getElementById('itemPrice').value,
-                description: document.getElementById('itemDescription').value,
-                category: document.getElementById('itemCategory').value,
-                sector: document.getElementById('itemSector').value
-            };
-            
-            // Salvar no localStorage
-            localStorage.setItem('menuItems', JSON.stringify(menuItems));
-            
-            alert(`Produto "${menuItems[itemIndex].name}" atualizado com sucesso!`);
-            closeModal('addItemModal');
-            
-            // Resetar o botão
-            const addButton = document.querySelector('button[onclick*="updateMenuItem"]');
-            if (addButton) {
-                addButton.textContent = '+ Adicionar Item';
-                addButton.setAttribute('onclick', 'addItem()');
-            }
-            
-            // Limpar formulário
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemPrice').value = '';
-            document.getElementById('itemDescription').value = '';
-            document.getElementById('itemCategory').value = '';
-            document.getElementById('itemSector').value = '';
-            
-            // Refresh displays
-            loadMenuItems();
-            loadVitrineProducts();
-        }
-        
-        // 🗑️ APAGAR PRODUTO
-        function deleteMenuItem(itemId) {
-            if (!confirm('Tem certeza que deseja apagar este produto? Esta ação não pode ser desfeita.')) {
-                return;
-            }
-            
-            let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            const item = menuItems.find(p => p.id === itemId);
-            
-            menuItems = menuItems.filter(p => p.id !== itemId);
-            localStorage.setItem('menuItems', JSON.stringify(menuItems));
-            
-            // Remover da vitine também
-            let vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
-            vitrineProducts = vitrineProducts.filter(p => p.id !== itemId);
-            localStorage.setItem('vitrineProducts', JSON.stringify(vitrineProducts));
-            
-            if (item) {
-                alert(`Produto "${item.name}" apagado com sucesso!`);
-            }
-            
-            // Refresh displays
-            loadMenuItems();
-            loadVitrineProducts();
-        }
-        
-        // 🏪 GERENCIAR VITRINE (ATÉ 8 PRODUTOS)
-        function loadVitrineProducts() {
-            const vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
-            const allProducts = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            
-            const vitrineContainer = document.getElementById('vitrineProducts');
-            if (!vitrineContainer) return;
-            
-            // Mostrar produtos disponíveis para selecionar
-            const availableProducts = allProducts.filter(product => 
-                !vitrineProducts.find(vp => vp.id === product.id)
-            );
-            
-            let html = '<h4>🏪 Produtos na Vitrine (Máx. 8)</h4>';
-            html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px;">';
-            
-            // Produtos já selecionados para vitrine
-            vitrineProducts.forEach((product, index) => {
-                html += `
-                    <div style="border: 2px solid #27ae60; padding: 10px; border-radius: 8px; background: #f8f9fa;">
-                        <div style="font-weight: bold; color: #27ae60;">✅ ${product.name}</div>
-                        <div style="color: #666; font-size: 14px;">R$ ${product.price}</div>
-                        <button onclick="removeFromVitrine(${product.id})" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-top: 5px; cursor: pointer;">
-                            Remover
-                        </button>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            
-            // Produtos disponíveis para adicionar
-            if (availableProducts.length > 0 && vitrineProducts.length < 8) {
-                html += '<h4>📦 Adicionar à Vitrine:</h4>';
-                html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
-                
-                availableProducts.forEach(product => {
-                    html += `
-                        <div style="border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: white;">
-                            <div style="font-weight: bold;">${product.name}</div>
-                            <div style="color: #666; font-size: 14px;">R$ ${product.price}</div>
-                            <button onclick="addToVitrine(${product.id})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-top: 5px; cursor: pointer;">
-                                Adicionar à Vitrine
-                            </button>
-                        </div>
-                    `;
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            if (typeof text === 'string') {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Copiado para a área de transferência!');
                 });
-                
-                html += '</div>';
-            } else if (vitrineProducts.length >= 8) {
-                html += '<p style="color: #e74c3c; font-weight: bold;">⚠️ Vitrine cheia! Máximo de 8 produtos.</p>';
             } else {
-                html += '<p style="color: #666;">Nenhum produto disponível para adicionar à vitrine.</p>';
+                // If text is an element ID
+                const element = document.getElementById(text) || { textContent: text };
+                navigator.clipboard.writeText(element.textContent).then(() => {
+                    alert('Copiado para a área de transferência!');
+                });
             }
-            
-            vitrineContainer.innerHTML = html;
-            console.log('[VITRINE] Carregados', vitrineProducts.length, 'produtos na vitrine');
-        }
-        
-        function addToVitrine(productId) {
-            const allProducts = JSON.parse(localStorage.getItem('menuItems') || '[]');
-            const vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
-            
-            if (vitrineProducts.length >= 8) {
-                alert('⚠️ A vitrine já está cheia! Máximo de 8 produtos.');
-                return;
-            }
-            
-            const product = allProducts.find(p => p.id === productId);
-            if (product) {
-                vitrineProducts.push(product);
-                localStorage.setItem('vitrineProducts', JSON.stringify(vitrineProducts));
-                
-                // Atualizar vitrine para o index
-                updateIndexVitrine(vitrineProducts);
-                
-                loadMenuItems();
-                loadVitrineProducts();
-                alert(`✅ "${product.name}" adicionado à vitrine!`);
-            }
-        }
-        
-        function removeFromVitrine(productId) {
-            let vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
-            const product = vitrineProducts.find(p => p.id === productId);
-            
-            vitrineProducts = vitrineProducts.filter(p => p.id !== productId);
-            localStorage.setItem('vitrineProducts', JSON.stringify(vitrineProducts));
-            
-            // Atualizar vitrine para o index
-            updateIndexVitrine(vitrineProducts);
-            
-            loadMenuItems();
-            loadVitrineProducts();
-            if (product) {
-                alert(`🗑️ "${product.name}" removido da vitrine!`);
-            }
-        }
-        
-        function updateIndexVitrine(vitrineProducts) {
-            // Salvar também no formato que o index espera
-            localStorage.setItem('productShowcase', JSON.stringify(vitrineProducts.map(product => ({
-                storeId: 'main',
-                storeName: 'Cardápio Principal',
-                productName: product.name,
-                price: product.price,
-                image: product.image,
-                description: product.description,
-                category: product.category
-            }))));
         }
         
         // Update menu URL in QR code section
@@ -1695,8 +1415,6 @@ function printQRCode() {
         // Atualizar o QR code quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(updateMenuUrl, 1000); // Aguardar um pouco para garantir que tudo esteja carregado
-            setTimeout(loadMenuItems, 1500); // Carregar lista de produtos
-            setTimeout(loadVitrineProducts, 2000); // Carregar vitrine após os produtos
         });
         
         // Atualizar o QR code periodicamente para garantir que esteja sempre atualizado

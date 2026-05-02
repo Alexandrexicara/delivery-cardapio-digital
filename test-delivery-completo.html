@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Comunicação - Delivery</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            color: #333;
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .status.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .log {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Comunicação Delivery-Motoboy</h1>
+        
+        <div class="warning">
+            ⚠️ <strong>Importante:</strong> Este é um painel de teste. Para usar o sistema real, acesse delivery.html e motoboy.html em abas separadas.
+        </div>
+        
+        <div class="test-section">
+            <h2>1. Status da Conexão</h2>
+            <div id="connectionStatus"></div>
+            <button onclick="checkConnection()">Verificar Conexão</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Enviar Pedido de Teste</h2>
+            <p>Clique para enviar um pedido fictício para o sistema</p>
+            <button onclick="sendTestOrder()">📦 Enviar Pedido</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Verificar Armazenamento</h2>
+            <button onclick="checkStorage()">📂 Verificar localStorage</button>
+            <div id="storageInfo"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Log de Eventos</h2>
+            <div id="logContainer" class="log"></div>
+            <button onclick="clearLog()">Limpar Log</button>
+        </div>
+    </div>
+    
+    <script src="communication.js"></script>
+    <script>
+        // Inicializar log
+        const logContainer = document.getElementById('logContainer');
+        
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString();
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            logContainer.innerHTML = '';
+            log('Log limpo');
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function checkConnection() {
+            log('Verificando conexão...');
+            
+            if (window.DeliveryCommunication) {
+                const ws = DeliveryCommunication.ws;
+                
+                if (!ws) {
+                    showStatus('❌ WebSocket não inicializado', 'error');
+                    log('WebSocket não existe');
+                    return;
+                }
+                
+                switch(ws.readyState) {
+                    case 0:
+                        showStatus('⚠️ Conectando...', 'info');
+                        log('WebSocket CONNECTING');
+                        break;
+                    case 1:
+                        showStatus('✅ Conectado (OPEN)', 'success');
+                        log('WebSocket OPEN - conectado com sucesso!');
+                        break;
+                    case 2:
+                        showStatus('❌ Fechando...', 'error');
+                        log('WebSocket CLOSING');
+                        break;
+                    case 3:
+                        showStatus('❌ Desconectado (CLOSED)', 'error');
+                        log('WebSocket CLOSED - tentando reconectar...');
+                        DeliveryCommunication.connectWebSocket();
+                        break;
+                }
+            } else {
+                showStatus('❌ DeliveryCommunication não encontrado', 'error');
+                log('Módulo DeliveryCommunication não carregado');
+            }
+        }
+        
+        function sendTestOrder() {
+            log('Criando pedido de teste...');
+            
+            const testOrder = {
+                id: `TEST_${Date.now()}`,
+                customerName: 'Cliente Teste',
+                customerPhone: '(11) 99999-9999',
+                address: 'Rua de Teste, 123 - Centro',
+                items: [
+                    { name: 'Produto Teste 1', quantity: 2, price: 25.00 },
+                    { name: 'Produto Teste 2', quantity: 1, price: 15.00 }
+                ],
+                total: 65.00,
+                status: 'pending',
+                orderTime: new Date().toISOString(),
+                paymentMethod: 'pix',
+                deliveryType: 'delivery',
+                estimatedTime: 35
+            };
+            
+            log(`Pedido criado: ${testOrder.id}`);
+            
+            if (window.DeliveryCommunication) {
+                log('Enviando via DeliveryCommunication...');
+                DeliveryCommunication.broadcastNewOrder(testOrder);
+                showStatus('✅ Pedido enviado com sucesso!', 'success');
+                log('✅ Pedido broadcasted para todos os listeners');
+            } else {
+                log('Fallback para localStorage...');
+                const orders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+                orders.push(testOrder);
+                localStorage.setItem('deliveryOrders', JSON.stringify(orders));
+                
+                window.dispatchEvent(new CustomEvent('newDeliveryOrder', { detail: testOrder }));
+                showStatus('✅ Pedido enviado via fallback localStorage', 'success');
+            }
+            
+            log('📋 Abra motoboy.html para ver o pedido!');
+        }
+        
+        function checkStorage() {
+            log('Verificando localStorage...');
+            
+            const storageDiv = document.getElementById('storageInfo');
+            
+            const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+            const motoboyOrders = JSON.parse(localStorage.getItem('motoboyOrders') || '[]');
+            const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+            
+            let html = '<div style="margin-top: 10px;">';
+            html += `<div class="status info">📦 Pedidos delivery: <strong>${deliveryOrders.length}</strong></div>`;
+            html += `<div class="status info">🏍️ Pedidos motoboy: <strong>${motoboyOrders.length}</strong></div>`;
+            html += `<div class="status info">🔔 Notificações: <strong>${customerNotifications.length}</strong></div>`;
+            
+            if (deliveryOrders.length > 0) {
+                const lastOrder = deliveryOrders[deliveryOrders.length - 1];
+                html += `<div style="margin-top: 10px; padding: 10px; background: white; border-radius: 5px;">`;
+                html += `<strong>Último pedido:</strong><br>`;
+                html += `ID: ${lastOrder.id}<br>`;
+                html += `Cliente: ${lastOrder.customerName}<br>`;
+                html += `Total: R$ ${lastOrder.total.toFixed(2)}<br>`;
+                html += `Status: ${lastOrder.status}`;
+                html += `</div>`;
+            }
+            
+            html += '</div>';
+            storageDiv.innerHTML = html;
+            
+            log(`📊 Storage verificado: ${deliveryOrders.length} pedidos delivery, ${motoboyOrders.length} pedidos motoboy`);
+        }
+        
+        // Configurar listeners
+        window.addEventListener('newDeliveryOrder', (event) => {
+            log(`📨 Novo pedido recebido: ${event.detail.id}`);
+        });
+        
+        window.addEventListener('orderStatusChanged', (event) => {
+            log(`📢 Status mudou: ${event.detail.orderId} -> ${event.detail.status}`);
+        });
+        
+        // Inicializar módulo de comunicação
+        log('Inicializando sistema...');
+        if (window.DeliveryCommunication) {
+            DeliveryCommunication.init();
+            log('✅ Módulo DeliveryCommunication inicializado');
+            
+            setTimeout(() => {
+                checkConnection();
+            }, 1000);
+        } else {
+            log('❌ Módulo DeliveryCommunication não encontrado!');
+            showStatus('❌ Erro: communication.js não foi carregado', 'error');
+        }
+        
+        log('🎉 Sistema pronto para testes!');
+    </script>
+</body>
+</html>

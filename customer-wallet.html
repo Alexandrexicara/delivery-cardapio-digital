@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Carteira - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .customer-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: white;
+            text-align: center;
+        }
+        
+        .balance-label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .balance-amount {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .balance-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .balance-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .balance-item-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .balance-item-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .withdrawal-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+        
+        .withdrawal-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .amount-btn {
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .amount-btn:hover {
+            border-color: #27ae60;
+            background: #f8fff8;
+        }
+        
+        .amount-btn.selected {
+            border-color: #27ae60;
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s;
+        }
+        
+        .history-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .history-info {
+            flex: 1;
+        }
+        
+        .history-type {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .history-date {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .history-amount {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .history-amount.credit {
+            color: #27ae60;
+        }
+        
+        .history-amount.debit {
+            color: #e74c3c;
+        }
+        
+        .daily-limit-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        
+        .daily-limit-info i {
+            margin-right: 8px;
+            color: #ffc107;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .withdrawal-methods {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .method-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .method-option:hover {
+            border-color: #27ae60;
+            background: #f8fff8;
+        }
+        
+        .method-option.selected {
+            border-color: #27ae60;
+            background: #27ae60;
+            color: white;
+        }
+        
+        .method-icon {
+            font-size: 1.5em;
+        }
+        
+        .method-details {
+            flex: 1;
+        }
+        
+        .method-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .method-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #27ae60;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #155724;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #721c24;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .balance-amount {
+                font-size: 2.5em;
+            }
+            
+            .withdrawal-amounts {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
+    <div class="container">
+        <header>
+            <div class="header-title">💳 Minha Carteira</div>
+            <div class="customer-info">
+                <div class="customer-name" id="customerName">Carregando...</div>
+                <i class="fas fa-user-circle" style="font-size: 2em; color: #667eea;"></i>
+            </div>
+        </header>
+
+        <!-- Cartão de Saldo -->
+        <div class="balance-card">
+            <div class="balance-label">💰 Saldo Disponível</div>
+            <div class="balance-amount" id="availableBalance">R$ 0,00</div>
+            
+            <div class="balance-info">
+                <div class="balance-item">
+                    <div class="balance-item-label">Total Acumulado</div>
+                    <div class="balance-item-value" id="totalEarned">R$ 0,00</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-item-label">Total Sacado</div>
+                    <div class="balance-item-value" id="totalWithdrawn">R$ 0,00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações de Limite Diário -->
+        <div class="daily-limit-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Limite de Saque Diário:</strong> R$ 100,00<br>
+            <small>Valor já sacado hoje: R$ <span id="todayWithdrawn">0,00</span></small>
+        </div>
+
+        <!-- Formulário de Saque -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-money-bill-wave"></i>
+                Solicitar Saque
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Saque solicitado com sucesso!
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i> Erro ao processar saque.
+            </div>
+            
+            <div class="withdrawal-form">
+                <div class="form-group">
+                    <label>Valor do Saque *</label>
+                    <input type="number" id="withdrawalAmount" placeholder="R$ 0,00" min="1" step="0.01">
+                    
+                    <div class="withdrawal-amounts">
+                        <button class="amount-btn" onclick="setAmount(10)">R$ 10</button>
+                        <button class="amount-btn" onclick="setAmount(25)">R$ 25</button>
+                        <button class="amount-btn" onclick="setAmount(50)">R$ 50</button>
+                        <button class="amount-btn" onclick="setAmount(75)">R$ 75</button>
+                        <button class="amount-btn" onclick="setAmount(100)">R$ 100</button>
+                        <button class="amount-btn" onclick="setAmount('all')">Tudo</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Método de Saque *</label>
+                    <div class="withdrawal-methods">
+                        <div class="method-option" onclick="selectMethod('pix')">
+                            <div class="method-icon">📱</div>
+                            <div class="method-details">
+                                <div class="method-name">PIX</div>
+                                <div class="method-desc">Transferência instantânea</div>
+                            </div>
+                        </div>
+                        
+                        <div class="method-option" onclick="selectMethod('bank')">
+                            <div class="method-icon">🏦</div>
+                            <div class="method-details">
+                                <div class="method-name">Transferência Bancária</div>
+                                <div class="method-desc">1-2 dias úteis</div>
+                            </div>
+                        </div>
+                        
+                        <div class="method-option" onclick="selectMethod('cash')">
+                            <div class="method-icon">💵</div>
+                            <div class="method-details">
+                                <div class="method-name">Dinheiro em Espécie</div>
+                                <div class="method-desc">Retirar no estabelecimento</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="pixFields" style="display: none;">
+                    <label>Chave PIX *</label>
+                    <input type="text" id="pixKey" placeholder="CPF, telefone ou e-mail">
+                </div>
+                
+                <div class="form-group" id="bankFields" style="display: none;">
+                    <label>Dados Bancários *</label>
+                    <input type="text" id="bankName" placeholder="Nome do banco">
+                    <input type="text" id="agencyNumber" placeholder="Agência">
+                    <input type="text" id="accountNumber" placeholder="Número da conta">
+                </div>
+                
+                <div class="form-group" id="cashFields" style="display: none;">
+                    <label>Horário para Retirada *</label>
+                    <select id="withdrawalTime">
+                        <option value="">Selecione um horário</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="processWithdrawal()" id="withdrawalBtn">
+                    <i class="fas fa-paper-plane"></i> Solicitar Saque
+                </button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processando saque...</p>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Minhas Estatísticas
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Pedidos Realizados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="averageOrder">R$ 0</div>
+                    <div class="stat-label">Ticket Médio</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="withdrawalCount">0</div>
+                    <div class="stat-label">Saques Realizados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="memberSince">-</div>
+                    <div class="stat-label">Cliente Desde</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-history"></i>
+                Histórico de Transações
+            </div>
+            
+            <div class="history-list" id="historyList">
+                <!-- Preenchido por JavaScript -->
+            </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="window.location.href='usuario-updated.html'">
+                <i class="fas fa-arrow-left"></i> Voltar ao Cardápio
+            </button>
+            <button class="btn btn-secondary" onclick="exportHistory()">
+                <i class="fas fa-download"></i> Exportar Histórico
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentCustomer = null;
+        let customerBalance = null;
+        let selectedMethod = null;
+        let orders = [];
+        let withdrawals = [];
+
+        // Carregar dados do cliente
+        function loadCustomerSession() {
+            try {
+                const sessionData = localStorage.getItem('currentCustomerSession');
+                if (!sessionData) {
+                    window.location.href = 'cliente-cadastro.html';
+                    return;
+                }
+                
+                currentCustomer = JSON.parse(sessionData);
+                document.getElementById('customerName').textContent = currentCustomer.nome;
+                
+            } catch (error) {
+                console.error('Erro ao carregar sessão do cliente:', error);
+                window.location.href = 'cliente-cadastro.html';
+            }
+        }
+
+        // Carregar dados financeiros
+        function loadFinancialData() {
+            try {
+                // Carregar saldo do cliente
+                const balances = JSON.parse(localStorage.getItem('customerBalances') || '{}');
+                customerBalance = balances[currentCustomer.cpf] || {
+                    balance: 0,
+                    totalEarned: 0,
+                    totalWithdrawn: 0,
+                    dailyWithdrawals: {},
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Carregar pedidos
+                orders = JSON.parse(localStorage.getItem('orders') || '[]')
+                    .filter(order => order.customerCpf === currentCustomer.cpf);
+                
+                // Carregar saques
+                withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]')
+                    .filter(withdrawal => withdrawal.customerCpf === currentCustomer.cpf);
+                
+                updateUI();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados financeiros:', error);
+            }
+        }
+
+        // Atualizar interface
+        function updateUI() {
+            // Atualizar saldo
+            document.getElementById('availableBalance').textContent = `R$ ${customerBalance.balance.toFixed(2)}`;
+            document.getElementById('totalEarned').textContent = `R$ ${customerBalance.totalEarned.toFixed(2)}`;
+            document.getElementById('totalWithdrawn').textContent = `R$ ${customerBalance.totalWithdrawn.toFixed(2)}`;
+            
+            // Calcular saque diário
+            const today = new Date().toISOString().split('T')[0];
+            const todayWithdrawn = customerBalance.dailyWithdrawals[today] || 0;
+            document.getElementById('todayWithdrawn').textContent = todayWithdrawn.toFixed(2);
+            
+            // Atualizar estatísticas
+            document.getElementById('totalOrders').textContent = orders.length;
+            
+            const averageOrder = orders.length > 0 ? 
+                (orders.reduce((sum, order) => sum + (order.financial?.customerAmount || 0), 0) / orders.length).toFixed(2) : 
+                '0';
+            document.getElementById('averageOrder').textContent = `R$ ${averageOrder}`;
+            
+            document.getElementById('withdrawalCount').textContent = withdrawals.length;
+            
+            if (customerBalance.createdAt) {
+                const memberSince = new Date(customerBalance.createdAt).toLocaleDateString('pt-BR');
+                document.getElementById('memberSince').textContent = memberSince;
+            }
+            
+            // Renderizar histórico
+            renderHistory();
+        }
+
+        // Renderizar histórico
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            // Combinar pedidos e saques
+            const allTransactions = [
+                ...orders.map(order => ({
+                    type: 'order',
+                    date: new Date(order.date),
+                    amount: order.financial?.customerAmount || 0,
+                    description: `Pedido #${order.id} - Mesa ${order.mesa}`,
+                    paymentMethod: order.paymentMethod
+                })),
+                ...withdrawals.map(withdrawal => ({
+                    type: 'withdrawal',
+                    date: new Date(withdrawal.date),
+                    amount: -withdrawal.amount,
+                    description: `Saque via ${withdrawal.method}`,
+                    status: withdrawal.status
+                }))
+            ];
+            
+            // Ordenar por data (mais recentes primeiro)
+            allTransactions.sort((a, b) => b.date - a.date);
+            
+            if (allTransactions.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: #999;">Nenhuma transação encontrada</p>';
+                return;
+            }
+            
+            historyList.innerHTML = allTransactions.map(transaction => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-type">
+                            ${transaction.type === 'order' ? '🛒 Pedido' : '💸 Saque'}
+                            ${transaction.status ? ` - ${transaction.status}` : ''}
+                        </div>
+                        <div class="history-date">${transaction.description}</div>
+                        <div class="history-date">${transaction.date.toLocaleString('pt-BR')}</div>
+                    </div>
+                    <div class="history-amount ${transaction.amount >= 0 ? 'credit' : 'debit'}">
+                        ${transaction.amount >= 0 ? '+' : ''}R$ ${Math.abs(transaction.amount).toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Definir valor do saque
+        function setAmount(amount) {
+            const input = document.getElementById('withdrawalAmount');
+            
+            if (amount === 'all') {
+                input.value = customerBalance.balance;
+            } else {
+                input.value = amount;
+            }
+            
+            // Atualizar botões
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // Selecionar método de saque
+        function selectMethod(method) {
+            selectedMethod = method;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.method-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            event.target.closest('.method-option').classList.add('selected');
+            
+            // Esconder todos os campos
+            document.getElementById('pixFields').style.display = 'none';
+            document.getElementById('bankFields').style.display = 'none';
+            document.getElementById('cashFields').style.display = 'none';
+            
+            // Mostrar campos correspondentes
+            switch (method) {
+                case 'pix':
+                    document.getElementById('pixFields').style.display = 'block';
+                    break;
+                case 'bank':
+                    document.getElementById('bankFields').style.display = 'block';
+                    break;
+                case 'cash':
+                    document.getElementById('cashFields').style.display = 'block';
+                    break;
+            }
+        }
+
+        // Processar saque
+        function processWithdrawal() {
+            const amount = parseFloat(document.getElementById('withdrawalAmount').value);
+            
+            // Validações
+            if (!amount || amount <= 0) {
+                showError('Por favor, informe um valor válido para o saque.');
+                return;
+            }
+            
+            if (amount > customerBalance.balance) {
+                showError('Saldo insuficiente para este saque.');
+                return;
+            }
+            
+            // Verificar limite diário
+            const today = new Date().toISOString().split('T')[0];
+            const todayWithdrawn = customerBalance.dailyWithdrawals[today] || 0;
+            const dailyLimit = 100; // R$ 100 por dia
+            
+            if (todayWithdrawn + amount > dailyLimit) {
+                showError(`Limite diário de saque excedido. Você já sacou R$ ${todayWithdrawn.toFixed(2)} hoje. Limite: R$ ${dailyLimit.toFixed(2)}`);
+                return;
+            }
+            
+            if (!selectedMethod) {
+                showError('Por favor, selecione um método de saque.');
+                return;
+            }
+            
+            // Validar campos específicos do método
+            let methodData = {};
+            
+            switch (selectedMethod) {
+                case 'pix':
+                    const pixKey = document.getElementById('pixKey').value.trim();
+                    if (!pixKey) {
+                        showError('Por favor, informe a chave PIX.');
+                        return;
+                    }
+                    methodData.pixKey = pixKey;
+                    break;
+                    
+                case 'bank':
+                    const bankName = document.getElementById('bankName').value.trim();
+                    const agencyNumber = document.getElementById('agencyNumber').value.trim();
+                    const accountNumber = document.getElementById('accountNumber').value.trim();
+                    
+                    if (!bankName || !agencyNumber || !accountNumber) {
+                        showError('Por favor, preencha todos os dados bancários.');
+                        return;
+                    }
+                    
+                    methodData = { bankName, agencyNumber, accountNumber };
+                    break;
+                    
+                case 'cash':
+                    const withdrawalTime = document.getElementById('withdrawalTime').value;
+                    if (!withdrawalTime) {
+                        showError('Por favor, selecione um horário para retirada.');
+                        return;
+                    }
+                    methodData.withdrawalTime = withdrawalTime;
+                    break;
+            }
+            
+            // Mostrar loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('withdrawalBtn').disabled = true;
+            
+            // Simular processamento
+            setTimeout(() => {
+                // Criar registro de saque
+                const withdrawal = {
+                    id: Date.now(),
+                    customerCpf: currentCustomer.cpf,
+                    customerName: currentCustomer.nome,
+                    amount: amount,
+                    method: selectedMethod,
+                    methodData: methodData,
+                    status: 'pending',
+                    date: new Date().toISOString(),
+                    processedAt: null
+                };
+                
+                // Salvar saque
+                try {
+                    const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+                    withdrawals.push(withdrawal);
+                    localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+                    
+                    // Atualizar saldo do cliente
+                    updateCustomerBalanceAfterWithdrawal(amount);
+                    
+                    // Mostrar sucesso
+                    showSuccess('Saque solicitado com sucesso! Você receberá atualizações sobre o processamento.');
+                    
+                    // Limpar formulário
+                    resetWithdrawalForm();
+                    
+                    // Recarregar dados
+                    loadFinancialData();
+                    
+                } catch (error) {
+                    console.error('Erro ao processar saque:', error);
+                    showError('Erro ao processar saque. Tente novamente.');
+                } finally {
+                    // Esconder loading
+                    document.getElementById('loading').classList.remove('show');
+                    document.getElementById('withdrawalBtn').disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Atualizar saldo após saque
+        function updateCustomerBalanceAfterWithdrawal(amount) {
+            try {
+                const balances = JSON.parse(localStorage.getItem('customerBalances') || '{}');
+                
+                if (balances[currentCustomer.cpf]) {
+                    balances[currentCustomer.cpf].balance -= amount;
+                    balances[currentCustomer.cpf].totalWithdrawn += amount;
+                    balances[currentCustomer.cpf].lastWithdrawal = new Date().toISOString();
+                    
+                    // Atualizar saque diário
+                    const today = new Date().toISOString().split('T')[0];
+                    balances[currentCustomer.cpf].dailyWithdrawals[today] = 
+                        (balances[currentCustomer.cpf].dailyWithdrawals[today] || 0) + amount;
+                    
+                    localStorage.setItem('customerBalances', JSON.stringify(balances));
+                }
+                
+            } catch (error) {
+                console.error('Erro ao atualizar saldo:', error);
+            }
+        }
+
+        // Resetar formulário
+        function resetWithdrawalForm() {
+            document.getElementById('withdrawalAmount').value = '';
+            document.getElementById('pixKey').value = '';
+            document.getElementById('bankName').value = '';
+            document.getElementById('agencyNumber').value = '';
+            document.getElementById('accountNumber').value = '';
+            document.getElementById('withdrawalTime').value = '';
+            
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.method-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            document.getElementById('pixFields').style.display = 'none';
+            document.getElementById('bankFields').style.display = 'none';
+            document.getElementById('cashFields').style.display = 'none';
+            
+            selectedMethod = null;
+        }
+
+        // Mostrar mensagem de sucesso
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        // Mostrar mensagem de erro
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        // Exportar histórico
+        function exportHistory() {
+            let csv = 'Tipo,Data,Descrição,Valor,Método,Status\n';
+            
+            const allTransactions = [
+                ...orders.map(order => ({
+                    type: 'Pedido',
+                    date: new Date(order.date).toLocaleString('pt-BR'),
+                    description: `Pedido #${order.id} - Mesa ${order.mesa}`,
+                    amount: order.financial?.customerAmount || 0,
+                    method: order.paymentMethod,
+                    status: 'Concluído'
+                })),
+                ...withdrawals.map(withdrawal => ({
+                    type: 'Saque',
+                    date: new Date(withdrawal.date).toLocaleString('pt-BR'),
+                    description: `Saque via ${withdrawal.method}`,
+                    amount: -withdrawal.amount,
+                    method: withdrawal.method,
+                    status: withdrawal.status
+                }))
+            ];
+            
+            // Ordenar por data
+            allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            allTransactions.forEach(transaction => {
+                csv += `"${transaction.type}","${transaction.date}","${transaction.description}",${transaction.amount},"${transaction.method}","${transaction.status}"\n`;
+            });
+            
+            // Download do arquivo
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `historico_${currentCustomer.cpf}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadCustomerSession();
+            loadFinancialData();
+        };
+    </script>
+</body>
+</html>

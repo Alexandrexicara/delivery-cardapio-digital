@@ -1,0 +1,31 @@
+// Correção para o erro de JSON.parse no admin.html
+// Adicione este script antes do fechamento do </body> no admin.html
+
+<script>
+// Corrige o tratamento de mensagens WebSocket
+(function() {
+    // Aguarda o DOM carregar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Encontra e substitui o onmessage
+        const scripts = document.querySelectorAll('script:not([src])');
+        scripts.forEach(script => {
+            const code = script.textContent;
+            if (code.includes('ws.onmessage') && code.includes('JSON.parse(event.data)')) {
+                // Substitui pelo código corrigido
+                const fixedCode = code.replace(
+                    /ws\.onmessage\s*=\s*function\(event\)\s*\{\s*const data = JSON\.parse\(event\.data\);/g,
+                    `ws.onmessage = function(event) {
+                        let data;
+                        try {
+                            data = JSON.parse(event.data);
+                        } catch (e) {
+                            console.warn('[WS] Mensagem não-JSON recebida:', event.data);
+                            return;
+                        }`
+                );
+                script.textContent = fixedCode;
+            }
+        });
+    });
+})();
+</script>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Rápido - Totem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .log-entry {
+            font-family: monospace;
+            font-size: 12px;
+            padding: 5px;
+            margin: 5px 0;
+            background: #f0f0f0;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+        .success { border-left-color: #27ae60; }
+        .error { border-left-color: #e74c3c; }
+        .status-ok {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status-error {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Rápido - Sistema Totem</h1>
+    
+    <div class="test-section">
+        <h2>Status do Totem</h2>
+        <p>Verifique se o totem está funcionando corretamente:</p>
+        <button onclick="openTotem()">Abrir Totem</button>
+        <button onclick="checkTotemData()">Verificar Dados</button>
+        <button onclick="clearTotemData()">Limpar Dados do Totem</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Checklist de Funcionamento</h2>
+        <ul id="checklist">
+            <li>Aguardando verificação...</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Dados no localStorage</h2>
+        <div id="localStorageData">Nenhum dado carregado</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Pedidos Recentes do Totem</h2>
+        <div id="recentOrders">Nenhum pedido encontrado</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="logContainer"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('logContainer').appendChild(logEntry);
+            console.log('[TESTE TOTEM]', message);
+        }
+
+        function openTotem() {
+            log('Abrindo totem.html...');
+            window.open('totem.html', '_blank');
+            setTimeout(() => {
+                checkTotemData();
+            }, 2000);
+        }
+
+        function checkTotemData() {
+            log('Verificando dados do totem...');
+            
+            const checklist = document.getElementById('checklist');
+            checklist.innerHTML = '';
+            
+            // Verificar menu items
+            const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            if (menuItems.length > 0) {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Menu items carregados: ${menuItems.length} itens</li>`;
+                log(`Menu items: ${menuItems.length} itens`, 'success');
+            } else {
+                checklist.innerHTML += `<li><span class="status-error">✗</span> Menu vazio - Usará menu padrão</li>`;
+                log('Menu items: Vazio (usará fallback)', 'error');
+            }
+            
+            // Verificar último número de pedido
+            const totemLastOrder = localStorage.getItem('totemLastOrder');
+            if (totemLastOrder) {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Último pedido: #${totemLastOrder}</li>`;
+                log(`Último número de pedido: ${totemLastOrder}`, 'success');
+            } else {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Contador de pedidos zerado</li>`;
+                log('Contador de pedidos: Não iniciado', 'info');
+            }
+            
+            // Verificar personalizações
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            if (Object.keys(customizations).length > 0) {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Personalizações aplicadas</li>`;
+                log('Personalizações: Encontradas', 'success');
+            } else {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Sem personalizações - Usará padrão</li>`;
+                log('Personalizações: Nenhuma', 'info');
+            }
+            
+            // Verificar taxa de serviço
+            const taxaPorProduto = localStorage.getItem('taxaPorProdutoGlobal');
+            if (taxaPorProduto) {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Taxa por produto: R$ ${parseFloat(taxaPorProduto).toFixed(2)}</li>`;
+                log(`Taxa por produto: R$ ${parseFloat(taxaPorProduto).toFixed(2)}`, 'success');
+            } else {
+                checklist.innerHTML += `<li><span class="status-ok">✓</span> Taxa padrão: R$ 0,10</li>`;
+                log('Taxa por produto: Padrão (R$ 0,10)', 'info');
+            }
+            
+            // Mostrar dados do localStorage
+            displayLocalStorageData();
+            
+            // Verificar pedidos recentes
+            checkRecentOrders();
+        }
+
+        function displayLocalStorageData() {
+            const dataDiv = document.getElementById('localStorageData');
+            const data = {
+                menuItems: JSON.parse(localStorage.getItem('menuItems') || '[]'),
+                totemLastOrder: localStorage.getItem('totemLastOrder'),
+                establishmentCustomizations: JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}'),
+                taxaPorProdutoGlobal: localStorage.getItem('taxaPorProdutoGlobal'),
+                orders: JSON.parse(localStorage.getItem('orders') || '[]')
+            };
+            
+            dataDiv.innerHTML = `
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        function checkRecentOrders() {
+            const ordersDiv = document.getElementById('recentOrders');
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const totemOrders = orders.filter(o => o.orderType === 'totem');
+            
+            if (totemOrders.length === 0) {
+                ordersDiv.innerHTML = '<p>Nenhum pedido de totem encontrado.</p>';
+                log('Pedidos totem: Nenhum encontrado', 'info');
+            } else {
+                const recentOrders = totemOrders.slice(-5).reverse();
+                ordersDiv.innerHTML = `
+                    <p><strong>Total de pedidos totem:</strong> ${totemOrders.length}</p>
+                    <ul>
+                        ${recentOrders.map(order => `
+                            <li>
+                                Pedido #${order.id} - 
+                                R$ ${order.total.toFixed(2)} - 
+                                ${order.paymentMethod} - 
+                                ${new Date(order.date).toLocaleString()}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                log(`Pedidos totem: ${totemOrders.length} encontrados`, 'success');
+            }
+        }
+
+        function clearTotemData() {
+            if (confirm('Tem certeza que deseja limpar todos os dados do totem?')) {
+                localStorage.removeItem('totemLastOrder');
+                localStorage.removeItem('establishmentCustomizations');
+                log('Dados do totem limpos!', 'success');
+                checkTotemData();
+            }
+        }
+
+        // Inicialização
+        window.onload = function() {
+            log('Página de teste carregada');
+            log('Clique em "Verificar Dados" para checar o totem');
+            checkTotemData();
+        };
+    </script>
+</body>
+</html>

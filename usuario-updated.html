@@ -1,0 +1,1669 @@
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .footer-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-banner img {
+            width: 100%;
+            height: auto;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        
+        .customer-details {
+            text-align: right;
+        }
+        
+        .customer-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .customer-mesa {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .cart-summary {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 280px;
+            max-width: 320px;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .cart-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .cart-count {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .cart-item-quantity {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .cart-item-price {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 10px;
+        }
+        
+        .total-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .total-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #27ae60;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .category-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .category-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .payment-option-card {
+            position: relative;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .payment-option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .payment-option-card.selected {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.2);
+        }
+        
+        .payment-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f39c12;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .payment-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .payment-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .payment-desc {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .payment-features {
+            text-align: left;
+            font-size: 0.9em;
+        }
+        
+        .payment-features .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+            color: #27ae60;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .item-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
+                        linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 3em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .item-details {
+            padding: 20px;
+        }
+        
+        .item-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .item-description {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-price {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .add-to-cart {
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .add-to-cart:hover {
+            background: #229954;
+            transform: scale(1.05);
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn.minus {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .quantity-btn.plus {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .quantity-display {
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .payment-modal.show {
+            display: flex;
+        }
+        
+        .payment-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .payment-methods {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .payment-method {
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .payment-icon {
+            font-size: 2em;
+        }
+        
+        .payment-details {
+            flex: 1;
+        }
+        
+        .payment-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .payment-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .card-scanner {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-scanner.show {
+            display: block;
+        }
+        
+        .scanner-area {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        .scanner-icon {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .card-inputs {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .input-group {
+            text-align: left;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .cvv-input {
+            width: 80px !important;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .summary-row.total {
+            font-weight: bold;
+            font-size: 1.2em;
+            padding-top: 10px;
+            border-top: 2px solid #e1e8ed;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .customer-info {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .customer-details {
+                text-align: center;
+            }
+            
+            .cart-summary {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 20px 0;
+                max-width: 100%;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <div class="logo" id="establishmentName">🍽️ Cardápio Digital</div>
+            </div>
+            <div class="customer-info">
+                <div class="customer-details">
+                    <div class="customer-name" id="customerName">Carregando...</div>
+                    <div class="customer-mesa" id="customerMesa">-</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button onclick="showOrderTypeSelection()" style="background: #f39c12; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 0.9em; cursor: pointer;">
+                        🏪 Mudar Local
+                    </button>
+                    <a href="customer-wallet.html" style="text-decoration: none; background: #27ae60; color: white; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 0.9em;">
+                        💳 Minha Carteira
+                    </a>
+                    <i class="fas fa-user-circle" style="font-size: 2em; color: #667eea;"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Opções de Pagamento -->
+        <div class="payment-options" style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <div class="section-title" style="font-size: 1.4em; font-weight: bold; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-credit-card"></i>
+                Como você prefere pagar?
+            </div>
+            
+            <div class="payment-methods-choice" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="payment-option-card" onclick="selectPaymentOption('end')" id="endPaymentOption" style="border: 2px solid #e1e8ed; border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white;">
+                    <div class="payment-icon" style="font-size: 3em; margin-bottom: 15px; color: #3498db;">🍽️</div>
+                    <div class="payment-title" style="font-size: 1.3em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Pagar no Final</div>
+                    <div class="payment-desc" style="color: #7f8c8d; font-size: 0.9em; margin-bottom: 15px;">Faça seus pedidos e pague tudo no final da refeição</div>
+                    <div class="payment-features" style="text-align: left; font-size: 0.9em;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #27ae60;">
+                            <i class="fas fa-check"></i>
+                            <span>Pagamento único no final</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #27ae60;">
+                            <i class="fas fa-check"></i>
+                            <span>Tradicional e prático</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #27ae60;">
+                            <i class="fas fa-check"></i>
+                            <span>Escolha à vontade</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="payment-option-card" onclick="selectPaymentOption('per_item')" id="perItemPaymentOption" style="border: 2px solid #e1e8ed; border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white;">
+                    <div class="payment-badge" style="position: absolute; top: 10px; right: 10px; background: #f39c12; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8em; font-weight: 600;">⚡ Rápido</div>
+                    <div class="payment-icon" style="font-size: 3em; margin-bottom: 15px; color: #27ae60; position: relative;">⚡</div>
+                    <div class="payment-title" style="font-size: 1.3em; font-weight: bold; color: #2c3e50; margin-bottom: 10px;">Pagar por Item</div>
+                    <div class="payment-desc" style="color: #7f8c8d; font-size: 0.9em; margin-bottom: 15px;">Pague cada item assim que fizer o pedido</div>
+                    <div class="payment-features" style="text-align: left; font-size: 0.9em;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #27ae60;">
+                            <i class="fas fa-check"></i>
+                            <span>Prioridade na cozinha</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #27ae60;">
+                            <i class="fas fa-check"></i>
+                            <span>Sem filas no final</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #27ae60;">
+                            <i class="fas fa-check"></i>
+                            <span>Controle total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="paymentChoiceInfo" style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-top: 15px; display: none;">
+                <div id="choiceInfoContent" style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-info-circle" style="color: #3498db; font-size: 1.2em;"></i>
+                    <span id="choiceInfoText" style="color: #2c3e50;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="cart-summary">
+            <div class="cart-header">
+                <div class="cart-title">🛒 Carrinho</div>
+                <div class="cart-count" id="cartCount">0</div>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p style="text-align: center; color: #999;">Seu carrinho está vazio</p>
+            </div>
+            <div class="cart-total">
+                <div class="total-label">Total:</div>
+                <div class="total-value" id="cartTotal">R$ 0,00</div>
+            </div>
+            <div class="cart-actions">
+                <button class="btn btn-secondary" onclick="clearCart()">Limpar</button>
+                <button class="btn btn-primary" onclick="showPaymentModal()">Pagar →</button>
+            </div>
+        </div>
+
+        <!-- Categorias -->
+        <div class="categories" id="categories">
+            <button class="category-btn active" onclick="filterCategory('all')">Todos</button>
+            <button class="category-btn" onclick="filterCategory('bebidas')">Bebidas</button>
+            <button class="category-btn" onclick="filterCategory('pratos')">Pratos</button>
+            <button class="category-btn" onclick="filterCategory('sobremesas')">Sobremesas</button>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="menu-grid" id="menuGrid">
+            <!-- Items serão carregados por JavaScript -->
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal de Pagamento -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <div class="modal-header">
+                <div class="modal-title">💳 Forma de Pagamento</div>
+                <button class="close-modal" onclick="closePaymentModal()">×</button>
+            </div>
+            
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="summarySubtotal">R$ 0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Taxa de serviço:</span>
+                    <span id="summaryService">R$ 0,00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="summaryTotal">R$ 0,00</span>
+                </div>
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPaymentMethod('card')">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-details">
+                        <div class="payment-name">Cartão de Crédito/Débito</div>
+                        <div class="payment-desc">Escaneie seu cartão</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPaymentMethod('pix')">
+                    <div class="payment-icon">📱</div>
+                    <div class="payment-details">
+                        <div class="payment-name">PIX</div>
+                        <div class="payment-desc">Pagamento instantâneo</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPaymentMethod('money')">
+                    <div class="payment-icon">💵</div>
+                    <div class="payment-details">
+                        <div class="payment-name">Dinheiro</div>
+                        <div class="payment-desc">Pagamento na entrega</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scanner de Cartão -->
+            <div class="card-scanner" id="cardScanner">
+                <div class="scanner-area">
+                    <div class="scanner-icon">📷</div>
+                    <h3>Posicione o cartão na câmera</h3>
+                    <p>O sistema irá ler os dados automaticamente</p>
+                </div>
+                
+                <div class="card-inputs">
+                    <div class="input-group">
+                        <label>Número do Cartão</label>
+                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+                    </div>
+                    <div class="input-group">
+                        <label>Validade</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="input-group">
+                        <label>CVV</label>
+                        <input type="text" id="cardCVV" placeholder="123" class="cvv-input" maxlength="4">
+                    </div>
+                    <div class="input-group">
+                        <label>Nome no Cartão</label>
+                        <input type="text" id="cardName" placeholder="Como está no cartão">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="processCardPayment()">
+                    Confirmar Pagamento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Banner Space -->
+    <div class="footer-banner">
+        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cart = [];
+        let currentCustomer = null;
+        let customizationData = {};
+        let selectedPaymentMethod = null;
+        let currentCategory = 'all';
+        let paymentChoice = null; // 'end' ou 'per_item'
+
+        // Menu de exemplo (pode ser carregado de backend)
+        const menuItems = [
+            {
+                id: 1,
+                name: "Hambúrguer Tradicional",
+                description: "Pão, carne, queijo, alface, tomate",
+                price: 25.00,
+                category: "pratos",
+                image: "🍔"
+            },
+            {
+                id: 2,
+                name: "Refrigerante Lata",
+                description: "Coca-Cola, Guaraná, Fanta",
+                price: 8.00,
+                category: "bebidas",
+                image: "🥤"
+            },
+            {
+                id: 3,
+                name: "Batata Frita",
+                description: "Porção individual com molho",
+                price: 12.00,
+                category: "pratos",
+                image: "🍟"
+            },
+            {
+                id: 4,
+                name: "Suco Natural",
+                description: "Laranja, Limão, Maracujá",
+                price: 10.00,
+                category: "bebidas",
+                image: "🥤"
+            },
+            {
+                id: 5,
+                name: "Petit Gateau",
+                description: "Chocolate com sorvete",
+                price: 15.00,
+                category: "sobremesas",
+                image: "🍰"
+            },
+            {
+                id: 6,
+                name: "Salada Caesar",
+                description: "Folhas verdes, frango, parmesão",
+                price: 22.00,
+                category: "pratos",
+                image: "🥗"
+            }
+        ];
+
+        // Selecionar opção de pagamento
+        function selectPaymentOption(option) {
+            paymentChoice = option;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.payment-option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            event.target.closest('.payment-option-card').classList.add('selected');
+            
+            // Mostrar informações da escolha
+            const infoDiv = document.getElementById('paymentChoiceInfo');
+            const infoText = document.getElementById('choiceInfoText');
+            
+            if (option === 'end') {
+                infoText.textContent = 'Ótimo! Você poderá fazer seus pedidos normalmente e pagar tudo no final da refeição.';
+            } else {
+                infoText.textContent = 'Perfeito! Cada pedido será pago imediatamente. Você terá prioridade na cozinha e não precisará esperar no final.';
+            }
+            
+            infoDiv.style.display = 'block';
+            
+            // Salvar preferência do cliente
+            try {
+                const customerData = JSON.parse(localStorage.getItem('customerPreferences') || '{}');
+                customerData[currentCustomer.cpf] = {
+                    ...customerData[currentCustomer.cpf],
+                    paymentChoice: option,
+                    lastUpdated: new Date().toISOString()
+                };
+                localStorage.setItem('customerPreferences', JSON.stringify(customerData));
+            } catch (error) {
+                console.error('Erro ao salvar preferência de pagamento:', error);
+            }
+        }
+
+        // Carregar preferência de pagamento do cliente
+        function loadPaymentPreference() {
+            try {
+                const customerData = JSON.parse(localStorage.getItem('customerPreferences') || '{}');
+                const preference = customerData[currentCustomer.cpf];
+                
+                if (preference && preference.paymentChoice) {
+                    paymentChoice = preference.paymentChoice;
+                    
+                    // Selecionar automaticamente a opção preferida
+                    const optionCard = document.getElementById(preference.paymentChoice === 'end' ? 'endPaymentOption' : 'perItemPaymentOption');
+                    if (optionCard) {
+                        optionCard.classList.add('selected');
+                        document.getElementById('paymentChoiceInfo').style.display = 'block';
+                        
+                        const infoText = document.getElementById('choiceInfoText');
+                        if (preference.paymentChoice === 'end') {
+                            infoText.textContent = 'Continuando com pagamento no final, como você preferiu da última vez.';
+                        } else {
+                            infoText.textContent = 'Continuando com pagamento por item, como você preferiu da última vez.';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar preferência de pagamento:', error);
+            }
+        }
+
+        // Opções de pedido
+        function showOrderTypeSelection() {
+            const orderType = confirm('Como você prefere pedir?\n\nOK = Pedido na Mesa\nCancelar = Pedido no Balcão');
+            
+            if (orderType) {
+                // Pedido na mesa
+                currentCustomer.orderType = 'mesa';
+                document.getElementById('customerMesa').textContent = `Mesa ${currentCustomer.mesa.toString().padStart(2, '0')}`;
+            } else {
+                // Pedido no balcão
+                currentCustomer.orderType = 'balcao';
+                document.getElementById('customerMesa').textContent = '🏪 Balcão';
+            }
+            
+            // Salvar preferência
+            localStorage.setItem('currentCustomerSession', JSON.stringify(currentCustomer));
+        }
+
+        // Carregar dados do cliente
+        function loadCustomerSession() {
+            try {
+                const sessionData = localStorage.getItem('currentCustomerSession');
+                if (!sessionData) {
+                    // Redirecionar para cadastro se não houver sessão
+                    window.location.href = 'cliente-cadastro.html';
+                    return;
+                }
+                
+                currentCustomer = JSON.parse(sessionData);
+                
+                // Mostrar nome do cliente
+                document.getElementById('customerName').textContent = currentCustomer.nome;
+                
+                // Verificar tipo de pedido
+                if (!currentCustomer.orderType) {
+                    showOrderTypeSelection();
+                } else {
+                    if (currentCustomer.orderType === 'mesa') {
+                        document.getElementById('customerMesa').textContent = `Mesa ${currentCustomer.mesa.toString().padStart(2, '0')}`;
+                    } else {
+                        document.getElementById('customerMesa').textContent = '🏪 Balcão';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar sessão do cliente:', error);
+                window.location.href = 'cliente-cadastro.html';
+            }
+        }
+
+        // Carregar pedido repetido
+        function loadRepeatedOrder() {
+            if (!currentCustomer.orderData) return;
+            
+            const orderItems = currentCustomer.orderData.items;
+            orderItems.forEach(item => {
+                const menuItem = menuItems.find(m => m.id === item.id);
+                if (menuItem) {
+                    cart.push({
+                        ...menuItem,
+                        quantity: item.quantity
+                    });
+                }
+            });
+            
+            updateCart();
+        }
+
+        // Carregar personalizações do estabelecimento
+        function loadEstablishmentData() {
+            try {
+                const savedData = localStorage.getItem('establishmentCustomizations');
+                if (savedData) {
+                    customizationData = JSON.parse(savedData);
+                    applyCustomizations();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do estabelecimento:', error);
+            }
+        }
+
+        // Aplicar personalizações
+        function applyCustomizations() {
+            if (customizationData.establishmentName) {
+                document.getElementById('establishmentName').textContent = customizationData.establishmentName;
+                document.getElementById('pageTitle').textContent = customizationData.establishmentName;
+            }
+            
+            if (customizationData.primaryColor) {
+                document.documentElement.style.setProperty('--primary-color', customizationData.primaryColor);
+            }
+        }
+
+        // Renderizar menu
+        function renderMenu(category = 'all') {
+            const menuGrid = document.getElementById('menuGrid');
+            const filteredItems = category === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === category);
+            
+            menuGrid.innerHTML = filteredItems.map(item => createMenuItemHTML(item)).join('');
+        }
+
+        // Criar HTML do item do menu
+        function createMenuItemHTML(item) {
+            const cartItem = cart.find(c => c.id === item.id);
+            const quantity = cartItem ? cartItem.quantity : 0;
+            
+            return `
+                <div class="menu-item">
+                    <div class="item-image">
+                        <span>${item.image}</span>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-description">${item.description}</div>
+                        <div class="item-footer">
+                            <div class="item-price">R$ ${item.price.toFixed(2)}</div>
+                            ${quantity > 0 ? createQuantityControls(item, quantity) : createAddButton(item)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Criar botão adicionar
+        function createAddButton(item) {
+            return `<button class="add-to-cart" onclick="addToCart(${item.id})">Adicionar</button>`;
+        }
+
+        // Criar controles de quantidade
+        function createQuantityControls(item, quantity) {
+            return `
+                <div class="quantity-controls">
+                    <button class="quantity-btn minus" onclick="updateQuantity(${item.id}, -1)">−</button>
+                    <div class="quantity-display">${quantity}</div>
+                    <button class="quantity-btn plus" onclick="updateQuantity(${item.id}, 1)">+</button>
+                </div>
+            `;
+        }
+
+        // Adicionar ao carrinho
+        function addToCart(itemId) {
+            // Verificar se o cliente já escolheu uma forma de pagamento
+            if (!paymentChoice) {
+                alert('Por favor, escolha como você prefere pagar: "Pagar no Final" ou "Pagar por Item".');
+                document.querySelector('.payment-options').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+            
+            const menuItem = menuItems.find(item => item.id === itemId);
+            if (!menuItem) return;
+            
+            // Se escolheu pagamento por item, processar pagamento imediato
+            if (paymentChoice === 'per_item') {
+                processPerItemPayment(menuItem);
+                return;
+            }
+            
+            // Se escolheu pagamento no final, adicionar ao carrinho normalmente
+            const existingItem = cart.find(item => item.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    ...menuItem,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            renderMenu(currentCategory);
+        }
+
+        // Atualizar quantidade
+        function updateQuantity(itemId, change) {
+            const cartItem = cart.find(item => item.id === itemId);
+            if (!cartItem) return;
+            
+            cartItem.quantity += change;
+            
+            if (cartItem.quantity <= 0) {
+                cart = cart.filter(item => item.id !== itemId);
+            }
+            
+            updateCart();
+            renderMenu(currentCategory);
+        }
+
+        // Limpar carrinho
+        function clearCart() {
+            if (cart.length === 0) return;
+            
+            if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+                cart = [];
+                updateCart();
+                renderMenu(currentCategory);
+            }
+        }
+
+        // Atualizar carrinho
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #999;">Seu carrinho está vazio</p>';
+                cartCount.textContent = '0';
+                cartTotal.textContent = 'R$ 0,00';
+                return;
+            }
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            cartCount.textContent = totalItems;
+            cartTotal.textContent = `R$ ${totalPrice.toFixed(2)}`;
+            
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-quantity">Quantidade: ${item.quantity}</div>
+                    </div>
+                    <div class="cart-item-price">R$ ${(item.price * item.quantity).toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Filtrar por categoria
+        function filterCategory(category) {
+            currentCategory = category;
+            
+            // Atualizar botões
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Renderizar menu
+            renderMenu(category);
+        }
+
+        // Mostrar modal de pagamento
+        function showPaymentModal() {
+            if (cart.length === 0) {
+                alert('Seu carrinho está vazio!');
+                return;
+            }
+            
+            updatePaymentSummary();
+            document.getElementById('paymentModal').classList.add('show');
+        }
+
+        // Fechar modal de pagamento
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show');
+            document.getElementById('cardScanner').classList.remove('show');
+            
+            // Limpar seleção
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.classList.remove('selected');
+            });
+            selectedPaymentMethod = null;
+        }
+
+        // Atualizar resumo do pagamento
+        function updatePaymentSummary() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const serviceFeePerItem = 0.10; // 10 centavos por produto
+            const serviceFee = totalItems * serviceFeePerItem;
+            const total = subtotal + serviceFee;
+            
+            document.getElementById('summarySubtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('summaryService').textContent = `R$ ${serviceFee.toFixed(2)} (${totalItems} itens × R$ 0,10)`;
+            document.getElementById('summaryTotal').textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        // Selecionar método de pagamento
+        function selectPaymentMethod(method) {
+            // Remover seleção anterior
+            document.querySelectorAll('.payment-method').forEach(m => {
+                m.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            event.target.closest('.payment-method').classList.add('selected');
+            selectedPaymentMethod = method;
+            
+            // Mostrar/esconder scanner de cartão
+            const cardScanner = document.getElementById('cardScanner');
+            if (method === 'card') {
+                cardScanner.classList.add('show');
+            } else {
+                cardScanner.classList.remove('show');
+                // Processar outros pagamentos diretamente
+                if (method === 'pix') {
+                    processPixPayment();
+                } else if (method === 'money') {
+                    processMoneyPayment();
+                }
+            }
+        }
+
+        // Processar pagamento com cartão
+        function processCardPayment() {
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardExpiry = document.getElementById('cardExpiry').value;
+            const cardCVV = document.getElementById('cardCVV').value;
+            const cardName = document.getElementById('cardName').value;
+            
+            if (!cardNumber || !cardExpiry || !cardCVV || !cardName) {
+                alert('Por favor, preencha todos os dados do cartão.');
+                return;
+            }
+            
+            // Simular processamento
+            processOrder('card', {
+                cardNumber: cardNumber.replace(/\s/g, '').slice(-4),
+                cardName: cardName
+            });
+        }
+
+        // Processar pagamento PIX
+        function processPixPayment() {
+            // Simular PIX
+            processOrder('pix');
+        }
+
+        // Processar pagamento em dinheiro
+        function processMoneyPayment() {
+                
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const serviceFeePerItem = 0.10;
+                const serviceFee = totalItems * serviceFeePerItem;
+                const total = subtotal + serviceFee;
+                
+                // Calcular valores separados
+                const systemFee = serviceFee;
+                const customerAmount = subtotal;
+                
+                const order = {
+                    id: Date.now(),
+                    customerName: currentCustomer.nome,
+                    customerCpf: currentCustomer.cpf,
+                    customerPhone: currentCustomer.telefone,
+                    mesa: currentCustomer.orderType === 'mesa' ? currentCustomer.mesa : 'Balcão',
+                    orderType: currentCustomer.orderType || 'mesa',
+                    items: cart.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity
+                    })),
+                    subtotal: subtotal,
+                    serviceFee: serviceFee,
+                    total: total,
+                    paymentMethod: paymentMethod,
+                    paymentData: paymentMethod === 'card' ? {
+                        cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, '').slice(-4),
+                        cardName: document.getElementById('cardName').value
+                    } : {},
+                    status: 'confirmed',
+                    date: new Date().toISOString(),
+                    priority: currentCustomer.orderType === 'balcao' ? 'high' : 'normal',
+                    financial: {
+                        customerAmount: customerAmount,
+                        systemFee: systemFee,
+                        feePerItem: serviceFeePerItem,
+                        totalItems: totalItems
+                    }
+                };
+                
+                // Salvar pedido
+                try {
+                    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                    orders.push(order);
+                    localStorage.setItem('orders', JSON.stringify(orders));
+            }
+        }
+
+        // Processar pagamento por item
+        function processPerItemPayment(menuItem) {
+            const serviceFeePerItem = 0.10;
+            const serviceFee = serviceFeePerItem;
+            const total = menuItem.price + serviceFee;
+            
+            // Calcular valores separados
+            const systemFee = serviceFee;
+            const customerAmount = menuItem.price;
+            
+            const order = {
+                id: Date.now(),
+                customerName: currentCustomer.nome,
+                customerCpf: currentCustomer.cpf,
+                customerPhone: currentCustomer.telefone,
+                mesa: currentCustomer.mesa,
+                items: [{
+                    id: menuItem.id,
+                    name: menuItem.name,
+                    price: menuItem.price,
+                    quantity: 1
+                }],
+                subtotal: menuItem.price,
+                serviceFee: serviceFee,
+                total: total,
+                paymentMethod: 'per_item',
+                status: 'confirmed',
+                date: new Date().toISOString(),
+                priority: 'high', // Prioridade alta para pagamento por item
+                paymentType: 'per_item',
+                financial: {
+                    customerAmount: customerAmount,
+                    systemFee: systemFee,
+                    feePerItem: serviceFeePerItem,
+                    totalItems: 1
+                }
+            };
+            
+            // Salvar pedido
+            try {
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                orders.push(order);
+                localStorage.setItem('orders', JSON.stringify(orders));
+                
+                // Atualizar contador de visitas do cliente
+                updateCustomerVisitCount();
+                
+                // Adicionar valor à conta do cliente
+                updateCustomerBalance(currentCustomer.cpf, customerAmount);
+                
+                // Mostrar sucesso
+                const message = `
+                    ✅ Pedido Pago e Confirmado!
+                    
+                    ${menuItem.name} - ${currentCustomer.orderType === 'balcao' ? 'Balcão' : `Mesa ${currentCustomer.mesa}`}
+                    Total: R$ ${total.toFixed(2)}
+                    
+                    ⚡ Seu pedido tem prioridade máxima na cozinha!
+                    ${currentCustomer.orderType === 'balcao' ? 'Retire seu pedido no balcão.' : 'Em breve será entregue na sua mesa.'}
+                `;
+                
+                alert(message);
+                
+                // Atualizar interface
+                renderMenu(currentCategory);
+                
+            } catch (error) {
+                console.error('Erro ao processar pagamento por item:', error);
+                alert('Erro ao processar pagamento. Tente novamente.');
+            }
+        }
+
+        // Enviar notificações sonoras para todos os setores
+        function sendOrderNotifications(order) {
+            try {
+                // Criar notificação para o sistema
+                const notification = {
+                    id: Date.now(),
+                    type: 'new_order',
+                    orderId: order.id,
+                    customerName: order.customerName,
+                    mesa: order.mesa,
+                    orderType: order.orderType,
+                    priority: order.priority,
+                    timestamp: new Date().toISOString(),
+                    message: `Novo pedido #${order.id} - ${order.customerName}`,
+                    sectors: ['garcom', 'cozinha', 'balcao'],
+                    status: 'pending'
+                };
+                
+                // Salvar notificação
+                const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                notifications.push(notification);
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+                
+                // Simular notificação sonora
+                playNotificationSound(order.orderType);
+                
+                // Enviar para diferentes setores
+                console.log(`🔔 NOTIFICAÇÃO ENVIADA: Pedido #${order.id}`);
+                console.log(`📍 Setores notificados: Garçom, Cozinha, Balcão`);
+                console.log(`👤 Cliente: ${order.customerName}`);
+                console.log(`🏪 Local: ${order.mesa}`);
+                console.log(`⚡ Prioridade: ${order.priority === 'high' ? 'ALTA' : 'NORMAL'}`);
+                
+            } catch (error) {
+                console.error('Erro ao enviar notificações:', error);
+            }
+        }
+
+        // Simular som de notificação
+        function playNotificationSound(orderType) {
+            try {
+                // Criar áudio de notificação
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Diferentes sons para diferentes tipos de pedido
+                if (orderType === 'balcao') {
+                    // Som mais agudo para balcão (prioridade alta)
+                    oscillator.frequency.value = 1000;
+                    gainNode.gain.value = 0.3;
+                } else {
+                    // Som normal para mesa
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.value = 0.2;
+                }
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.2);
+                
+                // Repetir 3 vezes
+                setTimeout(() => {
+                    const osc2 = audioContext.createOscillator();
+                    const gain2 = audioContext.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioContext.destination);
+                    osc2.frequency.value = orderType === 'balcao' ? 1000 : 800;
+                    gain2.gain.value = orderType === 'balcao' ? 0.3 : 0.2;
+                    osc2.start();
+                    osc2.stop(audioContext.currentTime + 0.2);
+                }, 300);
+                
+                setTimeout(() => {
+                    const osc3 = audioContext.createOscillator();
+                    const gain3 = audioContext.createGain();
+                    osc3.connect(gain3);
+                    gain3.connect(audioContext.destination);
+                    osc3.frequency.value = orderType === 'balcao' ? 1000 : 800;
+                    gain3.gain.value = orderType === 'balcao' ? 0.3 : 0.2;
+                    osc3.start();
+                    osc3.stop(audioContext.currentTime + 0.2);
+                }, 600);
+                
+            } catch (error) {
+                console.log('🔔 Som de notificação (simulado)');
+            }
+        }
+
+        // Atualizar contador de visitas do cliente
+        function updateCustomerVisitCount() {
+            try {
+                const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+                const customerIndex = customers.findIndex(c => c.cpf === currentCustomer.cpf);
+                
+                if (customerIndex !== -1) {
+                    customers[customerIndex].visitCount = (customers[customerIndex].visitCount || 1) + 1;
+                    customers[customerIndex].lastMesa = currentCustomer.mesa;
+                    customers[customerIndex].lastVisit = new Date().toISOString();
+                    
+                    localStorage.setItem('customers', JSON.stringify(customers));
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar contador de visitas:', error);
+            }
+        }
+
+        // Atualizar saldo do cliente
+        function updateCustomerBalance(cpf, amount) {
+            try {
+                let customerBalances = JSON.parse(localStorage.getItem('customerBalances') || '{}');
+                
+                if (!customerBalances[cpf]) {
+                    customerBalances[cpf] = {
+                        cpf: cpf,
+                        balance: 0,
+                        totalEarned: 0,
+                        totalWithdrawn: 0,
+                        lastWithdrawal: null,
+                        dailyWithdrawals: {},
+                        createdAt: new Date().toISOString()
+                    };
+                }
+                
+                // Adicionar valor ao saldo e total acumulado
+                customerBalances[cpf].balance += amount;
+                customerBalances[cpf].totalEarned += amount;
+                customerBalances[cpf].lastUpdated = new Date().toISOString();
+                
+                localStorage.setItem('customerBalances', JSON.stringify(customerBalances));
+                
+            } catch (error) {
+                console.error('Erro ao atualizar saldo do cliente:', error);
+            }
+        }
+
+        // Mostrar sucesso do pedido
+        function showOrderSuccess(order) {
+            const locationText = order.orderType === 'balcao' ? 'Balcão' : `Mesa ${order.mesa}`;
+            const deliveryText = order.orderType === 'balcao' ? 'Retire seu pedido no balcão' : 'Seu pedido será entregue na mesa';
+            
+            const message = `
+                ✅ Pedido Confirmado!
+                
+                Pedido #${order.id}
+                Local: ${locationText}
+                Total: R$ ${order.total.toFixed(2)}
+                
+                ${deliveryText}
+                ${order.priority === 'high' ? '⚡ Pedido com prioridade alta!' : ''}
+            `;
+            
+            alert(message);
+            
+            // Limpar carrinho e fechar modal
+            cart = [];
+            updateCart();
+            closePaymentModal();
+        }    
+            
+            // Opcional: redirecionar para página de acompanhamento
+            // window.location.href = 'acompanhamento.html';
+        }
+
+        // Formatar número do cartão
+        document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Formatar validade do cartão
+        document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Permitir apenas números no CVV
+        document.getElementById('cardCVV')?.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Inicializar
+        window.onload = function() {
+            loadCustomerSession();
+            loadEstablishmentData();
+            loadPaymentPreference();
+            renderMenu();
+            updateCart();
+        };
+    </script>
+</body>
+</html>

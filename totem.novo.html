@@ -1,0 +1,2543 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Totem Autoatendimento - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 🛡️ Scripts Anti-Chargeback -->
+    <script src="anti-chargeback-integration.js"></script>
+    <script async src="https://pay.google.com/gp/p/js/pay.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;  /* Previne seleção de texto */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-tap-highlight-color: transparent;  /* Remove highlight ao tocar */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            overflow-y: auto;  /* Scroll vertical na página toda */
+            overflow-x: hidden;  /* Esconde scroll horizontal */
+        }
+        
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-banner img {
+            max-width: 100%;
+            max-height: 80px;
+        }
+        
+        .totem-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2px;
+            width: 100%;
+            overflow: visible;  /* Permite que conteúdo flua */
+        }
+        
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .welcome-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+        }
+        
+        .start-button {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .main-content {
+            display: none;
+            flex: 1;
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: visible;  /* Conteúdo visível */
+        }
+        
+        .main-content.show {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-section {
+            display: block;
+            width: 100%;
+        }
+        
+        #menu {
+            display: block;
+            padding: 15px;
+        }
+        
+        .totem-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 8px 10px;  /* Padding lateral reduzido */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;  /* Gap mínimo absoluto */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .totem-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: flex-start;
+            min-width: 140px;  /* Coluna mais estreita */
+        }
+        
+        .order-number {
+            font-size: 0.7em;  /* Fonte ainda menor */
+        }
+        
+        .cart-button-fixed {
+            background: #27ae60;
+            color: white;
+            padding: 6px 12px;  /* Botão compacto */
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            font-weight: bold;
+            font-size: 0.8em;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(39, 174, 96, 0.3);
+        }
+        
+        .cart-button-fixed:active {
+            transform: scale(0.95);
+        }
+        
+        .totem-title {
+            font-size: 1em;  /* Ícone menor */
+        }
+        
+        .cart-button-fixed:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .cart-count-fixed {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+        
+        .cart-total-fixed {
+            color: #fff;
+            font-size: 1.1em;
+        }
+        
+        .totem-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .totem-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .order-number {
+            background: #27ae60;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.0em;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 5px;  /* Gap reduzido */
+            padding: 10px;  /* Padding reduzido */
+            background: #f8f9fa;
+            overflow-x: auto;
+            border-bottom: 2px solid #e1e8ed;
+        }
+        
+        .category-btn {
+            padding: 12px 20px;  /* Área maior para touch */
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-weight: 600;
+            font-size: 1em;
+            min-width: 100px;
+            text-align: center;
+            touch-action: manipulation;  /* Otimizado para touch */
+            -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);  /* Highlight suave ao tocar */
+        }
+        
+        .category-btn:active {
+            transform: scale(0.95);  /* Feedback ao tocar */
+        }
+        
+        .category-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+        
+        .category-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  /* Produtos menores */
+            gap: 10px;  /* Gap reduzido */
+            padding: 10px;  /* Padding reduzido */
+            min-height: 400px;  /* Altura mínima garantida */
+            max-height: 60vh;  /* Altura máxima para habilitar scroll */
+            overflow-y: auto;  /* Barra de rolagem vertical */
+            overflow-x: hidden;  /* Esconder scroll horizontal */
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.2s;  /* Transição mais rápida para touch */
+            cursor: pointer;
+            border: 2px solid transparent;
+            touch-action: manipulation;  /* Otimizado para touch */
+        }
+        
+        .menu-item:active {
+            transform: scale(0.95);  /* Feedback visual ao tocar */
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: #27ae60;
+        }
+        
+        .item-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
+                        linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .item-image div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            font-size: 3rem;
+        }
+        
+        .item-details {
+            padding: 20px;
+        }
+        
+        .item-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .item-description {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .item-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .quantity-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.3em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(102, 126, 234, 0.3);
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            pointer-events: auto !important;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .quantity-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .quantity-btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .quantity {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            min-width: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 2px solid #e1e8ed;
+        }
+        
+        .add-to-cart {
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+        
+        .add-to-cart:hover {
+            background: #229954;
+            transform: scale(1.05);
+        }
+        
+        .cart-summary {
+            background: white;
+            color: #2c3e50;
+            padding: 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: block;
+            visibility: visible;
+            scroll-margin-top: 100px;  /* Para quando fizer scroll */
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .cart-title {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .cart-count {
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .cart-items {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: 600;
+        }
+        
+        .cart-item-quantity {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .cart-item-price {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 2px solid #e1e8ed;
+            margin-top: 10px;
+            font-size: 1.3em;
+        }
+        
+        .total-label {
+            font-weight: bold;
+        }
+        
+        .total-value {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 15px 25px;  /* Área generosa para touch */
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 1.1em;
+            flex: 1;
+            touch-action: manipulation;  /* Otimizado para touch */
+            min-height: 50px;  /* Altura mínima para touch */
+        }
+        
+        .btn:active {
+            transform: scale(0.97);  /* Feedback ao tocar */
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            background: #ccc;
+            filter: grayscale(100%);
+        }
+        
+        .btn-primary:not(:disabled) {
+            opacity: 1;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .payment-modal.show {
+            display: flex;
+        }
+        
+        .payment-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+            padding: 5px;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .summary-row.total {
+            font-weight: bold;
+            font-size: 1.2em;
+            padding-top: 15px;
+            border-top: 2px solid #e1e8ed;
+            color: #27ae60;
+        }
+        
+        .payment-methods {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .payment-method {
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .payment-method:hover {
+            border-color: #27ae60;
+            background: #f8fff8;
+        }
+        
+        .payment-method.selected {
+            border-color: #27ae60;
+            background: #27ae60;
+            color: white;
+        }
+        
+        .payment-icon {
+            font-size: 2.5em;
+        }
+        
+        .payment-details {
+            flex: 1;
+        }
+        
+        .payment-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .payment-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .card-inputs {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .input-group input {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+        
+        .success-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .success-icon {
+            font-size: 5em;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .success-message {
+            font-size: 1.3em;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .order-info {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 5px solid #27ae60;
+        }
+        
+        .order-number-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+        
+        .order-details {
+            text-align: left;
+            margin: 15px 0;
+        }
+        
+        .restart-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #27ae60;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #721c24;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .footer-info {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+        }
+        
+        /* Responsive para tablets */
+        @media (max-width: 768px) {
+            .totem-container {
+                padding: 10px;
+            }
+            
+            .welcome-title {
+                font-size: 2em;
+            }
+            
+            .menu-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .categories {
+                padding: 15px;
+            }
+            
+            .category-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+                min-width: 100px;
+            }
+        }
+        
+        /* Estilo para touchscreen */
+        @media (pointer: coarse) {
+            .category-btn,
+            .menu-item,
+            .add-to-cart,
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .payment-method {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Banner -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho">
+    </div>
+    
+    <div class="totem-container">
+        <!-- Tela de Boas-vindas -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-title">🍽️ Bem-vindo!</div>
+            <div class="welcome-subtitle">Toque para iniciar seu pedido</div>
+            <button class="start-button" onclick="startOrder()">
+                <i class="fas fa-utensils"></i> Iniciar Pedido
+            </button>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content" id="mainContent">
+            <div class="totem-header">
+                <div class="totem-info">
+                    <!-- Logo de Personalização do Admin -->
+                    <div id="adminLogoContainer" style="margin-bottom: 5px;"></div>
+                    
+                    <div class="order-number" id="orderNumberDisplay">Pedido #000</div>
+                    
+                    <!-- Botão Fixo do Carrinho -->
+                    <div class="cart-button-fixed" onclick="scrollToCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count-fixed" id="cartCountFixed">0</span>
+                        <span class="cart-total-fixed" id="cartTotalFixed">R$ 0,00</span>
+                    </div>
+                </div>
+                
+                <!-- Ícone Movido para Baixo -->
+                <div class="totem-title" style="align-self: flex-end; margin-bottom: 5px;">🍽️</div>
+            </div>
+
+            <!-- Categorias -->
+            <div class="categories" id="categories">
+                <button class="category-btn active" onclick="filterCategory('all')">Todos</button>
+                <button class="category-btn" onclick="filterCategory('appetizer')">Entradas/Porções</button>
+                <button class="category-btn" onclick="filterCategory('main')">Pratos Principais</button>
+                <button class="category-btn" onclick="filterCategory('drink')">Bebidas</button>
+                <button class="category-btn" onclick="filterCategory('dessert')">Sobremesas</button>
+            </div>
+
+            <!-- Menu Section -->
+            <section id="menu" class="content-section">
+                <h2>Cardápio</h2>
+                <div class="taxa-aviso" style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center;">
+                    <small><i class="fas fa-info-circle"></i> A plataforma cobra uma taxa de serviço por produto. Valores já incluem esta taxa.</small>
+                </div>
+                <p>Escolha os itens que deseja pedir</p>
+                
+                <!-- Grid de Produtos -->
+                <div class="menu-grid" id="menuGrid"></div>
+                
+                <!-- Botão para Ver Carrinho -->
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn btn-primary" onclick="scrollToCart()" style="padding: 15px 30px; font-size: 1.1em;">
+                        <i class="fas fa-shopping-cart"></i> Ver Carrinho e Finalizar Pedido
+                    </button>
+                </div>
+                
+                <!-- Carrinho de Compras (oculto por padrão) -->
+                <div class="cart-summary" id="cartSection" style="margin-top: 20px; display: none;">
+                    <div class="cart-header">
+                        <div class="cart-title">🛒 Seu Pedido</div>
+                        <div class="cart-count" id="cartCount">0</div>
+                    </div>
+                    <div class="cart-items" id="cartItems">
+                        <p style="text-align: center; color: #95a5a6; font-style: italic; padding: 20px;">🛒 Seu carrinho está vazio</p>
+                    </div>
+                    <div class="cart-total">
+                        <span class="total-label">Total:</span>
+                        <span class="total-value" id="cartTotal">R$ 0,00</span>
+                    </div>
+                </div>
+                
+                <div class="cart-actions">
+                    <button class="btn btn-secondary" onclick="clearCart()">Limpar</button>
+                    <button class="btn btn-primary" onclick="showPaymentModal()" id="payButton" disabled>
+                        <i class="fas fa-lock"></i> Pagar Agora
+                    </button>
+                </div>
+            </section>
+        </div>
+        </div>
+        
+        <!-- BOTAO DE TESTE DIRETO NO HTML -->
+        <button id="botaoTesteHTML" style="position:fixed;top:10px;right:10px;z-index:9999999!important;background:blue;color:white;padding:30px;font-size:24px;font-weight:bold;cursor:pointer!important;pointer-events:auto!important;border:5px solid white;box-shadow:0 0 20px black;" onclick="alert('BOTAO HTML CLICADO!'); console.log('[TESTE HTML] BOTAO CLICADO!'); if(typeof window.changeQuantity==='function'){window.changeQuantity(0,1);alert('SUCESSO!');}">🔵 CLIQUE AQUI (HTML)</button>
+
+        <!-- Tela de Sucesso -->
+        <div class="success-screen" id="successScreen">
+            <div class="success-icon">✅</div>
+            <div class="success-title">Pedido Confirmado!</div>
+            <div class="success-message">Seu pedido foi pago e está sendo preparado</div>
+            
+            <!-- 📋 RESUMO COMPLETO DO PEDIDO -->
+            <div class="order-summary-success" style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">📋 Resumo do Pedido</h3>
+                
+                <div id="successOrderItems" style="margin-bottom: 15px;">
+                    <!-- Itens serão preenchidos via JavaScript -->
+                </div>
+                
+                <div style="border-top: 2px solid #e0e0e0; padding-top: 15px; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #666;">Subtotal:</span>
+                        <span id="successSubtotal" style="color: #666;">R$ 0,00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #666;">Taxa de Serviço:</span>
+                        <span id="successTaxa" style="color: #666;">R$ 0,00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 1.2em; font-weight: bold; color: #27ae60;">
+                        <span>Total Pago:</span>
+                        <span id="successTotal">R$ 0,00</span>
+                    </div>
+                </div>
+                
+                <!-- 🛡️ DADOS DO CLIENTE -->
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #2196f3;">
+                    <h4 style="color: #1976d2; margin-bottom: 10px; font-size: 14px;">🛡️ Dados para Retirada</h4>
+                    <div id="successClientData" style="font-size: 14px; color: #333;">
+                        <!-- Dados do cliente serão preenchidos -->
+                    </div>
+                </div>
+                
+                <!-- 📱 INFORMAÇÕES IMPORTANTES -->
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ffc107;">
+                    <h4 style="color: #856404; margin-bottom: 10px; font-size: 14px;">📱 Informações Importantes</h4>
+                    <div style="font-size: 13px; color: #856404; line-height: 1.4;">
+                        <div style="margin-bottom: 5px;">📋 <strong>Número do Pedido:</strong> <span id="successOrderNumber">#00000</span></div>
+                        <div style="margin-bottom: 5px;">⏰ <strong>Tempo Estimado:</strong> 15-20 minutos</div>
+                        <div style="margin-bottom: 5px;">🔔 <strong>Você receberá uma notificação quando estiver pronto</strong></div>
+                        <div style="margin-bottom: 5px;">📱 <strong>Comprovante enviado via WhatsApp</strong></div>
+                        <div>📍 <strong>Dirija-se ao balcão de retirada quando chamado</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-info">
+                <div class="order-number">Pedido #<span id="displayOrderNumber">00000</span></div>
+                <div class="order-time">⏰ Tempo estimado: 15-20 minutos</div>
+            </div>
+            
+            <div class="success-actions">
+                <button class="btn btn-primary" onclick="restartTotem()" style="background: #27ae60;">
+                    <i class="fas fa-redo"></i> Fazer Novo Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamento -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <div class="modal-header">
+                <div class="modal-title">💳 Pagamento Obrigatório</div>
+                <button class="close-modal" onclick="closePaymentModal()">×</button>
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i> Erro ao processar pagamento.
+            </div>
+            
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="summarySubtotal">R$ 0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Taxa de Serviço:</span>
+                    <span id="summaryService">R$ 0,00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total a Pagar:</span>
+                    <span id="summaryTotal">R$ 0,00</span>
+                </div>
+            </div>
+            
+            <!-- 🛡️ SEÇÃO ANTI-CHARGEBACK -->
+            <div class="anti-chargeback-section" id="anti-chargeback-section" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+                <h3 style="margin-bottom: 15px; color: #1976d2; font-size: 16px;">🛡️ Proteção Anti-Chargeback</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                    Informe seus dados para proteção e receba o comprovante via WhatsApp:
+                </p>
+                
+                <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px;">
+                            🆔 CPF *
+                        </label>
+                        <input type="text" id="totem-cpf" placeholder="000.000.000-00" maxlength="14" 
+                               style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 14px;">
+                        <div id="totem-cpf-validation" style="font-size: 12px; margin-top: 3px;"></div>
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px;">
+                            📱 WhatsApp *
+                        </label>
+                        <input type="tel" id="totem-whatsapp" placeholder="(00) 00000-0000" maxlength="15" 
+                               style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 14px;">
+                        <div id="totem-whatsapp-validation" style="font-size: 12px; margin-top: 3px;"></div>
+                    </div>
+                </div>
+                
+                <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; font-size: 12px; color: #1976d2;">
+                    <strong>🔒 Por que precisamos disso?</strong><br>
+                    • Validar sua identidade<br>
+                    • Proteger contra chargeback<br>
+                    • Enviar comprovante via WhatsApp
+                </div>
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPaymentMethod('card')">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-details">
+                        <div class="payment-name">Cartão</div>
+                        <div class="payment-desc">Crédito ou Débito</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPaymentMethod('pix')">
+                    <div class="payment-icon">📱</div>
+                    <div class="payment-details">
+                        <div class="payment-name">PIX</div>
+                        <div class="payment-desc">Pagamento instantâneo</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPaymentMethod('money')">
+                    <div class="payment-icon">💵</div>
+                    <div class="payment-details">
+                        <div class="payment-name">Dinheiro</div>
+                        <div class="payment-desc">Pagar no caixa</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Campos do Cartão -->
+            <div class="card-inputs" id="cardInputs" style="display: none;">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Número do Cartão</label>
+                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+                    </div>
+                    <div class="input-group">
+                        <label>CVV</label>
+                        <input type="text" id="cardCVV" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Validade</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="input-group">
+                        <label>Nome no Cartão</label>
+                        <input type="text" id="cardName" placeholder="Como está no cartão">
+                    </div>
+                </div>
+                
+                <!-- 🚀 Google Pay -->
+                <div class="payment-method" onclick="selectPaymentMethod('google_pay')" id="google-pay-method">
+                    <div class="payment-icon">🚀</div>
+                    <div class="payment-details">
+                        <div class="payment-name">Google Pay</div>
+                        <div class="payment-desc">Pagamento com câmera automática</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="processPayment()" id="paymentBtn">
+                <i class="fas fa-lock"></i> Confirmar Pagamento
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processando pagamento...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="footer-info">
+        <div>📍 Totem Autoatendimento - Pagamento Obrigatório</div>
+        <div>⚡ Pedidos só liberados após pagamento</div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cart = [];
+        let currentOrderNumber = 1;
+        let selectedPaymentMethod = null;
+        let currentCategory = 'all';
+        let customizationData = {};
+        let menuItems = [];
+        let clienteData = null; // 🛡️ Dados anti-chargeback
+
+        // 🎯 Função para obter emoji baseado no nome do item
+        function getEmojiForItem(itemName) {
+            const emojis = {
+                'Hambúrguer': '🍔',
+                'Pizza': '🍕',
+                'Refrigerante': '🥤',
+                'Batata': '🍟',
+                'Salada': '🥗',
+                'Sorvete': '🍦',
+                'Coca': '🥤',
+                'Suco': '🧃',
+                'Água': '💧',
+                'Cerveja': '🍺',
+                'Vinho': '🍷',
+                'Café': '☕',
+                'Pão': '🍞',
+                'Queijo': '🧀',
+                'Frango': '🍗',
+                'Carne': '🥩',
+                'Peixe': '🐟',
+                'Camarão': '🍤',
+                'Massa': '🍝',
+                'Sopa': '🍲',
+                'Omelete': '🍳',
+                'Torta': '🥧',
+                'Doce': '🍰',
+                'Chocolate': '🍫',
+                'Fruta': '🍎',
+                'default': '🍽️'
+            };
+            
+            for (const [key, emoji] of Object.entries(emojis)) {
+                if (itemName.toLowerCase().includes(key.toLowerCase())) {
+                    return emoji;
+                }
+            }
+            
+            return emojis.default;
+        }
+
+        // Carregar produtos do cardápio principal
+        function loadMenuItems() {
+            try {
+                const savedMenuItems = localStorage.getItem('menuItems');
+                if (savedMenuItems) {
+                    menuItems = JSON.parse(savedMenuItems);
+                    console.log('[TOTEM] Menu items carregados do localStorage:', menuItems.length);
+                    
+                    // 🔍 DEBUG: Mostrar informações das imagens
+                    menuItems.forEach((item, index) => {
+                        console.log(`[TOTEM] Item ${index}: ${item.name}`);
+                        console.log(`[TOTEM] - Imagem: ${item.image}`);
+                        console.log(`[TOTEM] - Tem imagem?: ${!!item.image}`);
+                        console.log(`[TOTEM] - Tipo de imagem: ${item.image ? item.image.substring(0, 50) + '...' : 'N/A'}`);
+                    });
+                    
+                } else {
+                    console.log('[TOTEM] Nenhum item encontrado no localStorage, usando menu padrão');
+                    // Menu padrão caso não tenha nada salvo
+                    menuItems = [
+                        {
+                            id: 1,
+                            name: "Hambúrguer Tradicional",
+                            description: "Pão, carne, queijo, alface, tomate",
+                            price: 25.00,
+                            category: "main", // Prato Principal
+                            image: "/uploads/hamburguer.jpg" // 🖼️ IMAGEM REAL
+                        },
+                        {
+                            id: 2,
+                            name: "Batata Frita",
+                            description: "Porção crocante de batatas",
+                            price: 15.00,
+                            category: "appetizer", // Entrada/Porção
+                            image: "/uploads/batata.jpg" // 🖼️ IMAGEM REAL
+                        },
+                        {
+                            id: 3,
+                            name: "Refrigerante",
+                            description: "Lata 350ml",
+                            price: 8.00,
+                            category: "drink", // Bebida
+                            image: "/uploads/refrigerante.jpg" // 🖼️ IMAGEM REAL
+                        },
+                        {
+                            id: 4,
+                            name: "Pizza",
+                            description: "Pizza tradicional",
+                            price: 35.00,
+                            category: "main",
+                            image: "/uploads/pizza.jpg" // 🖼️ IMAGEM REAL
+                        },
+                        {
+                            id: 5,
+                            name: "Salada",
+                            description: "Salada fresca",
+                            price: 18.00,
+                            category: "appetizer",
+                            image: "/uploads/salada.jpg" // 🖼️ IMAGEM REAL
+                        },
+                        {
+                            id: 6,
+                            name: "Sorvete",
+                            description: "Sorvete cremoso",
+                            price: 12.00,
+                            category: "dessert",
+                            image: "/uploads/sorvete.jpg" // 🖼️ IMAGEM REAL
+                        }
+                    ];
+                }
+            } catch (error) {
+                console.error('[TOTEM] Erro ao carregar menu items:', error);
+            }
+        }
+
+        // Iniciar pedido
+        function startOrder() {
+            console.log('[TOTEM] startOrder() chamado!');
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'flex';
+            
+            // Gerar número do pedido
+            currentOrderNumber = generateOrderNumber();
+            document.getElementById('orderNumberDisplay').textContent = `Pedido #${currentOrderNumber}`;
+            
+            // Carregar menu
+            renderMenu();
+        }
+        
+        // Expor funções globalmente para acesso via onclick
+        window.startOrder = startOrder;
+        window.restartTotem = restartTotem;
+        window.scrollToCart = scrollToCart;
+        window.clearCart = clearCart;
+        window.filterCategory = filterCategory;
+        window.showPaymentModal = showPaymentModal;
+        window.processPayment = processPayment;
+        window.selectPaymentMethod = selectPaymentMethod;
+        window.addToCart = addToCart;
+        window.changeQuantity = changeQuantity;
+
+        // Carregar personalizações do estabelecimento
+        function loadEstablishmentData() {
+            document.getElementById('mainContent').style.display = 'flex';
+            
+            // Gerar número do pedido
+            currentOrderNumber = generateOrderNumber();
+            document.getElementById('orderNumberDisplay').textContent = `Pedido #${currentOrderNumber}`;
+            
+            // Carregar menu
+            renderMenu();
+        }
+
+        // Gerar número do pedido
+        function generateOrderNumber() {
+            const today = new Date();
+            const day = today.getDate().toString().padStart(2, '0');
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const lastOrder = parseInt(localStorage.getItem('totemLastOrder') || '0');
+            const newOrder = lastOrder + 1;
+            
+            localStorage.setItem('totemLastOrder', newOrder.toString());
+            
+            return parseInt(`${day}${month}${newOrder.toString().padStart(3, '0')}`);
+        }
+
+        // Carregar personalizações do estabelecimento
+        function loadEstablishmentData() {
+            try {
+                const savedData = localStorage.getItem('establishmentCustomizations');
+                if (savedData) {
+                    customizationData = JSON.parse(savedData);
+                    applyCustomizations();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do estabelecimento:', error);
+            }
+        }
+
+        // Aplicar personalizações
+        function applyCustomizations() {
+            console.log('[TOTEM] Aplicando personalizações:', customizationData);
+            
+            // Nome do estabelecimento
+            if (customizationData.establishmentName) {
+                document.title = `Totem - ${customizationData.establishmentName}`;
+            }
+            
+            // Logo - AUMENTADO EM 100%
+            if (customizationData.logo) {
+                const logoContainer = document.getElementById('adminLogoContainer');
+                if (logoContainer) {
+                    logoContainer.innerHTML = `<img src="${customizationData.logo}" alt="Logo" style="max-width: 200px; max-height: 70px; border-radius: 8px; background: white; padding: 5px;">`;
+                }
+                // Remover do totem-title
+                const logoElements = document.querySelectorAll('.totem-title');
+                logoElements.forEach(el => {
+                    el.innerHTML = '🍽️';
+                });
+            }
+            
+            // Imagem de fundo
+            if (customizationData.backgroundImage) {
+                document.body.style.backgroundImage = `url(${customizationData.backgroundImage})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+                document.body.style.backgroundRepeat = 'no-repeat';
+            }
+            
+            // Cor de fundo
+            if (customizationData.backgroundColor) {
+                document.body.style.backgroundColor = customizationData.backgroundColor;
+            }
+            
+            // Cor do header
+            if (customizationData.headerColor) {
+                const header = document.querySelector('.totem-header');
+                if (header) {
+                    header.style.background = customizationData.headerColor;
+                }
+            }
+            
+            // Cor dos botões
+            if (customizationData.buttonColor) {
+                const buttons = document.querySelectorAll('.category-btn, .add-to-cart');
+                buttons.forEach(btn => {
+                    btn.style.backgroundColor = customizationData.buttonColor;
+                });
+            }
+            
+            // Redes sociais
+            if (customizationData.socialLinks) {
+                // Adicionar ícones de redes sociais no footer
+                const footer = document.querySelector('.footer-info');
+                if (footer && customizationData.socialLinks.instagram) {
+                    footer.innerHTML += ` <a href="${customizationData.socialLinks.instagram}" target="_blank" style="color: white; margin-left: 10px;">📷</a>`;
+                }
+                if (footer && customizationData.socialLinks.facebook) {
+                    footer.innerHTML += ` <a href="${customizationData.socialLinks.facebook}" target="_blank" style="color: white; margin-left: 10px;">📘</a>`;
+                }
+                if (footer && customizationData.socialLinks.whatsapp) {
+                    footer.innerHTML += ` <a href="${customizationData.socialLinks.whatsapp}" target="_blank" style="color: white; margin-left: 10px;">💬</a>`;
+                }
+            }
+            
+            console.log('[TOTEM] Personalizações aplicadas com sucesso');
+        }
+
+        // Renderizar menu
+        function renderMenu(category = 'all') {
+            console.log('[TOTEM] renderMenu() chamado, categoria:', category);
+            
+            const menuGrid = document.getElementById('menuGrid');
+            let filteredItems;
+            
+            if (category === 'all') {
+                filteredItems = menuItems;
+                console.log('[TOTEM] Mostrando TODOS os', filteredItems.length, 'itens');
+            } else {
+                filteredItems = menuItems.filter(item => {
+                    const match = item.category === category;
+                    console.log('[TOTEM] Item:', item.name, '| Categoria:', item.category, '| Match:', match);
+                    return match;
+                });
+                console.log('[TOTEM] Filtrados', filteredItems.length, 'itens para categoria', category);
+            }
+            
+            if (filteredItems.length === 0) {
+                menuGrid.innerHTML = '<p style="text-align: center; color: #95a5a6; padding: 40px;">Nenhum produto encontrado nesta categoria.</p>';
+            } else {
+                menuGrid.innerHTML = filteredItems.map(item => createMenuItemHTML(item)).join('');
+            }
+        }
+
+        // Criar HTML do item do menu
+        function createMenuItemHTML(item) {
+            // Obter logo do admin
+            const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+            const logo = customizations.logo || '';
+            
+            const cartItem = cart.find(c => c.id === item.id);
+            const quantity = cartItem ? cartItem.quantity : 0;
+            
+            // Incluir taxa no preço do produto
+            const taxaPorProduto = parseFloat(localStorage.getItem('taxaPorProdutoGlobal') || '0.10');
+            const precoComTaxa = parseFloat(item.price) + taxaPorProduto;
+            
+            return `
+                <div class="menu-item" onclick="addToCart(${item.id})">
+                    <div class="item-image" style="position: relative;">
+                        ${item.image && (item.image.startsWith('http') || item.image.startsWith('/uploads/') || item.image.startsWith('public/') || item.image.startsWith('data:'))
+                            ? `<img src="${item.image}" alt="${item.name}" 
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px 15px 0 0;" 
+                                onerror="this.onerror=null; this.src='/placeholder-food.jpg';">` 
+                            : `<div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; border-radius: 15px 15px 0 0;">
+                                <span style="font-size: 60px; color: white;">🍽️</span>
+                               </div>`
+                        }
+                        ${logo ? 
+                            `<div style="position: absolute; top: 5px; right: 5px; width: 35px; height: 35px; background: white; border-radius: 50%; padding: 3px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">
+                                <img src="${logo}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                            </div>` : ''
+                        }
+                    </div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3>${item.name}</h3>
+                            <div class="item-price">R$ ${precoComTaxa.toFixed(2)}</div>
+                        </div>
+                        <p class="item-description">${item.description || 'Delicioso produto especial'}</p>
+                        <div class="item-actions">
+                            <button type="button" class="quantity-btn" onclick="console.log('BOTAO + CLICADO!'); changeQuantity(${item.id}, 1)">+</button>
+                            <span class="quantity" id="quantity-${item.id}">${quantity}</span>
+                            <button type="button" class="quantity-btn" onclick="console.log('BOTAO - CLICADO!'); changeQuantity(${item.id}, -1)">-</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Funções de compartilhamento (se não existirem)
+        function shareProduct(name, description, image) {
+            console.log('Função de compartilhamento não implementada no totem');
+        }
+
+        // Adicionar ao carrinho
+        function addToCart(itemId) {
+            console.log('[TOTEM] >>> addToCart() chamado para itemId:', itemId);
+            
+            const menuItem = menuItems.find(item => item.id === itemId);
+            if (!menuItem) {
+                console.error('[TOTEM] ❌ Item não encontrado:', itemId);
+                return;
+            }
+            
+            const existingItem = cart.find(item => item.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+                console.log('[TOTEM] Quantidade aumentada para', existingItem.quantity, 'de', menuItem.name);
+            } else {
+                cart.push({
+                    ...menuItem,
+                    quantity: 1
+                });
+                console.log('[TOTEM] Item adicionado:', menuItem.name);
+            }
+            
+            console.log('[TOTEM] Carrinho agora tem', cart.length, 'itens diferentes');
+            updateCart();
+            renderMenu(currentCategory);
+            
+            // Habilitar botão de pagamento IMEDIATAMENTE
+            setTimeout(() => {
+                const payButton = document.getElementById('payButton');
+                if (payButton) {
+                    payButton.disabled = false;
+                    payButton.style.opacity = '1';
+                    payButton.style.cursor = 'pointer';
+                    payButton.setAttribute('aria-disabled', 'false');
+                    console.log('[TOTEM] ✅ Botão de pagamento HABILITADO - cart.length:', cart.length);
+                } else {
+                    console.error('[TOTEM] ❌ Botão de pagamento NÃO ENCONTRADO!');
+                }
+            }, 100);
+            
+            // Debug: mostrar estado do carrinho
+            console.log('[TOTEM] Estado do carrinho:', JSON.stringify(cart, null, 2));
+        }
+
+        // Alterar quantidade
+        function changeQuantity(itemId, delta) {
+            console.log('[TOTEM] >>> changeQuantity() INICIADO - itemId:', itemId, 'delta:', delta);
+            
+            const itemIndex = cart.findIndex(item => item.id === itemId);
+            if (itemIndex === -1) {
+                console.error('[TOTEM] ❌ Item NÃO ENCONTRADO no carrinho - itemId:', itemId);
+                console.log('[TOTEM] Carrinho atual:', cart);
+                return;
+            }
+            
+            cart[itemIndex].quantity += delta;
+            console.log('[TOTEM] Nova quantidade do item', cart[itemIndex].name, ':', cart[itemIndex].quantity);
+            
+            if (cart[itemIndex].quantity <= 0) {
+                cart.splice(itemIndex, 1);
+                console.log('[TOTEM] Item removido do carrinho');
+            }
+            
+            console.log('[TOTEM] Atualizando carrinho...');
+            updateCart();
+            renderMenu(currentCategory);
+            console.log('[TOTEM] ✅ changeQuantity() COMPLETADO');
+        }
+
+        // Atualizar carrinho COM TAXA REAL
+        function updateCart() {
+            console.log('[TOTEM] >>> updateCart() INICIADO - cart.length:', cart.length);
+            
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            // Atualizar também o botão fixo no header
+            const cartCountFixed = document.getElementById('cartCountFixed');
+            const cartTotalFixed = document.getElementById('cartTotalFixed');
+            
+            if (!cartItems || !cartCount || !cartTotal) {
+                console.error('[TOTEM] ❌ Elementos do carrinho não encontrados!');
+                console.log('[TOTEM] cartItems:', cartItems);
+                console.log('[TOTEM] cartCount:', cartCount);
+                console.log('[TOTEM] cartTotal:', cartTotal);
+                return;
+            }
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #95a5a6; font-style: italic; padding: 20px;">🛒 Seu carrinho está vazio</p>';
+                cartCount.textContent = '0';
+                cartTotal.textContent = 'R$ 0,00';
+                
+                // Atualizar botão fixo
+                if (cartCountFixed) cartCountFixed.textContent = '0';
+                if (cartTotalFixed) cartTotalFixed.textContent = 'R$ 0,00';
+                
+                const payButton = document.getElementById('payButton');
+                if (payButton) {
+                    payButton.disabled = true;
+                    payButton.style.opacity = '0.4';
+                    payButton.style.cursor = 'not-allowed';
+                }
+                console.log('[TOTEM] Carrinho vazio atualizado - botão DESABILITADO');
+                return;
+            }
+            
+            console.log('[TOTEM] >>> Preenchendo carrinho com', totalItems, 'itens');
+            
+            // 💰 CALCULAR COM TAXA REAL DO SISTEMA
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const taxaPorProduto = parseFloat(localStorage.getItem('taxaPorProdutoGlobal') || '0.00');
+            const taxaTotal = taxaPorProduto * totalItems;
+            const totalPrice = subtotal + taxaTotal;
+            
+            cartCount.textContent = totalItems;
+            cartTotal.textContent = `R$ ${totalPrice.toFixed(2)}`;
+            
+            // Atualizar botão fixo no header
+            if (cartCountFixed) cartCountFixed.textContent = totalItems;
+            if (cartTotalFixed) cartTotalFixed.textContent = `R$ ${totalPrice.toFixed(2)}`;
+            
+            cartItems.innerHTML = cart.map(item => {
+                console.log('[TOTEM] Processando item:', item.name, 'quantity:', item.quantity);
+                const itemPrice = parseFloat(item.price) || 0;
+                const itemQuantity = parseInt(item.quantity) || 0;
+                const itemSubtotal = itemPrice * itemQuantity;
+                const itemTaxa = taxaPorProduto * itemQuantity;
+                const itemTotal = itemSubtotal + itemTaxa;
+                
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-quantity">Quantidade: ${itemQuantity}</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                R$ ${itemPrice.toFixed(2)} × ${itemQuantity} + Taxa R$ ${itemTaxa.toFixed(2)}
+                            </div>
+                        </div>
+                        <div class="cart-item-price">R$ ${itemTotal.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log('[TOTEM] ✅ HTML do carrinho gerado - length:', cartItems.innerHTML.length);
+            console.log('[TOTEM] Carrinho atualizado com', totalItems, 'itens, subtotal: R$', subtotal.toFixed(2), 'taxa: R$', taxaTotal.toFixed(2), 'total: R$', totalPrice.toFixed(2));
+        }
+
+        // Scroll suave até o carrinho e mostrar/ocultar
+        function scrollToCart() {
+            const cartSection = document.getElementById('cartSection');
+            
+            if (cartSection) {
+                // Se o carrinho estiver oculto, mostra
+                if (cartSection.style.display === 'none') {
+                    cartSection.style.display = 'block';
+                    console.log('[TOTEM] Carrinho mostrado');
+                } else {
+                    // Se já estiver visível, faz scroll
+                    cartSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                    console.log('[TOTEM] Scroll até o carrinho');
+                }
+            }
+        }
+
+        // Limpar carrinho
+        function clearCart() {
+            if (cart.length === 0) return;
+            
+            cart = [];
+            updateCart();
+            renderMenu(currentCategory);
+        }
+
+        // Filtrar por categoria
+        function filterCategory(category) {
+            currentCategory = category;
+            
+            // Atualizar botões
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Renderizar menu
+            renderMenu(category);
+        }
+
+        // Mostrar modal de pagamento
+        function showPaymentModal() {
+            console.log('[TOTEM] >>> showPaymentModal() chamado!');
+            console.log('[TOTEM] cart.length:', cart.length);
+            
+            if (cart.length === 0) {
+                alert('Seu carrinho está vazio!');
+                console.log('[TOTEM] Carrinho vazio - modal não aberto');
+                return;
+            }
+            
+            console.log('[TOTEM] Atualizando resumo do pagamento...');
+            updatePaymentSummary();
+            
+            const paymentModal = document.getElementById('paymentModal');
+            console.log('[TOTEM] paymentModal:', paymentModal);
+            
+            paymentModal.classList.add('show');
+            console.log('[TOTEM] ✅ Modal de pagamento ABERTO!');
+        }
+
+        // Fechar modal de pagamento
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show');
+            
+            // Limpar seleção
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.classList.remove('selected');
+            });
+            selectedPaymentMethod = null;
+        }
+
+        // Atualizar resumo do pagamento (preços já incluem taxa)
+        function updatePaymentSummary() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal; // Preços já incluem taxa
+            
+            document.getElementById('summarySubtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('summaryService').textContent = 'Incluído no preço';
+            document.getElementById('summaryTotal').textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        // Selecionar método de pagamento
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.payment-method').forEach(m => {
+                m.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            event.target.closest('.payment-method').classList.add('selected');
+            
+            // Mostrar/esconder campos do cartão
+            const cardInputs = document.getElementById('cardInputs');
+            if (method === 'card') {
+                cardInputs.style.display = 'block';
+            } else {
+                cardInputs.style.display = 'none';
+            }
+        }
+
+        // Processar pagamento
+        function processPayment() {
+            if (!selectedPaymentMethod) {
+                showError('Por favor, selecione um método de pagamento.');
+                return;
+            }
+            
+            // 🛡️ Verificar dados anti-chargeback
+            if (!podeProsseguirPagamento()) {
+                showError('Por favor, preencha os dados de proteção anti-chargeback (CPF e WhatsApp).');
+                return;
+            }
+            
+            // 🚀 Se for Google Pay, processar com Google Pay
+            if (selectedPaymentMethod === 'google_pay') {
+                processGooglePayPayment();
+                return;
+            }
+            
+            // Validar campos do cartão se necessário
+            if (selectedPaymentMethod === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const cardCVV = document.getElementById('cardCVV').value;
+                const cardExpiry = document.getElementById('cardExpiry').value;
+                const cardName = document.getElementById('cardName').value;
+                
+                if (!cardNumber || !cardCVV || !cardExpiry || !cardName) {
+                    showError('Por favor, preencha todos os dados do cartão.');
+                    return;
+                }
+            }
+            
+            // Mostrar loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('paymentBtn').disabled = true;
+            
+            // Simular processamento
+            setTimeout(() => {
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const serviceFeePerItem = 0.10;
+                const serviceFee = totalItems * serviceFeePerItem;
+                const total = subtotal + serviceFee;
+                
+                // Calcular valores separados
+                const systemFee = serviceFee;
+                const customerAmount = subtotal;
+                
+                // Função para obter setor do item
+                function getItemSector(item) {
+                    const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+                    const menuItem = menuItems.find(mi => mi.id === item.id || mi.name === item.name);
+                    if (menuItem && menuItem.sector) {
+                        return menuItem.sector;
+                    }
+                    // Fallback baseado na categoria
+                    const category = item.category || 'all';
+                    if (category === 'drink' || category === 'dessert') {
+                        return 'counter';
+                    }
+                    return 'kitchen';
+                }
+                
+                const order = {
+                    id: currentOrderNumber,
+                    orderType: 'totem',
+                    items: cart.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        sector: getItemSector(item),
+                        category: item.category || 'all'
+                    })),
+                    subtotal: subtotal,
+                    serviceFee: serviceFee,
+                    total: total,
+                    paymentMethod: selectedPaymentMethod,
+                    paymentData: selectedPaymentMethod === 'card' ? {
+                        cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, '').slice(-4),
+                        cardName: document.getElementById('cardName').value
+                    } : {},
+                    status: 'paid',
+                    date: new Date().toISOString(),
+                    priority: 'totem',
+                    financial: {
+                        customerAmount: customerAmount,
+                        systemFee: systemFee,
+                        feePerItem: serviceFeePerItem,
+                        totalItems: totalItems
+                    }
+                };
+                
+                // Salvar pedido
+                try {
+                    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                    orders.push(order);
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    
+                    // Mostrar sucesso
+                    showSuccessScreen(order);
+                    
+                } catch (error) {
+                    console.error('Erro ao salvar pedido:', error);
+                    showError('Erro ao processar pagamento. Tente novamente.');
+                } finally {
+                    document.getElementById('loading').classList.remove('show');
+                    document.getElementById('paymentBtn').disabled = false;
+                }
+            }, 2000);
+        }
+
+        // 🚀 Processar pagamento Google Pay (fora de processPayment)
+        async function processGooglePayPayment() {
+            try {
+                console.log('[TOTEM] Iniciando pagamento Google Pay com anti-chargeback');
+                
+                // Obter dados do cliente
+                const clienteData = getClienteData();
+                if (!clienteData) {
+                    showError('Dados do cliente não encontrados.');
+                    return;
+                }
+                
+                // Calcular total
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                // Simulação do Google Pay (já que servidor não está rodando)
+                console.log('[TOTEM] Simulando Google Pay...');
+                console.log('[TOTEM] Dados do cliente:', clienteData);
+                console.log('[TOTEM] Total:', total);
+                console.log('[TOTEM] Itens:', cart);
+                
+                // Simular sucesso do Google Pay
+                setTimeout(() => {
+                    // Mostrar sucesso
+                    showSuccessMessage('✅ Pedido confirmado! Simulação Google Pay concluída.');
+                    
+                    // Salvar pedido localmente (simulação)
+                    const pedido = {
+                        id: Date.now(),
+                        cliente: clienteData,
+                        itens: cart,
+                        total: total,
+                        metodo: 'google_pay',
+                        data: new Date().toISOString(),
+                        status: 'confirmado'
+                    };
+                    
+                    // Salvar no localStorage
+                    const pedidos = JSON.parse(localStorage.getItem('pedidosTotem') || '[]');
+                    pedidos.push(pedido);
+                    localStorage.setItem('pedidosTotem', JSON.stringify(pedidos));
+                    
+                    console.log('[TOTEM] Pedido salvo localmente:', pedido);
+                    
+                    // Limpar carrinho
+                    cart = [];
+                    updateCart();
+                    closePaymentModal();
+                    
+                    // Resetar após 5 segundos
+                    setTimeout(() => {
+                        location.reload();
+                    }, 5000);
+                }, 2000);
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro no pagamento Google Pay:', error);
+                showError('Erro no pagamento. Tente novamente.');
+            }
+        }
+
+        // Mostrar mensagem de sucesso
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #d4edda;
+                color: #155724;
+                padding: 30px;
+                border-radius: 10px;
+                text-align: center;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-size: 18px;
+                font-weight: bold;
+            `;
+            successDiv.innerHTML = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+
+        // Mostrar tela de sucesso
+        function showSuccessScreen(order) {
+            console.log('[TOTEM] showSuccessScreen() chamado para pedido:', order.id);
+            
+            // PREENCHER RESUMO DO PEDIDO
+            const orderItemsHTML = order.items.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; color: #333;">${item.quantity}x ${item.name}</div>
+                        ${item.description ? `<div style="font-size: 12px; color: #666;">${item.description}</div>` : ''}
+                    </div>
+                    <div style="font-weight: bold; color: #27ae60;">R$ ${(item.price * item.quantity).toFixed(2)}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('successOrderItems').innerHTML = orderItemsHTML;
+            
+            // 💰 CALCULAR E EXIBIR VALORES COM TAXA REAL DO SISTEMA
+            const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const taxaPorProduto = parseFloat(localStorage.getItem('taxaPorProdutoGlobal') || '0.00');
+            const taxaTotal = taxaPorProduto * order.items.reduce((sum, item) => sum + item.quantity, 0);
+            const total = order.total || subtotal + taxaTotal;
+            
+            document.getElementById('successSubtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('successTaxa').textContent = `R$ ${taxaTotal.toFixed(2)} (${order.items.reduce((sum, item) => sum + item.quantity, 0)} itens × R$ ${taxaPorProduto.toFixed(2)})`;
+            document.getElementById('successTotal').textContent = `R$ ${total.toFixed(2)}`;
+            
+            // PREENCHER DADOS DO CLIENTE (se tiver)
+            if (order.cliente) {
+                const clientDataHTML = `
+                    <div style="margin-bottom: 5px;"><strong> Cliente:</strong> ${order.cliente.nome || 'Não informado'}</div>
+                    <div style="margin-bottom: 5px;"><strong> CPF:</strong> ${order.cliente.cpf || 'Não informado'}</div>
+                    <div style="margin-bottom: 5px;"><strong> WhatsApp:</strong> ${order.cliente.whatsapp || 'Não informado'}</div>
+                `;
+                document.getElementById('successClientData').innerHTML = clientDataHTML;
+            } else {
+                document.getElementById('successClientData').innerHTML = '<div style="color: #666;">Dados de proteção não informados</div>';
+            }
+            
+            // PREENCHER NÚMERO DO PEDIDO
+            document.getElementById('successOrderNumber').textContent = `#${order.id}`;
+            document.getElementById('displayOrderNumber').textContent = order.id;
+            
+            // Mudar para tela de sucesso
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('paymentModal').classList.remove('show');
+            document.getElementById('successScreen').style.display = 'flex';
+            console.log('[TOTEM] Tela de sucesso exibida com resumo completo');
+            
+            // ZERAR CARRINHO PARA PRÓXIMO CLIENTE
+            cart = [];
+            updateCart();
+            
+            // 📱 ENVIAR COMPROVANTE VIA WHATSAPP (SIMULAÇÃO)
+            if (order.cliente && order.cliente.whatsapp) {
+                console.log('[TOTEM] Enviando comprovante via WhatsApp para:', order.cliente.whatsapp);
+                
+                // 📝 MONTAR MENSAGEM DO COMPROVANTE COM TAXA REAL
+                const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const taxaPorProduto = parseFloat(localStorage.getItem('taxaPorProdutoGlobal') || '0.00');
+                const taxaTotal = taxaPorProduto * order.items.reduce((sum, item) => sum + item.quantity, 0);
+                
+                const mensagemWhatsApp = `
+🍽️ *CARDÁPIO DIGITAL UNIVERSAL*
+📋 *COMPROVANTE DE PEDIDO*
+
+━━━━━━━━━━━━━━━━━━━━
+🔢 *NÚMERO DO PEDIDO:* #${order.id}
+━━━━━━━━━━━━━━━━━━━━
+
+📦 *ITENS DO PEDIDO:*
+${order.items.map(item => `• ${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━
+💰 *RESUMO FINANCEIRO:*
+• Subtotal: R$ ${subtotal.toFixed(2)}
+• Taxa de Serviço: R$ ${taxaTotal.toFixed(2)} (${order.items.reduce((sum, item) => sum + item.quantity, 0)} itens × R$ ${taxaPorProduto.toFixed(2)})
+• *TOTAL PAGO: R$ ${order.total.toFixed(2)}*
+━━━━━━━━━━━━━━━━━━━━
+👤 *DADOS DO CLIENTE:*
+• Nome: ${order.cliente.nome || 'Não informado'}
+• CPF: ${order.cliente.cpf || 'Não informado'}
+• WhatsApp: ${order.cliente.whatsapp}
+━━━━━━━━━━━━━━━━━━━━
+⏰ *TEMPO ESTIMADO:* 15-20 minutos
+📍 *RETIRADA:* Dirija-se ao balcão quando chamado
+🔔 *NOTIFICAÇÃO:* Você será chamado quando estiver pronto
+
+🛡️ *PROTEÇÃO ANTI-CHARGEBACK ATIVA*
+✅ Pedido protegido contra chargeback
+✅ Comprovante válido como prova de compra
+
+---
+Obrigado pela preferência! 🍽️
+                `.trim();
+
+                // 📱 ABRIR WHATSAPP COM MENSAGEM (FUNCIONALIDADE REAL)
+                const whatsappLimpo = order.cliente.whatsapp.replace(/\D/g, '');
+                
+                // 📱 VERIFICAR SE TEM DDD E ADICIONAR 55
+                let whatsappCompleto = whatsappLimpo;
+                if (whatsappLimpo.length === 11) {
+                    // Se não começar com 55, adiciona
+                    if (!whatsappLimpo.startsWith('55')) {
+                        whatsappCompleto = '55' + whatsappLimpo;
+                    }
+                }
+                
+                const whatsappURL = `https://wa.me/${whatsappCompleto}?text=${encodeURIComponent(mensagemWhatsApp)}`;
+                
+                console.log('[TOTEM] WhatsApp original:', order.cliente.whatsapp);
+                console.log('[TOTEM] WhatsApp limpo:', whatsappLimpo);
+                console.log('[TOTEM] WhatsApp completo:', whatsappCompleto);
+                console.log('[TOTEM] URL WhatsApp:', whatsappURL);
+                
+                // 📱 TENTAR ABRIR WHATSAPP DE VÁRIAS FORMAS
+                let whatsappAberto = false;
+                
+                // Método 1: Tentar abrir diretamente
+                try {
+                    window.location.href = whatsappURL;
+                    whatsappAberto = true;
+                    console.log('[TOTEM] WhatsApp aberto via location.href');
+                } catch (e) {
+                    console.log('[TOTEM] Falha ao abrir via location.href:', e);
+                }
+                
+                // Método 2: Se falhar, tentar window.open
+                setTimeout(() => {
+                    if (!whatsappAberto) {
+                        try {
+                            window.open(whatsappURL, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                            whatsappAberto = true;
+                            console.log('[TOTEM] WhatsApp aberto via window.open');
+                        } catch (e) {
+                            console.log('[TOTEM] Falha ao abrir via window.open:', e);
+                        }
+                    }
+                }, 500);
+                
+                // 📱 Mostrar confirmação visual
+                const confirmDiv = document.createElement('div');
+                confirmDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #25d366;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    z-index: 10000;
+                    font-size: 14px;
+                    font-weight: bold;
+                    animation: slideIn 0.5s ease-out;
+                `;
+                confirmDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        📱 Abrindo WhatsApp com comprovante...
+                    </div>
+                `;
+                document.body.appendChild(confirmDiv);
+                
+                // Remover confirmação após 5 segundos
+                setTimeout(() => {
+                    if (confirmDiv.parentNode) {
+                        confirmDiv.remove();
+                    }
+                }, 5000);
+                
+                // 📱 ENVIAR VIA API REAL (SE TIVER)
+                fetch('/api/send-whatsapp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: order.cliente.whatsapp,
+                        message: mensagemWhatsApp,
+                        orderId: order.id
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('[TOTEM] WhatsApp enviado via API');
+                    }
+                }).catch(error => {
+                    console.log('[TOTEM] Erro ao enviar WhatsApp via API:', error);
+                });
+                
+                // 📱 Abrir WhatsApp manualmente após 1 segundo
+                setTimeout(() => {
+                    if (!whatsappAberto) {
+                        try {
+                            window.open(whatsappURL, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                            whatsappAberto = true;
+                            console.log('[TOTEM] WhatsApp aberto via window.open');
+                        } catch (e) {
+                            console.log('[TOTEM] Falha ao abrir via window.open:', e);
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        function restartTotem() {
+            console.log('[TOTEM] Reiniciando sistema para próximo cliente...');
+            
+            // Esconder tela de sucesso
+            document.getElementById('successScreen').style.display = 'none';
+            
+            // Voltar para tela de boas-vindas (FUNCIONAL!)
+            document.getElementById('welcomeScreen').style.display = 'flex';
+            
+            // Esconder tela de produtos até próximo clique
+            const mainContent = document.getElementById('mainContent');
+            mainContent.classList.remove('show');
+            mainContent.style.display = 'none';
+            
+            // Ocultar carrinho também
+            const cartSection = document.getElementById('cartSection');
+            if (cartSection) {
+                cartSection.style.display = 'none';
+                console.log('[TOTEM] Carrinho ocultado');
+            }
+            
+            // ZERAR CARRINHO COMPLETAMENTE
+            cart = [];
+            updateCart();  // Atualiza display (zera contador)
+            console.log('[TOTEM] Carrinho zerado:', cart.length, 'itens');
+            
+            // Auto-iniciar após 5 segundos na tela de boas-vindas
+            setTimeout(() => {
+                console.log('[TOTEM] Auto-iniciando após 5 segundos na tela de boas-vindas');
+                if (document.getElementById('welcomeScreen').style.display !== 'none') {
+                    startOrder();
+                }
+            }, 5000); // 5 segundos
+            
+            // Resetar outras variáveis
+            selectedPaymentMethod = null;
+            currentCategory = 'all';
+            
+            // Resetar formulários
+            document.getElementById('cardNumber').value = '';
+            document.getElementById('cardCVV').value = '';
+            document.getElementById('cardExpiry').value = '';
+            document.getElementById('cardName').value = '';
+            
+            // Limpar seleções de categoria
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const allBtn = document.querySelector('.category-btn[data-category="all"]');
+            if (allBtn) allBtn.classList.add('active');
+            
+            // Renderizar menu completo (formato original)
+            renderMenu('all');
+            
+            // Atualizar número do pedido
+            document.getElementById('orderNumberDisplay').textContent = `Pedido #${currentOrderNumber}`;
+            
+            console.log('[TOTEM] Sistema pronto para próximo cliente!');
+        }
+
+        // Mostrar mensagem de erro
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        // Formatar número do cartão
+        document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Formatar validade do cartão
+        document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Permitir apenas números no CVV
+        document.getElementById('cardCVV')?.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Prevenir comportamento padrão do navegador
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('dragstart', e => e.preventDefault());
+
+        // 🛡️ Inicializar validações anti-chargeback
+        function initAntiChargebackValidation() {
+            const cpfInput = document.getElementById('totem-cpf');
+            const whatsappInput = document.getElementById('totem-whatsapp');
+            
+            if (!cpfInput || !whatsappInput) {
+                console.log('[TOTEM] Campos anti-chargeback não encontrados');
+                return;
+            }
+            
+            // Validação de CPF (local, sem servidor)
+            cpfInput.addEventListener('input', (e) => {
+                const cpf = formatCPF(e.target.value);
+                e.target.value = cpf;
+                
+                const validationDiv = document.getElementById('totem-cpf-validation');
+                
+                if (cpf.length === 14) {
+                    // Validação simples de CPF local
+                    if (validarCPFSimples(cpf)) {
+                        e.target.style.borderColor = '#27ae60';
+                        validationDiv.innerHTML = '<span style="color: #27ae60;">✅ CPF válido</span>';
+                    } else {
+                        e.target.style.borderColor = '#e74c3c';
+                        validationDiv.innerHTML = '<span style="color: #e74c3c;">❌ CPF inválido</span>';
+                    }
+                } else {
+                    e.target.style.borderColor = '#e0e0e0';
+                    validationDiv.innerHTML = '';
+                }
+            });
+            
+            // Validação de WhatsApp (local, sem servidor)
+            whatsappInput.addEventListener('input', (e) => {
+                const whatsapp = formatWhatsApp(e.target.value);
+                e.target.value = whatsapp;
+                
+                const validationDiv = document.getElementById('totem-whatsapp-validation');
+                
+                if (whatsapp.length >= 14) {
+                    // Validação simples de WhatsApp local
+                    if (validarWhatsAppSimples(whatsapp)) {
+                        e.target.style.borderColor = '#27ae60';
+                        validationDiv.innerHTML = '<span style="color: #27ae60;">✅ WhatsApp válido</span>';
+                    } else {
+                        e.target.style.borderColor = '#e74c3c';
+                        validationDiv.innerHTML = '<span style="color: #e74c3c;">❌ WhatsApp inválido</span>';
+                    }
+                } else {
+                    e.target.style.borderColor = '#e0e0e0';
+                    validationDiv.innerHTML = '';
+                }
+            });
+        }
+
+        // 🧹 Validação simples de CPF (local)
+        function validarCPFSimples(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            
+            if (cpf.length !== 11) return false;
+            
+            // CPFs inválidos conhecidos
+            const cpfsInvalidos = [
+                '00000000000', '11111111111', '22222222222', '33333333333',
+                '44444444444', '55555555555', '66666666666', '77777777777',
+                '88888888888', '99999999999'
+            ];
+            
+            return !cpfsInvalidos.includes(cpf);
+        }
+
+        // 📱 Validação simples de WhatsApp (local)
+        function validarWhatsAppSimples(whatsapp) {
+            whatsapp = whatsapp.replace(/\D/g, '');
+            
+            if (whatsapp.length < 10 || whatsapp.length > 13) return false;
+            
+            // Verificar se começa com DDD válido
+            const ddd = whatsapp.slice(0, 2);
+            const dddsValidos = [
+                '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                '21', '22', '24', '27', '28',
+                '31', '32', '33', '34', '35', '37', '38',
+                '41', '42', '43', '44', '45', '46',
+                '47', '48', '49',
+                '51', '53', '54', '55',
+                '61', '62', '63', '64', '65', '66', '67', '68', '69',
+                '71', '73', '74', '75', '77',
+                '79', '81', '82', '83', '84', '85', '86', '87', '88', '89',
+                '91', '92', '93', '94', '95', '96', '97', '98', '99'
+            ];
+            
+            return dddsValidos.includes(ddd);
+        }
+
+        // 🧹 Funções de formatação
+        function formatCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length <= 11) {
+                cpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+            return cpf;
+        }
+
+        function formatWhatsApp(whatsapp) {
+            whatsapp = whatsapp.replace(/\D/g, '');
+            if (whatsapp.length <= 11) {
+                whatsapp = whatsapp.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            }
+            return whatsapp;
+        }
+
+        // 🛡️ Verificar se pode prosseguir com pagamento
+        function podeProsseguirPagamento() {
+            const cpfInput = document.getElementById('totem-cpf');
+            const whatsappInput = document.getElementById('totem-whatsapp');
+            
+            if (!cpfInput || !whatsappInput) {
+                return true; // Se não existirem, permite prosseguir
+            }
+            
+            const cpfValid = cpfInput.style.borderColor === 'rgb(39, 174, 96)';
+            const whatsappValid = whatsappInput.style.borderColor === 'rgb(39, 174, 96)';
+            
+            return cpfValid && whatsappValid;
+        }
+
+        // 🛡️ Obter dados do cliente
+        function getClienteData() {
+            const cpfInput = document.getElementById('totem-cpf');
+            const whatsappInput = document.getElementById('totem-whatsapp');
+            
+            if (!cpfInput || !whatsappInput) {
+                return null;
+            }
+            
+            return {
+                cpf: cpfInput.value,
+                whatsapp: whatsappInput.value
+            };
+        }
+
+        // Inicializar
+        console.log('[DEBUG] Antes do window.onload');
+        window.onload = function() {
+            console.log('[TESTE] window.onload executado!');
+            
+            try {
+                // Teste de botao SIMPLES - FORA DO MODAL
+                console.log('[TESTE] Criando botão de teste...');
+                const testBtn = document.createElement('button');
+                testBtn.textContent = '🔴 CLIQUE AQUI 🔴';
+                testBtn.id = 'botaoTesteVermelho';
+                testBtn.style.cssText = `
+                    position: fixed !important;
+                    top: 10px !important;
+                    right: 10px !important;
+                    left: auto !important;
+                    z-index: 9999999 !important;
+                    background: red !important;
+                    color: white !important;
+                    padding: 30px !important;
+                    font-size: 24px !important;
+                    font-weight: bold !important;
+                    cursor: pointer !important;
+                    pointer-events: auto !important;
+                    border: 5px solid white !important;
+                    box-shadow: 0 0 20px black !important;
+                `;
+                document.body.appendChild(testBtn);
+                
+                // Usar addEventListener
+                testBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('BOTAO CLICADO! window.changeQuantity = ' + typeof window.changeQuantity);
+                    console.log('[TESTE] BOTAO CLICADO! changeQuantity existe?', typeof changeQuantity);
+                    if (typeof window.changeQuantity === 'function') {
+                        console.log('[TESTE] Chamando window.changeQuantity(0, 1)...');
+                        window.changeQuantity(0, 1);
+                        alert('window.changeQuantity chamado com sucesso!');
+                    } else {
+                        alert('ERRO: window.changeQuantity NÃO EXISTE!');
+                    }
+                });
+                console.log('[TESTE] Botão criado e event listener adicionado!');
+            } catch (e) {
+                console.error('[TESTE] ERRO ao criar botão:', e);
+            }
+            
+            loadMenuItems(); // Carregar produtos do cardápio
+            loadEstablishmentData();
+            
+            // 🛡️ Inicializar validações anti-chargeback
+            initAntiChargebackValidation();
+            
+            // Adicionar event listeners para botões de quantidade
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('quantity-btn')) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const itemId = parseInt(e.target.getAttribute('data-item-id'));
+                    const action = e.target.getAttribute('data-action');
+                    const delta = action === 'increase' ? 1 : -1;
+                    
+                    console.log('[TOTEM] Event listener capturou clique! itemId:', itemId, 'delta:', delta);
+                    changeQuantity(itemId, delta);
+                }
+            });
+            
+            // Auto-iniciar após 3 segundos se não houver interação
+            setTimeout(() => {
+                if (document.getElementById('welcomeScreen').style.display !== 'none') {
+                    startOrder();
+                }
+            }, 10000); // 10 segundos
+            
+            // Abrir modal de produtos automaticamente após 5 segundos
+            setTimeout(() => {
+                console.log('[TOTEM] Abrindo produtos automaticamente após 5 segundos');
+                startOrder(); // Inicia o pedido automaticamente
+            }, 5000); // 5 segundos
+            
+            // ⏰ AGENDAR REINÍCIO AUTOMÁTICO (após 1 minuto)
+            setTimeout(() => {
+                console.log('[TOTEM] Tempo completado! Gerando novo número...');
+                currentOrderNumber = generateOrderNumber();
+                console.log('[TOTEM] Novo número:', currentOrderNumber);
+                console.log('[TOTEM] Chamando restartTotem()...');
+                restartTotem(); // Reinicia totem automaticamente
+                console.log('[TOTEM] restartTotem() executado!');
+            }, 60000); // 1 minuto
+        };
+    </script>
+</body>
+</html>

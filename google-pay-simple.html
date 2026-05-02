@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Pay - Cardápio Digital Universal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .payment-section {
+            margin: 20px 0;
+        }
+        
+        .amount-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .amount-display h2 {
+            color: #27ae60;
+            font-size: 32px;
+            margin: 0;
+        }
+        
+        .google-pay-button {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .google-pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .google-pay-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .info-text {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Google Pay Integration</h1>
+        
+        <div class="info-text">
+            <h3>📷 Como funciona a leitura por câmera:</h3>
+            <p><strong>1.</strong> Você clica em "Pagar com Google Pay"</p>
+            <p><strong>2.</strong> Google Pay abre automaticamente</p>
+            <p><strong>3.</strong> Se não tiver cartão salvo, o Google Pay oferece:</p>
+            <ul>
+                <li>📷 <strong>Escanear com câmera</strong> (dentro do Google Pay)</li>
+                <li>⌨️ <strong>Digitar manualmente</strong></li>
+            </ul>
+            <p><strong>4.</strong> Câmera lê o cartão DENTRO do Google Pay</p>
+            <p><strong>5.</strong> Cartão fica salvo no Google Pay</p>
+            <p><strong>6.</strong> Pagamento confirmado!</p>
+        </div>
+        
+        <div class="amount-display">
+            <h2>R$ <span id="valor">50,00</span></h2>
+        </div>
+        
+        <div class="payment-section">
+            <button id="google-pay-button" class="google-pay-button" disabled>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <span>🚀 Pagar com Google Pay</span>
+            </button>
+        </div>
+        
+        <div id="status" class="status info" style="display: none;">
+            <p id="status-message">Processando...</p>
+        </div>
+    </div>
+
+    <!-- Carregar Google Pay -->
+    <script async src="https://pay.google.com/gp/p/js/pay.js"></script>
+    
+    <script>
+        let paymentsClient = null;
+        let isReady = false;
+
+        // Inicializar Google Pay
+        async function initGooglePay() {
+            try {
+                showStatus('info', '🚀 Iniciando Google Pay...');
+                
+                if (!window.google) {
+                    showStatus('error', '❌ Google Pay não disponível neste navegador');
+                    return;
+                }
+                
+                paymentsClient = new google.payments.api.PaymentsClient({
+                    environment: 'TEST' // Mudar para 'PRODUCTION' em produção
+                });
+                
+                // Verificar disponibilidade
+                const isReadyToPay = await paymentsClient.isReadyToPay({
+                    allowedPaymentMethods: ['CARD', 'TOKENIZED_CARD']
+                });
+                
+                isReady = isReadyToPay.result;
+                
+                if (isReady) {
+                    document.getElementById('google-pay-button').disabled = false;
+                    showStatus('success', '✅ Google Pay está pronto!');
+                    console.log('✅ Google Pay pronto para uso');
+                } else {
+                    showStatus('error', '❌ Google Pay não disponível');
+                    console.log('❌ Google Pay não disponível');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao inicializar Google Pay:', error);
+                showStatus('error', '❌ Erro ao inicializar Google Pay');
+            }
+        }
+
+        // Processar pagamento
+        async function processGooglePay() {
+            if (!isReady) {
+                alert('❌ Google Pay não está pronto');
+                return;
+            }
+            
+            try {
+                showStatus('info', '🚀 Abrindo Google Pay...');
+                
+                const paymentDataRequest = {
+                    apiVersion: 2,
+                    apiVersionMinor: 0,
+                    allowedPaymentMethods: [{
+                        type: 'CARD',
+                        parameters: {
+                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                            allowedCardNetworks: ['VISA', 'MASTERCARD', 'ELO', 'HIPERCARD']
+                        },
+                        tokenizationSpecification: {
+                            type: 'PAYMENT_GATEWAY',
+                            parameters: {
+                                gateway: 'mercadopago',
+                                gatewayMerchantId: 'SEU_ID'
+                            }
+                        }
+                    }],
+                    merchantInfo: {
+                        merchantId: 'SEU_MERCHANT_ID',
+                        merchantName: 'Cardápio Digital Universal'
+                    },
+                    transactionInfo: {
+                        totalPriceStatus: 'FINAL',
+                        totalPrice: document.getElementById('valor').textContent.replace(',', '.'),
+                        currencyCode: 'BRL',
+                        countryCode: 'BR'
+                    }
+                };
+                
+                // Abrir Google Pay
+                const paymentData = await paymentsClient.loadPaymentData(paymentDataRequest);
+                
+                console.log('✅ Pagamento Google Pay:', paymentData);
+                showStatus('success', '✅ Pagamento autorizado!');
+                
+                // Enviar para backend
+                await sendToBackend(paymentData);
+                
+            } catch (error) {
+                console.error('❌ Erro no pagamento:', error);
+                
+                if (error.statusCode === 'CANCELED') {
+                    showStatus('error', '❌ Pagamento cancelado');
+                } else {
+                    showStatus('error', '❌ Erro no pagamento');
+                }
+            }
+        }
+
+        // Enviar para backend
+        async function sendToBackend(paymentData) {
+            try {
+                showStatus('info', '📤 Enviando para servidor...');
+                
+                const response = await fetch('/google-pay', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        paymentData: paymentData,
+                        valor: document.getElementById('valor').textContent,
+                        metodo: 'google_pay',
+                        carrinho: [{ id: 1, nome: 'Teste', preco: 50 }],
+                        cliente: { nome: 'Cliente Teste' }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('success', '✅ Pagamento processado com sucesso!');
+                    console.log('✅ Resultado:', result);
+                } else {
+                    showStatus('error', '❌ Erro: ' + result.error);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao enviar:', error);
+                showStatus('error', '❌ Erro de conexão');
+            }
+        }
+
+        // Mostrar status
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('status');
+            const messageP = document.getElementById('status-message');
+            
+            statusDiv.className = `status ${type}`;
+            messageP.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        // Adicionar evento ao botão
+        document.getElementById('google-pay-button').addEventListener('click', processGooglePay);
+
+        // Inicializar quando carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initGooglePay, 1000);
+        });
+    </script>
+</body>
+</html>

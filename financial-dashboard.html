@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .header-subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .system-icon {
+            color: #e74c3c;
+        }
+        
+        .customer-icon {
+            color: #27ae60;
+        }
+        
+        .withdrawal-icon {
+            color: #f39c12;
+        }
+        
+        .balance-icon {
+            color: #3498db;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .financial-table th,
+        .financial-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .financial-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .financial-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .system-amount {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .customer-amount {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .withdrawal-amount {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8em;
+            transition: all 0.3s;
+        }
+        
+        .btn-approve {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #229954;
+        }
+        
+        .btn-reject {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #c0392b;
+        }
+        
+        .btn-view {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #2980b9;
+        }
+        
+        .btn-export {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1em;
+        }
+        
+        .btn-export:hover {
+            background: #5a6268;
+        }
+        
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.1em;
+        }
+        
+        .summary-cards {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .summary-card.system {
+            border-left-color: #e74c3c;
+        }
+        
+        .summary-card.customer {
+            border-left-color: #27ae60;
+        }
+        
+        .summary-card.withdrawal {
+            border-left-color: #f39c12;
+        }
+        
+        .summary-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-card.system .summary-value {
+            color: #e74c3c;
+        }
+        
+        .summary-card.customer .summary-value {
+            color: #27ae60;
+        }
+        
+        .summary-card.withdrawal .summary-value {
+            color: #f39c12;
+        }
+        
+        .summary-details {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e1e8ed;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .page-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .quick-action-btn {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .quick-action-btn:hover {
+            border-color: #3498db;
+            background: #f8f9ff;
+        }
+        
+        .quick-action-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        
+        .quick-action-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .quick-action-desc {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="header-title">💰 Dashboard Financeiro</div>
+                <div class="header-subtitle">Gerenciamento de taxas, saques e transações</div>
+            </div>
+            <a href="admin.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Voltar ao Admin
+            </a>
+        </header>
+
+        <!-- Estatísticas Financeiras -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon system-icon">💸</div>
+                <div class="stat-value" id="totalSystemFees">R$ 0</div>
+                <div class="stat-label">Total Taxas do Sistema</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon customer-icon">💳</div>
+                <div class="stat-value" id="totalCustomerAmount">R$ 0</div>
+                <div class="stat-label">Total Clientes (Acumulado)</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon withdrawal-icon">🏦</div>
+                <div class="stat-value" id="totalWithdrawals">R$ 0</div>
+                <div class="stat-label">Total Sacado</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon balance-icon">📊</div>
+                <div class="stat-value" id="availableBalance">R$ 0</div>
+                <div class="stat-label">Saldo Disponível Clientes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon system-icon">📈</div>
+                <div class="stat-value" id="todayRevenue">R$ 0</div>
+                <div class="stat-label">Receita Hoje</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon withdrawal-icon">📋</div>
+                <div class="stat-value" id="pendingWithdrawals">0</div>
+                <div class="stat-label">Saques Pendentes</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-grid">
+            <!-- Transações Financeiras -->
+            <div class="section-card">
+                <div class="section-title">
+                    📋 Transações Financeiras
+                    <button class="btn btn-export" onclick="exportFinancialData()">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                </div>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Tipo:</label>
+                        <select id="transactionTypeFilter" onchange="filterTransactions()">
+                            <option value="">Todos</option>
+                            <option value="order">Pedidos</option>
+                            <option value="withdrawal">Saques</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Data:</label>
+                        <input type="date" id="transactionDateFilter" onchange="filterTransactions()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="statusFilter" onchange="filterTransactions()">
+                            <option value="">Todos</option>
+                            <option value="confirmed">Confirmado</option>
+                            <option value="pending">Pendente</option>
+                            <option value="processing">Processando</option>
+                            <option value="completed">Concluído</option>
+                            <option value="rejected">Rejeitado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="transactionSearch" placeholder="Buscar por cliente, CPF ou ID..." onkeyup="searchTransactions()">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <div class="table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Tipo</th>
+                                <th>Cliente</th>
+                                <th>CPF</th>
+                                <th>Valor Sistema</th>
+                                <th>Valor Cliente</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <!-- Preenchido por JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="transactionsPagination">
+                    <!-- Preenchido por JavaScript -->
+                </div>
+            </div>
+
+            <!-- Resumo e Ações Rápidas -->
+            <div>
+                <!-- Resumo Financeiro -->
+                <div class="section-card">
+                    <div class="section-title">
+                        📊 Resumo Financeiro
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="summary-card system">
+                            <div class="summary-title">💸 Taxas do Sistema</div>
+                            <div class="summary-value" id="summarySystemFees">R$ 0</div>
+                            <div class="summary-details">
+                                <div>Hoje: R$ <span id="todaySystemFees">0</span></div>
+                                <div>Esta semana: R$ <span id="weekSystemFees">0</span></div>
+                                <div>Este mês: R$ <span id="monthSystemFees">0</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card customer">
+                            <div class="summary-title">💳 Valores Clientes</div>
+                            <div class="summary-value" id="summaryCustomerAmount">R$ 0</div>
+                            <div class="summary-details">
+                                <div>Acumulado: R$ <span id="totalCustomerEarned">0</span></div>
+                                <div>Sacado: R$ <span id="totalCustomerWithdrawn">0</span></div>
+                                <div>Disponível: R$ <span id="customerAvailableBalance">0</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card withdrawal">
+                            <div class="summary-title">🏦 Saques</div>
+                            <div class="summary-value" id="summaryWithdrawals">R$ 0</div>
+                            <div class="summary-details">
+                                <div>Pendentes: <span id="pendingCount">0</span></div>
+                                <div>Processando: <span id="processingCount">0</span></div>
+                                <div>Concluídos: <span id="completedCount">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="section-card">
+                    <div class="section-title">
+                        ⚡ Ações Rápidas
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <div class="quick-action-btn" onclick="processPendingWithdrawals()">
+                            <div class="quick-action-icon">⏳</div>
+                            <div class="quick-action-title">Processar Saques</div>
+                            <div class="quick-action-desc">Aprovar saques pendentes</div>
+                        </div>
+                        
+                        <div class="quick-action-btn" onclick="exportDailyReport()">
+                            <div class="quick-action-icon">📄</div>
+                            <div class="quick-action-title">Relatório Diário</div>
+                            <div class="quick-action-desc">Exportar relatório do dia</div>
+                        </div>
+                        
+                        <div class="quick-action-btn" onclick="viewCustomerBalances()">
+                            <div class="quick-action-icon">👥</div>
+                            <div class="quick-action-title">Saldos Clientes</div>
+                            <div class="quick-action-desc">Ver todos os saldos</div>
+                        </div>
+                        
+                        <div class="quick-action-btn" onclick="generateMonthlyReport()">
+                            <div class="quick-action-icon">📈</div>
+                            <div class="quick-action-title">Relatório Mensal</div>
+                            <div class="quick-action-desc">Relatório completo do mês</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="section-card">
+                    <div class="section-title">
+                        📈 Análise Financeira
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            📊 Gráfico de receita vs taxas (últimos 7 dias)
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            📈 Gráfico de saques por método
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let orders = [];
+        let withdrawals = [];
+        let customerBalances = {};
+        let filteredTransactions = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        // Carregar dados
+        function loadData() {
+            try {
+                orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+                customerBalances = JSON.parse(localStorage.getItem('customerBalances') || '{}');
+                
+                // Preparar transações
+                prepareTransactions();
+                
+                updateStats();
+                renderTransactions();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // Preparar transações
+        function prepareTransactions() {
+            const transactions = [];
+            
+            // Adicionar pedidos
+            orders.forEach(order => {
+                if (order.financial) {
+                    transactions.push({
+                        type: 'order',
+                        date: new Date(order.date),
+                        customerName: order.customerName,
+                        customerCpf: order.customerCpf,
+                        systemAmount: order.financial.systemFee || 0,
+                        customerAmount: order.financial.customerAmount || 0,
+                        status: order.status || 'confirmed',
+                        orderId: order.id,
+                        mesa: order.mesa,
+                        paymentMethod: order.paymentMethod
+                    });
+                }
+            });
+            
+            // Adicionar saques
+            withdrawals.forEach(withdrawal => {
+                transactions.push({
+                    type: 'withdrawal',
+                    date: new Date(withdrawal.date),
+                    customerName: withdrawal.customerName,
+                    customerCpf: withdrawal.customerCpf,
+                    systemAmount: 0,
+                    customerAmount: -withdrawal.amount,
+                    status: withdrawal.status || 'pending',
+                    withdrawalId: withdrawal.id,
+                    method: withdrawal.method,
+                    methodData: withdrawal.methodData
+                });
+            });
+            
+            // Ordenar por data (mais recentes primeiro)
+            transactions.sort((a, b) => b.date - a.date);
+            
+            filteredTransactions = [...transactions];
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            // Calcular totais
+            const totalSystemFees = orders.reduce((sum, order) => 
+                sum + (order.financial?.systemFee || 0), 0);
+            
+            const totalCustomerAmount = Object.values(customerBalances)
+                .reduce((sum, balance) => sum + (balance.totalEarned || 0), 0);
+            
+            const totalWithdrawals = withdrawals.reduce((sum, withdrawal) => 
+                sum + withdrawal.amount, 0);
+            
+            const availableBalance = Object.values(customerBalances)
+                .reduce((sum, balance) => sum + (balance.balance || 0), 0);
+            
+            // Receita de hoje
+            const today = new Date().toDateString();
+            const todayOrders = orders.filter(order => 
+                new Date(order.date).toDateString() === today);
+            const todayRevenue = todayOrders.reduce((sum, order) => 
+                sum + (order.financial?.systemFee || 0), 0);
+            
+            // Saques pendentes
+            const pendingWithdrawals = withdrawals.filter(w => w.status === 'pending').length;
+            
+            // Atualizar UI
+            document.getElementById('totalSystemFees').textContent = `R$ ${totalSystemFees.toFixed(2)}`;
+            document.getElementById('totalCustomerAmount').textContent = `R$ ${totalCustomerAmount.toFixed(2)}`;
+            document.getElementById('totalWithdrawals').textContent = `R$ ${totalWithdrawals.toFixed(2)}`;
+            document.getElementById('availableBalance').textContent = `R$ ${availableBalance.toFixed(2)}`;
+            document.getElementById('todayRevenue').textContent = `R$ ${todayRevenue.toFixed(2)}`;
+            document.getElementById('pendingWithdrawals').textContent = pendingWithdrawals;
+            
+            // Atualizar resumo
+            updateSummary();
+        }
+
+        // Atualizar resumo
+        function updateSummary() {
+            const today = new Date();
+            const weekStart = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            // Taxas do sistema
+            const todaySystemFees = orders
+                .filter(order => new Date(order.date) >= new Date(today.toDateString()))
+                .reduce((sum, order) => sum + (order.financial?.systemFee || 0), 0);
+            
+            const weekSystemFees = orders
+                .filter(order => new Date(order.date) >= weekStart)
+                .reduce((sum, order) => sum + (order.financial?.systemFee || 0), 0);
+            
+            const monthSystemFees = orders
+                .filter(order => new Date(order.date) >= monthStart)
+                .reduce((sum, order) => sum + (order.financial?.systemFee || 0), 0);
+            
+            // Valores clientes
+            const totalCustomerEarned = Object.values(customerBalances)
+                .reduce((sum, balance) => sum + (balance.totalEarned || 0), 0);
+            
+            const totalCustomerWithdrawn = Object.values(customerBalances)
+                .reduce((sum, balance) => sum + (balance.totalWithdrawn || 0), 0);
+            
+            const customerAvailableBalance = Object.values(customerBalances)
+                .reduce((sum, balance) => sum + (balance.balance || 0), 0);
+            
+            // Saques
+            const pendingCount = withdrawals.filter(w => w.status === 'pending').length;
+            const processingCount = withdrawals.filter(w => w.status === 'processing').length;
+            const completedCount = withdrawals.filter(w => w.status === 'completed').length;
+            
+            const totalWithdrawalAmount = withdrawals.reduce((sum, w) => sum + w.amount, 0);
+            
+            // Atualizar UI
+            document.getElementById('summarySystemFees').textContent = `R$ ${weekSystemFees.toFixed(2)}`;
+            document.getElementById('todaySystemFees').textContent = todaySystemFees.toFixed(2);
+            document.getElementById('weekSystemFees').textContent = weekSystemFees.toFixed(2);
+            document.getElementById('monthSystemFees').textContent = monthSystemFees.toFixed(2);
+            
+            document.getElementById('summaryCustomerAmount').textContent = `R$ ${totalCustomerEarned.toFixed(2)}`;
+            document.getElementById('totalCustomerEarned').textContent = totalCustomerEarned.toFixed(2);
+            document.getElementById('totalCustomerWithdrawn').textContent = totalCustomerWithdrawn.toFixed(2);
+            document.getElementById('customerAvailableBalance').textContent = customerAvailableBalance.toFixed(2);
+            
+            document.getElementById('summaryWithdrawals').textContent = `R$ ${totalWithdrawalAmount.toFixed(2)}`;
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('processingCount').textContent = processingCount;
+            document.getElementById('completedCount').textContent = completedCount;
+        }
+
+        // Renderizar transações
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionsTableBody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageTransactions = filteredTransactions.slice(start, end);
+            
+            if (pageTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">Nenhuma transação encontrada</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = pageTransactions.map(transaction => {
+                const statusClass = `status-${transaction.status}`;
+                const statusText = {
+                    'confirmed': 'Confirmado',
+                    'pending': 'Pendente',
+                    'processing': 'Processando',
+                    'completed': 'Concluído',
+                    'rejected': 'Rejeitado'
+                }[transaction.status] || transaction.status;
+                
+                return `
+                    <tr>
+                        <td>${transaction.date.toLocaleString('pt-BR')}</td>
+                        <td>${transaction.type === 'order' ? '🛒 Pedido' : '💸 Saque'}</td>
+                        <td>${transaction.customerName}</td>
+                        <td>${transaction.customerCpf}</td>
+                        <td class="system-amount">R$ ${transaction.systemAmount.toFixed(2)}</td>
+                        <td class="customer-amount">R$ ${Math.abs(transaction.customerAmount).toFixed(2)}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                ${transaction.type === 'withdrawal' && transaction.status === 'pending' ? 
+                                    `<button class="btn btn-approve" onclick="approveWithdrawal(${transaction.withdrawalId})">✓</button>
+                                    <button class="btn btn-reject" onclick="rejectWithdrawal(${transaction.withdrawalId})">✗</button>` : 
+                                    `<button class="btn btn-view" onclick="viewTransactionDetails(${transaction.orderId || transaction.withdrawalId})">👁</button>`
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            updatePagination();
+        }
+
+        // Atualizar paginação
+        function updatePagination() {
+            const container = document.getElementById('transactionsPagination');
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Botão anterior
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">←</button>`;
+            }
+            
+            // Páginas
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                const active = i === currentPage ? 'active' : '';
+                html += `<button class="page-btn ${active}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            // Próxima
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">→</button>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Mudar página
+        function changePage(page) {
+            currentPage = page;
+            renderTransactions();
+        }
+
+        // Filtrar transações
+        function filterTransactions() {
+            const typeFilter = document.getElementById('transactionTypeFilter').value;
+            const dateFilter = document.getElementById('transactionDateFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            filteredTransactions = [...filteredTransactions].filter(transaction => {
+                if (typeFilter && transaction.type !== typeFilter) return false;
+                if (statusFilter && transaction.status !== statusFilter) return false;
+                if (dateFilter) {
+                    const transactionDate = transaction.date.toISOString().split('T')[0];
+                    if (transactionDate !== dateFilter) return false;
+                }
+                return true;
+            });
+            
+            currentPage = 1;
+            renderTransactions();
+        }
+
+        // Buscar transações
+        function searchTransactions() {
+            const searchTerm = document.getElementById('transactionSearch').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                prepareTransactions();
+            } else {
+                filteredTransactions = [...filteredTransactions].filter(transaction => 
+                    transaction.customerName.toLowerCase().includes(searchTerm) ||
+                    transaction.customerCpf.includes(searchTerm) ||
+                    (transaction.orderId && transaction.orderId.toString().includes(searchTerm)) ||
+                    (transaction.withdrawalId && transaction.withdrawalId.toString().includes(searchTerm))
+                );
+            }
+            
+            currentPage = 1;
+            renderTransactions();
+        }
+
+        // Aprovar saque
+        function approveWithdrawal(withdrawalId) {
+            if (!confirm('Deseja aprovar este saque?')) return;
+            
+            try {
+                const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+                const withdrawalIndex = withdrawals.findIndex(w => w.id === withdrawalId);
+                
+                if (withdrawalIndex !== -1) {
+                    withdrawals[withdrawalIndex].status = 'processing';
+                    withdrawals[withdrawalIndex].processedAt = new Date().toISOString();
+                    
+                    localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+                    
+                    alert('Saque aprovado e enviado para processamento!');
+                    loadData();
+                }
+            } catch (error) {
+                console.error('Erro ao aprovar saque:', error);
+                alert('Erro ao aprovar saque.');
+            }
+        }
+
+        // Rejeitar saque
+        function rejectWithdrawal(withdrawalId) {
+            if (!confirm('Deseja rejeitar este saque?')) return;
+            
+            try {
+                const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+                const withdrawalIndex = withdrawals.findIndex(w => w.id === withdrawalId);
+                
+                if (withdrawalIndex !== -1) {
+                    const withdrawal = withdrawals[withdrawalIndex];
+                    
+                    // Devolver valor ao saldo do cliente
+                    const balances = JSON.parse(localStorage.getItem('customerBalances') || '{}');
+                    if (balances[withdrawal.customerCpf]) {
+                        balances[withdrawal.customerCpf].balance += withdrawal.amount;
+                        balances[withdrawal.customerCpf].totalWithdrawn -= withdrawal.amount;
+                        
+                        localStorage.setItem('customerBalances', JSON.stringify(balances));
+                    }
+                    
+                    withdrawals[withdrawalIndex].status = 'rejected';
+                    withdrawals[withdrawalIndex].processedAt = new Date().toISOString();
+                    
+                    localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+                    
+                    alert('Saque rejeitado. Valor devolvido ao cliente.');
+                    loadData();
+                }
+            } catch (error) {
+                console.error('Erro ao rejeitar saque:', error);
+                alert('Erro ao rejeitar saque.');
+            }
+        }
+
+        // Ver detalhes da transação
+        function viewTransactionDetails(id) {
+            // Implementar visualização detalhada
+            alert(`Detalhes da transação #${id} - Funcionalidade em desenvolvimento`);
+        }
+
+        // Processar saques pendentes
+        function processPendingWithdrawals() {
+            const pendingWithdrawals = withdrawals.filter(w => w.status === 'pending');
+            
+            if (pendingWithdrawals.length === 0) {
+                alert('Nenhum saque pendente para processar.');
+                return;
+            }
+            
+            if (confirm(`Processar ${pendingWithdrawals.length} saques pendentes?`)) {
+                pendingWithdrawals.forEach(withdrawal => {
+                    approveWithdrawal(withdrawal.id);
+                });
+            }
+        }
+
+        // Exportar dados financeiros
+        function exportFinancialData() {
+            let csv = 'Data,Tipo,Cliente,CPF,Valor Sistema,Valor Cliente,Status,Método\n';
+            
+            filteredTransactions.forEach(transaction => {
+                csv += `"${transaction.date.toLocaleString('pt-BR')}","${transaction.type === 'order' ? 'Pedido' : 'Saque'}","${transaction.customerName}","${transaction.customerCpf}",${transaction.systemAmount},${transaction.customerAmount},"${transaction.status}","${transaction.method || transaction.paymentMethod || ''}"\n`;
+            });
+            
+            downloadCSV(csv, 'transacoes_financeiras.csv');
+        }
+
+        // Exportar relatório diário
+        function exportDailyReport() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayOrders = orders.filter(order => 
+                order.date.startsWith(today));
+            const todayWithdrawals = withdrawals.filter(withdrawal => 
+                withdrawal.date.startsWith(today));
+            
+            let csv = 'Relatório Financeiro Diário - ' + new Date().toLocaleDateString('pt-BR') + '\n\n';
+            csv += 'Resumo do Dia\n';
+            csv += 'Taxas Sistema,R$ ' + todayOrders.reduce((sum, order) => sum + (order.financial?.systemFee || 0), 0).toFixed(2) + '\n';
+            csv += 'Valor Clientes,R$ ' + todayOrders.reduce((sum, order) => sum + (order.financial?.customerAmount || 0), 0).toFixed(2) + '\n';
+            csv += 'Saques,R$ ' + todayWithdrawals.reduce((sum, w) => sum + w.amount, 0).toFixed(2) + '\n\n';
+            
+            csv += 'Pedidos do Dia\n';
+            csv += 'ID,Cliente,Mesa,Valor Sistema,Valor Cliente,Método\n';
+            todayOrders.forEach(order => {
+                csv += `${order.id},"${order.customerName}",${order.mesa},${order.financial?.systemFee || 0},${order.financial?.customerAmount || 0},${order.paymentMethod}\n`;
+            });
+            
+            csv += '\nSaques do Dia\n';
+            csv += 'ID,Cliente,Método,Valor,Status\n';
+            todayWithdrawals.forEach(withdrawal => {
+                csv += `${withdrawal.id},"${withdrawal.customerName}",${withdrawal.method},${withdrawal.amount},${withdrawal.status}\n`;
+            });
+            
+            downloadCSV(csv, `relatorio_diario_${today}.csv`);
+        }
+
+        // Ver saldos dos clientes
+        function viewCustomerBalances() {
+            let report = 'Saldos dos Clientes\n\n';
+            report += 'CPF,Cliente,Saldo Disponível,Total Acumulado,Total Sacado\n';
+            
+            Object.entries(customerBalances).forEach(([cpf, balance]) => {
+                const customer = customers.find(c => c.cpf === cpf);
+                report += `"${cpf}","${customer?.nome || 'Desconhecido'}",${balance.balance || 0},${balance.totalEarned || 0},${balance.totalWithdrawn || 0}\n`;
+            });
+            
+            downloadCSV(report, 'saldos_clientes.csv');
+        }
+
+        // Gerar relatório mensal
+        function generateMonthlyReport() {
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            
+            const monthOrders = orders.filter(order => {
+                const orderDate = new Date(order.date);
+                return orderDate >= monthStart && orderDate <= monthEnd;
+            });
+            
+            const monthWithdrawals = withdrawals.filter(withdrawal => {
+                const withdrawalDate = new Date(withdrawal.date);
+                return withdrawalDate >= monthStart && withdrawalDate <= monthEnd;
+            });
+            
+            let csv = 'Relatório Financeiro Mensal - ' + monthStart.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) + '\n\n';
+            
+            csv += 'Resumo Mensal\n';
+            csv += 'Total Pedidos,' + monthOrders.length + '\n';
+            csv += 'Taxas Sistema,R$ ' + monthOrders.reduce((sum, order) => sum + (order.financial?.systemFee || 0), 0).toFixed(2) + '\n';
+            csv += 'Valor Clientes,R$ ' + monthOrders.reduce((sum, order) => sum + (order.financial?.customerAmount || 0), 0).toFixed(2) + '\n';
+            csv += 'Total Saques,R$ ' + monthWithdrawals.reduce((sum, w) => sum + w.amount, 0).toFixed(2) + '\n';
+            csv += 'Ticket Médio,R$ ' + (monthOrders.length > 0 ? (monthOrders.reduce((sum, order) => sum + (order.total || 0), 0) / monthOrders.length).toFixed(2) : '0.00') + '\n\n';
+            
+            // Adicionar mais detalhes conforme necessário
+            
+            downloadCSV(csv, `relatorio_mensal_${monthStart.toISOString().split('T')[0]}.csv`);
+        }
+
+        // Download CSV
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadData();
+        };
+    </script>
+</body>
+</html>

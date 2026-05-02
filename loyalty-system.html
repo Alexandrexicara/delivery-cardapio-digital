@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Fidelidade - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .header-subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .loyalty-tiers {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .tier-card {
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .tier-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .tier-card.active {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+        }
+        
+        .tier-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .tier-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .tier-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .tier-requirement {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .tier-benefits {
+            text-align: left;
+            margin-top: 15px;
+        }
+        
+        .tier-benefits h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            color: #27ae60;
+        }
+        
+        .promotion-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .date-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .promotion-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .promotion-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .promotion-item.active {
+            border-color: #27ae60;
+            background: #f8fff8;
+        }
+        
+        .promotion-item.expired {
+            border-color: #999;
+            background: #f8f9fa;
+            opacity: 0.7;
+        }
+        
+        .promotion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .promotion-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .promotion-type {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .promotion-discount {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .promotion-gift {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .promotion-dates {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .promotion-description {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .promotion-conditions {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .promotion-conditions h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        
+        .condition-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .promotion-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .promotion-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+        
+        .customer-segments {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .segment-card {
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .segment-card:hover {
+            border-color: #27ae60;
+            background: #f8fff8;
+        }
+        
+        .segment-card.selected {
+            border-color: #27ae60;
+            background: #e8f5e8;
+        }
+        
+        .segment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .segment-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .segment-count {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+        
+        .segment-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .loyalty-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #27ae60;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="header-title">🎁 Sistema de Fidelidade</div>
+                <div class="header-subtitle">Gerencie programas de fidelidade e promoções</div>
+            </div>
+            <a href="admin.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Voltar ao Admin
+            </a>
+        </header>
+
+        <!-- Estatísticas de Fidelidade -->
+        <div class="loyalty-stats">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="loyalCustomers">0</div>
+                <div class="stat-label">Clientes Fieis</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="activePromotions">0</div>
+                <div class="stat-label">Promoções Ativas</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="loyaltyRevenue">R$ 0</div>
+                <div class="stat-label">Receita Fidelidade</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value" id="redemptionRate">0%</div>
+                <div class="stat-label">Taxa de Resgate</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-grid">
+            <!-- Níveis de Fidelidade -->
+            <div class="section-card">
+                <div class="section-title">
+                    ⭐ Níveis de Fidelidade
+                    <button class="btn btn-primary" onclick="saveLoyaltyTiers()">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+                
+                <div class="loyalty-tiers" id="loyaltyTiers">
+                    <div class="tier-card" data-tier="bronze">
+                        <div class="tier-icon">🥉</div>
+                        <div class="tier-name">Bronze</div>
+                        <div class="tier-requirement">1-3 visitas</div>
+                        <div class="tier-benefits">
+                            <h4>Benefícios:</h4>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>5% de desconto no aniversário</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>Bebida gratuita a cada 3 visitas</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tier-card" data-tier="silver">
+                        <div class="tier-icon">🥈</div>
+                        <div class="tier-name">Silver</div>
+                        <div class="tier-requirement">4-10 visitas</div>
+                        <div class="tier-benefits">
+                            <h4>Benefícios:</h4>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>10% de desconto no aniversário</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>Sobremesa gratuita a cada 5 visitas</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>Prioridade na fila</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tier-card" data-tier="gold">
+                        <div class="tier-icon">🥇</div>
+                        <div class="tier-name">Gold</div>
+                        <div class="tier-requirement">11+ visitas</div>
+                        <div class="tier-benefits">
+                            <h4>Benefícios:</h4>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>15% de desconto em todas as visitas</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>Prato exclusivo do chef</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>Atendimento prioritário</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check"></i>
+                                <span>Estacionamento gratuito</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Criar Promoção -->
+            <div class="section-card">
+                <div class="section-title">
+                    🎉 Criar Nova Promoção
+                </div>
+                
+                <form class="promotion-form" id="promotionForm">
+                    <div class="form-group">
+                        <label>Nome da Promoção *</label>
+                        <input type="text" id="promotionName" required placeholder="Ex: Happy Hour Especial">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tipo de Promoção *</label>
+                        <select id="promotionType" required onchange="updatePromotionFields()">
+                            <option value="">Selecione...</option>
+                            <option value="discount">Desconto (%)</option>
+                            <option value="gift">Brinde/Gratuito</option>
+                            <option value="cashback">Cashback</option>
+                            <option value="points">Pontos Extras</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="discountField" style="display: none;">
+                        <label>Valor do Desconto (%)</label>
+                        <input type="number" id="discountValue" min="1" max="100" placeholder="10">
+                    </div>
+                    
+                    <div class="form-group" id="giftField" style="display: none;">
+                        <label>Brinde Oferecido</label>
+                        <input type="text" id="giftValue" placeholder="Ex: Sobremesa gratuita">
+                    </div>
+                    
+                    <div class="form-group" id="cashbackField" style="display: none;">
+                        <label>Valor do Cashback (%)</label>
+                        <input type="number" id="cashbackValue" min="1" max="50" placeholder="5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="promotionDescription" placeholder="Descreva os detalhes da promoção..."></textarea>
+                    </div>
+                    
+                    <div class="date-range">
+                        <div class="form-group">
+                            <label>Data de Início *</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data de Término *</label>
+                            <input type="date" id="endDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Condições</label>
+                        <textarea id="promotionConditions" placeholder="Condições para participar da promoção..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Segmento de Clientes</label>
+                        <div class="customer-segments" id="customerSegments">
+                            <div class="segment-card" data-segment="all">
+                                <div class="segment-header">
+                                    <div class="segment-name">Todos os Clientes</div>
+                                    <div class="segment-count" id="allCount">0</div>
+                                </div>
+                                <div class="segment-description">Aplicável a todos os clientes cadastrados</div>
+                            </div>
+                            
+                            <div class="segment-card" data-segment="new">
+                                <div class="segment-header">
+                                    <div class="segment-name">Novos Clientes</div>
+                                    <div class="segment-count" id="newCount">0</div>
+                                </div>
+                                <div class="segment-description">Primeira visita nos últimos 30 dias</div>
+                            </div>
+                            
+                            <div class="segment-card" data-segment="returning">
+                                <div class="segment-header">
+                                    <div class="segment-name">Clientes Recorrentes</div>
+                                    <div class="segment-count" id="returningCount">0</div>
+                                </div>
+                                <div class="segment-description">2+ visitas no último mês</div>
+                            </div>
+                            
+                            <div class="segment-card" data-segment="loyal">
+                                <div class="segment-header">
+                                    <div class="segment-name">Clientes Fieis</div>
+                                    <div class="segment-count" id="loyalCount">0</div>
+                                </div>
+                                <div class="segment-description">5+ visitas totais</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <button type="button" class="btn btn-primary" onclick="createPromotion()">
+                            <i class="fas fa-plus"></i> Criar Promoção
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetPromotionForm()">
+                            <i class="fas fa-redo"></i> Limpar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Promoções Ativas -->
+        <div class="section-card">
+            <div class="section-title">
+                📋 Promoções Ativas
+                <button class="btn btn-primary" onclick="exportPromotions()">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+            </div>
+            
+            <div class="promotion-list" id="promotionList">
+                <!-- Preenchido por JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let customers = [];
+        let orders = [];
+        let promotions = [];
+        let loyaltyTiers = {
+            bronze: { minVisits: 1, maxVisits: 3, benefits: ['5% desconto aniversário', 'Bebida gratuita a cada 3 visitas'] },
+            silver: { minVisits: 4, maxVisits: 10, benefits: ['10% desconto aniversário', 'Sobremesa gratuita a cada 5 visitas', 'Prioridade na fila'] },
+            gold: { minVisits: 11, maxVisits: Infinity, benefits: ['15% desconto em todas as visitas', 'Prato exclusivo', 'Atendimento prioritário', 'Estacionamento gratuito'] }
+        };
+        let selectedSegments = [];
+
+        // Carregar dados
+        function loadData() {
+            try {
+                customers = JSON.parse(localStorage.getItem('customers') || '[]');
+                orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                promotions = JSON.parse(localStorage.getItem('promotions') || '[]');
+                
+                const savedTiers = localStorage.getItem('loyaltyTiers');
+                if (savedTiers) {
+                    loyaltyTiers = JSON.parse(savedTiers);
+                }
+                
+                updateStats();
+                renderPromotions();
+                updateSegmentCounts();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            const loyalCustomers = customers.filter(c => (c.visitCount || 1) >= 5).length;
+            const activePromotions = promotions.filter(p => isActivePromotion(p)).length;
+            
+            // Calcular receita de fidelidade (simplificado)
+            const loyalCustomersCPFs = customers.filter(c => (c.visitCount || 1) >= 5).map(c => c.cpf);
+            const loyaltyOrders = orders.filter(o => loyalCustomersCPFs.includes(o.customerCpf));
+            const loyaltyRevenue = loyaltyOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+            
+            // Taxa de resgate (simplificado)
+            const redemptionRate = promotions.length > 0 ? 
+                Math.round((promotions.filter(p => p.usedCount > 0).length / promotions.length) * 100) : 0;
+            
+            document.getElementById('loyalCustomers').textContent = loyalCustomers;
+            document.getElementById('activePromotions').textContent = activePromotions;
+            document.getElementById('loyaltyRevenue').textContent = `R$ ${loyaltyRevenue.toFixed(2)}`;
+            document.getElementById('redemptionRate').textContent = `${redemptionRate}%`;
+        }
+
+        // Verificar se promoção está ativa
+        function isActivePromotion(promotion) {
+            const now = new Date();
+            const start = new Date(promotion.startDate);
+            const end = new Date(promotion.endDate);
+            return now >= start && now <= end;
+        }
+
+        // Atualizar contadores de segmentos
+        function updateSegmentCounts() {
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('allCount').textContent = customers.length;
+            document.getElementById('newCount').textContent = customers.filter(c => 
+                new Date(c.registrationDate) >= thirtyDaysAgo
+            ).length;
+            document.getElementById('returningCount').textContent = customers.filter(c => 
+                (c.visitCount || 1) >= 2 && c.lastVisit && new Date(c.lastVisit) >= oneMonthAgo
+            ).length;
+            document.getElementById('loyalCount').textContent = customers.filter(c => 
+                (c.visitCount || 1) >= 5
+            ).length;
+        }
+
+        // Atualizar campos da promoção
+        function updatePromotionFields() {
+            const type = document.getElementById('promotionType').value;
+            
+            // Esconder todos os campos
+            document.getElementById('discountField').style.display = 'none';
+            document.getElementById('giftField').style.display = 'none';
+            document.getElementById('cashbackField').style.display = 'none';
+            
+            // Mostrar campo correspondente
+            switch (type) {
+                case 'discount':
+                    document.getElementById('discountField').style.display = 'block';
+                    break;
+                case 'gift':
+                    document.getElementById('giftField').style.display = 'block';
+                    break;
+                case 'cashback':
+                    document.getElementById('cashbackField').style.display = 'block';
+                    break;
+            }
+        }
+
+        // Selecionar segmentos
+        document.querySelectorAll('.segment-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const segment = this.dataset.segment;
+                
+                if (segment === 'all') {
+                    // Se selecionar "todos", desmarcar outros
+                    document.querySelectorAll('.segment-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedSegments = ['all'];
+                } else {
+                    // Desmarcar "todos" se estiver selecionado
+                    document.querySelector('[data-segment="all"]').classList.remove('selected');
+                    
+                    // Toggle do segmento atual
+                    this.classList.toggle('selected');
+                    
+                    // Atualizar lista de selecionados
+                    if (this.classList.contains('selected')) {
+                        selectedSegments = selectedSegments.filter(s => s !== 'all');
+                        if (!selectedSegments.includes(segment)) {
+                            selectedSegments.push(segment);
+                        }
+                    } else {
+                        selectedSegments = selectedSegments.filter(s => s !== segment);
+                    }
+                }
+            });
+        });
+
+        // Criar promoção
+        function createPromotion() {
+            const name = document.getElementById('promotionName').value.trim();
+            const type = document.getElementById('promotionType').value;
+            const description = document.getElementById('promotionDescription').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const conditions = document.getElementById('promotionConditions').value.trim();
+            
+            if (!name || !type || !startDate || !endDate || selectedSegments.length === 0) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Validar datas
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert('A data de término deve ser posterior à data de início.');
+                return;
+            }
+            
+            // Obter valor baseado no tipo
+            let value = null;
+            switch (type) {
+                case 'discount':
+                    value = document.getElementById('discountValue').value;
+                    break;
+                case 'gift':
+                    value = document.getElementById('giftValue').value;
+                    break;
+                case 'cashback':
+                    value = document.getElementById('cashbackValue').value;
+                    break;
+            }
+            
+            if (!value && type !== 'points') {
+                alert('Por favor, informe o valor da promoção.');
+                return;
+            }
+            
+            const promotion = {
+                id: Date.now(),
+                name: name,
+                type: type,
+                value: value,
+                description: description,
+                startDate: startDate,
+                endDate: endDate,
+                conditions: conditions,
+                targetSegments: selectedSegments,
+                usedCount: 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            promotions.push(promotion);
+            localStorage.setItem('promotions', JSON.stringify(promotions));
+            
+            alert('Promoção criada com sucesso!');
+            resetPromotionForm();
+            renderPromotions();
+            updateStats();
+        }
+
+        // Resetar formulário
+        function resetPromotionForm() {
+            document.getElementById('promotionForm').reset();
+            document.querySelectorAll('.segment-card').forEach(c => c.classList.remove('selected'));
+            selectedSegments = [];
+            updatePromotionFields();
+        }
+
+        // Renderizar promoções
+        function renderPromotions() {
+            const container = document.getElementById('promotionList');
+            
+            if (promotions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">Nenhuma promoção cadastrada</p>';
+                return;
+            }
+            
+            // Ordenar por data de criação (mais recentes primeiro)
+            const sortedPromotions = [...promotions].sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            
+            container.innerHTML = sortedPromotions.map(promotion => {
+                const isActive = isActivePromotion(promotion);
+                const isExpired = new Date() > new Date(promotion.endDate);
+                
+                const typeClass = promotion.type === 'discount' ? 'discount' : 
+                                 promotion.type === 'gift' ? 'gift' : 
+                                 promotion.type === 'cashback' ? 'cashback' : '';
+                
+                const typeText = promotion.type === 'discount' ? 'Desconto' : 
+                                promotion.type === 'gift' ? 'Brinde' : 
+                                promotion.type === 'cashback' ? 'Cashback' : 
+                                promotion.type;
+                
+                return `
+                    <div class="promotion-item ${isActive ? 'active' : ''} ${isExpired ? 'expired' : ''}">
+                        <div class="promotion-header">
+                            <div class="promotion-title">${promotion.name}</div>
+                            <div class="promotion-type ${typeClass}">${typeText}</div>
+                        </div>
+                        
+                        <div class="promotion-dates">
+                            📅 ${new Date(promotion.startDate).toLocaleDateString('pt-BR')} até ${new Date(promotion.endDate).toLocaleDateString('pt-BR')}
+                        </div>
+                        
+                        ${promotion.description ? `<div class="promotion-description">${promotion.description}</div>` : ''}
+                        
+                        ${promotion.value ? `
+                            <div style="margin-bottom: 15px;">
+                                <strong>Valor: </strong>
+                                ${promotion.type === 'discount' ? `${promotion.value}% de desconto` :
+                                  promotion.type === 'cashback' ? `${promotion.value}% de cashback` :
+                                  promotion.value}
+                            </div>
+                        ` : ''}
+                        
+                        ${promotion.conditions ? `
+                            <div class="promotion-conditions">
+                                <h4>Condições:</h4>
+                                ${promotion.conditions.split('\n').map(condition => 
+                                    `<div class="condition-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>${condition}</span>
+                                    </div>`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="promotion-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${promotion.usedCount || 0}</div>
+                                <div class="stat-label">Usos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${getTargetCustomersCount(promotion.targetSegments)}</div>
+                                <div class="stat-label">Clientes Alvo</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${isActive ? 'Ativa' : isExpired ? 'Expirada' : 'Agendada'}</div>
+                                <div class="stat-label">Status</div>
+                            </div>
+                        </div>
+                        
+                        <div class="promotion-actions">
+                            <button class="btn btn-danger" onclick="deletePromotion(${promotion.id})">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                            ${isActive ? `<button class="btn btn-primary" onclick="promoteToCustomers(${promotion.id})">
+                                <i class="fas fa-bullhorn"></i> Promover
+                            </button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Obter contador de clientes alvo
+        function getTargetCustomersCount(segments) {
+            if (segments.includes('all')) return customers.length;
+            
+            let count = 0;
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            segments.forEach(segment => {
+                switch (segment) {
+                    case 'new':
+                        count += customers.filter(c => new Date(c.registrationDate) >= thirtyDaysAgo).length;
+                        break;
+                    case 'returning':
+                        count += customers.filter(c => 
+                            (c.visitCount || 1) >= 2 && c.lastVisit && new Date(c.lastVisit) >= oneMonthAgo
+                        ).length;
+                        break;
+                    case 'loyal':
+                        count += customers.filter(c => (c.visitCount || 1) >= 5).length;
+                        break;
+                }
+            });
+            
+            return count;
+        }
+
+        // Promover para clientes
+        function promoteToCustomers(promotionId) {
+            const promotion = promotions.find(p => p.id === promotionId);
+            if (!promotion) return;
+            
+            const targetCustomers = getTargetCustomers(promotion.targetSegments);
+            
+            if (targetCustomers.length === 0) {
+                alert('Nenhum cliente encontrado para este segmento.');
+                return;
+            }
+            
+            const message = `
+                📢 Promover "${promotion.name}" para ${targetCustomers.length} clientes?
+                
+                Esta ação irá:
+                • Enviar notificação para os clientes selecionados
+                • Disponibilizar a promoção para uso
+                
+                Deseja continuar?
+            `;
+            
+            if (confirm(message)) {
+                // Simular envio de notificações
+                alert(`Promoção "${promotion.name}" enviada para ${targetCustomers.length} clientes com sucesso!`);
+                
+                // Atualizar contador de usos (simulação)
+                promotion.usedCount = Math.floor(Math.random() * targetCustomers.length);
+                localStorage.setItem('promotions', JSON.stringify(promotions));
+                
+                renderPromotions();
+            }
+        }
+
+        // Obter clientes alvo
+        function getTargetCustomers(segments) {
+            if (segments.includes('all')) return customers;
+            
+            let targetCustomers = [];
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            segments.forEach(segment => {
+                let segmentCustomers = [];
+                
+                switch (segment) {
+                    case 'new':
+                        segmentCustomers = customers.filter(c => new Date(c.registrationDate) >= thirtyDaysAgo);
+                        break;
+                    case 'returning':
+                        segmentCustomers = customers.filter(c => 
+                            (c.visitCount || 1) >= 2 && c.lastVisit && new Date(c.lastVisit) >= oneMonthAgo
+                        );
+                        break;
+                    case 'loyal':
+                        segmentCustomers = customers.filter(c => (c.visitCount || 1) >= 5);
+                        break;
+                }
+                
+                // Adicionar sem duplicar
+                segmentCustomers.forEach(customer => {
+                    if (!targetCustomers.find(c => c.cpf === customer.cpf)) {
+                        targetCustomers.push(customer);
+                    }
+                });
+            });
+            
+            return targetCustomers;
+        }
+
+        // Excluir promoção
+        function deletePromotion(promotionId) {
+            if (!confirm('Tem certeza que deseja excluir esta promoção?')) return;
+            
+            promotions = promotions.filter(p => p.id !== promotionId);
+            localStorage.setItem('promotions', JSON.stringify(promotions));
+            
+            renderPromotions();
+            updateStats();
+        }
+
+        // Salvar níveis de fidelidade
+        function saveLoyaltyTiers() {
+            // Implementar salvamento das configurações dos níveis
+            localStorage.setItem('loyaltyTiers', JSON.stringify(loyaltyTiers));
+            alert('Configurações de fidelidade salvas com sucesso!');
+        }
+
+        // Exportar promoções
+        function exportPromotions() {
+            let csv = 'Nome,Tipo,Valor,Data Início,Data Término,Segmentos,Usos,Status\n';
+            
+            promotions.forEach(promotion => {
+                const status = isActivePromotion(promotion) ? 'Ativa' : 
+                              new Date() > new Date(promotion.endDate) ? 'Expirada' : 'Agendada';
+                
+                csv += `"${promotion.name}","${promotion.type}","${promotion.value || ''}","${promotion.startDate}","${promotion.endDate}","${promotion.targetSegments.join(',')}","${promotion.usedCount || 0}","${status}"\n`;
+            });
+            
+            downloadCSV(csv, 'promocoes.csv');
+        }
+
+        // Download CSV
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadData();
+            
+            // Selecionar "Todos" por padrão
+            document.querySelector('[data-segment="all"]').classList.add('selected');
+            selectedSegments = ['all'];
+            
+            // Definir datas padrão
+            const today = new Date();
+            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('startDate').value = today.toISOString().split('T')[0];
+            document.getElementById('endDate').value = nextWeek.toISOString().split('T')[0];
+        };
+    </script>
+</body>
+</html>

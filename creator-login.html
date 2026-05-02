@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login do Criador - Cardápio Digital Universal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .creator-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #ff6b6b;
+            outline: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .credentials-info {
+            background: #f8f9fa;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .credentials-info h4 {
+            margin: 0 0 10px 0;
+            color: #ff6b6b;
+        }
+        
+        .credentials-info p {
+            margin: 5px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link:hover {
+            color: #ff6b6b;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="creator-badge">
+            <i class="fas fa-crown"></i> CRIADOR DO SISTEMA
+        </div>
+        
+        <div class="logo">👑 Painel do Criador</div>
+        <div class="subtitle">Acesso total ao Cardápio Digital Universal</div>
+        
+        <div class="credentials-info">
+            <h4><i class="fas fa-info-circle"></i> Credenciais de Acesso</h4>
+            <p><strong>Email:</strong> creator@cardapiodigital.com</p>
+            <p><strong>Senha:</strong> creator123</p>
+        </div>
+        
+        <div class="error" id="errorMessage"></div>
+        
+        <form id="creatorLoginForm" onsubmit="handleCreatorLogin(event)">
+            <div class="form-group">
+                <label for="creatorEmail">
+                    <i class="fas fa-envelope"></i> Email do Criador
+                </label>
+                <input type="email" id="creatorEmail" required placeholder="creator@cardapiodigital.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="creatorPassword">
+                    <i class="fas fa-lock"></i> Senha do Criador
+                </label>
+                <input type="password" id="creatorPassword" required placeholder="creator123">
+            </div>
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-crown"></i> Acessar Painel do Criador
+            </button>
+        </form>
+        
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Voltar para página inicial
+        </a>
+    </div>
+
+    <script>
+        function handleCreatorLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('creatorEmail').value.trim();
+            const password = document.getElementById('creatorPassword').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            
+            // Credenciais do criador
+            const creatorEmail = "creator@cardapiodigital.com";
+            const creatorPassword = "creator123";
+            
+            // Verificar credenciais
+            if (email === creatorEmail && password === creatorPassword) {
+                // Salvar autenticação
+                sessionStorage.setItem('isCreatorAuthenticated', 'true');
+                sessionStorage.setItem('creatorEmail', email);
+                
+                // Redirecionar para o painel
+                alert('Acesso autorizado! Bem-vindo, Criador do Sistema!');
+                window.location.href = 'creator-dashboard.html';
+            } else {
+                // Mostrar erro
+                errorDiv.textContent = '❌ Credenciais incorretas! Verifique o email e senha.';
+                errorDiv.style.display = 'block';
+                
+                // Limpar campos
+                document.getElementById('creatorPassword').value = '';
+            }
+        }
+        
+        // Preencher automaticamente para facilitar
+        window.onload = function() {
+            document.getElementById('creatorEmail').value = 'creator@cardapiodigital.com';
+            document.getElementById('creatorPassword').value = 'creator123';
+        };
+    </script>
+</body>
+</html>

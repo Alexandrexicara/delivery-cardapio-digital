@@ -1,833 +1,658 @@
+
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardápio Digital Universal - Sistema para Estabelecimentos</title>
+    <title>Cardápio Digital Universal- Marketplace</title>
     <style>
-        .header-banner {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
         }
-        .header-banner img {
-            width: 100%;
-            height: auto;
-        }
-        .footer-banner {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 0;
-        }
-        .footer-banner img {
-            width: 100%;
-            height: auto;
-        }
-        .mini-banner-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .mini-banner {
-            width: 300px;
-            height: 250px;
-            background-color: #f9f9f9;
-            border: 2px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px;
-        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #1a1a1a;
             color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-        .page-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+
         header {
-            text-align: center;
-            padding: 30px 0;
-        }
-        .logo {
-            font-size: 3em;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .tagline {
-            font-size: 1.2em;
-            color: #7f8c8d;
-            max-width: 800px;
-            margin: 0 auto 30px;
-        }
-        .hero {
-            background: linear-gradient(rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.9)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%233498db"/><path d="M20,20 Q50,5 80,20 T80,80 Q50,95 20,80 T20,20" fill="none" stroke="%232c3e50" stroke-width="0.5"/></svg>');
-            background-size: cover;
-            border-radius: 15px;
-            padding: 60px 30px;
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .hero h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        .hero p {
-            font-size: 1.2em;
-            max-width: 700px;
-            margin: 0 auto 30px;
-        }
-        .price-tag {
-            background-color: #27ae60;
-            color: white;
-            font-size: 2.5em;
-            font-weight: bold;
-            padding: 15px 40px;
-            border-radius: 50px;
-            display: inline-block;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .btn {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.2em;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: bold;
-            margin: 20px 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .btn:hover {
-            background-color: #c0392b;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-        .btn-secondary {
-            background-color: #3498db;
-        }
-        .btn-secondary:hover {
-            background-color: #2980b9;
-        }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 50px 0;
-        }
-        .feature-card {
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-        .feature-icon {
-            font-size: 3em;
-            margin-bottom: 20px;
-            color: #3498db;
-        }
-        .feature-card h3 {
-            color: #2c3e50;
-            margin-top: 0;
-        }
-        .how-it-works {
-            background-color: white;
-            border-radius: 15px;
-            padding: 40px;
-            margin: 50px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .steps {
+            background: #fff;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
-            margin-top: 30px;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .step {
-            flex: 1;
-            min-width: 200px;
-            text-align: center;
-            padding: 20px;
+
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 15px;
+                flex-direction: column;
+                gap: 12px;
+            }
         }
-        .step-number {
-            background-color: #3498db;
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d5017;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 20px;
+            }
+        }
+
+        .landing-page-btn {
+            background: #2d5017;
             color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin: 0 auto 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #2d5017;
+            display: inline-block;
         }
-        .purchase-form {
-            background-color: white;
-            border-radius: 15px;
-            padding: 40px;
-            margin: 50px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            max-width: 700px;
-            margin: 50px auto;
-            box-sizing: border-box;
+
+        .landing-page-btn:hover {
+            background: #1e3b0f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45,80,23,0.3);
         }
-        
-        /* Estilos para aviso de domínio */
-        .domain-warning {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            padding: 40px 20px;
-            margin: 40px 0;
+
+        @media (max-width: 768px) {
+            .landing-page-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+                width: 100%;
+                text-align: center;
+            }
         }
-        
-        .warning-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
+
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: auto;
+            padding: 20px;
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
+            border: 8px solid #7CFF7C;
+            box-shadow: 0 5px 15px rgba(124, 255, 124, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            right: -100px;
+            bottom: -100px;
+            background: linear-gradient(90deg, transparent, #9B59B6, transparent);
+            border-radius: 24px;
+            animation: borderRotate 2s linear infinite;
+            opacity: 1;
+            z-index: -1;
+            box-shadow: 0 0 50px #9B59B6, 0 0 100px #9B59B6;
+        }
+        
+        @keyframes borderRotate {
+            0% {
+                background: linear-gradient(90deg, transparent, #9B59B6, transparent);
+                background-size: 200% 200%;
+                background-position: 100% 50%;
+            }
+            25% {
+                background: linear-gradient(180deg, transparent, #9B59B6, transparent);
+                background-size: 200% 200%;
+                background-position: 50% 100%;
+            }
+            50% {
+                background: linear-gradient(270deg, transparent, #9B59B6, transparent);
+                background-size: 200% 200%;
+                background-position: 0% 50%;
+            }
+            75% {
+                background: linear-gradient(360deg, transparent, #9B59B6, transparent);
+                background-size: 200% 200%;
+                background-position: 50% 0%;
+            }
+            100% {
+                background: linear-gradient(90deg, transparent, #9B59B6, transparent);
+                background-size: 200% 200%;
+                background-position: 100% 50%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+                border-radius: 15px;
+            }
+        }
+
+        /* Marketplace Styles */
+        .marketplace-header {
+            background: #7CFF7C;
             padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(124, 255, 124, 0.5);
+            border: 3px solid #7CFF7C;
         }
-        
-        .warning-icon {
-            font-size: 4em;
-            flex-shrink: 0;
-        }
-        
-        .warning-content h2 {
-            margin-top: 0;
-        }
-        
-        .warning-features {
-            margin: 20px 0;
-        }
-        
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            margin: 10px 0;
-            gap: 10px;
-        }
-        
-        .check-mark {
-            color: #27ae60;
+
+        .marketplace-header h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
             font-weight: bold;
-            font-size: 1.2em;
         }
-        
-        .warning-note {
+
+        .marketplace-header p {
+            color: #1a1a1a;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .search-bar {
             margin-top: 20px;
         }
-        
-        /* Responsividade para o aviso de domínio */
-        @media (max-width: 768px) {
-            .warning-container {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px;
-            }
-            
-            .warning-icon {
-                font-size: 3em;
-            }
-        }
-        
-        /* Responsividade para o formulário de compra */
-        @media (max-width: 768px) {
-            .purchase-form {
-                padding: 30px;
-                margin: 30px 15px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .purchase-form {
-                padding: 20px;
-                margin: 20px 10px;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .purchase-form {
-                padding: 45px;
-            }
-        }
-        
-        /* Layout geral responsivo para a página inicial */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 40px 20px;
-            }
-            
-            .hero h1 {
-                font-size: 2.5em;
-            }
-            
-            .hero p {
-                font-size: 1.2em;
-            }
-            
-            .features {
-                grid-template-columns: 1fr;
-            }
-            
-            .feature {
-                padding: 20px;
-            }
-            
-            .purchase-form {
-                padding: 25px;
-                margin: 30px 15px;
-            }
-            
-            .form-group {
-                margin-bottom: 20px;
-            }
-            
-            .btn {
-                width: 100%;
-                padding: 12px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .hero {
-                padding: 30px 15px;
-            }
-            
-            .hero h1 {
-                font-size: 2em;
-            }
-            
-            .hero p {
-                font-size: 1em;
-            }
-            
-            .feature {
-                padding: 15px;
-            }
-            
-            .purchase-form {
-                padding: 20px;
-                margin: 20px 10px;
-            }
-            
-            .form-group {
-                margin-bottom: 15px;
-            }
-            
-            .btn {
-                padding: 10px;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .hero {
-                padding: 80px 20px;
-            }
-            
-            .hero h1 {
-                font-size: 3.5em;
-            }
-            
-            .hero p {
-                font-size: 1.5em;
-            }
-            
-            .feature {
-                padding: 40px;
-            }
-            
-            .purchase-form {
-                padding: 50px;
-            }
-            
-            .form-group {
-                margin-bottom: 35px;
-            }
-            
-            .btn {
-                padding: 18px;
-            }
-        }
-        .form-group {
-            margin-bottom: 25px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        input, select {
+
+        .search-bar input {
             width: 100%;
             padding: 15px;
-            border: 2px solid #ddd;
+            border: 3px solid #7CFF7C;
             border-radius: 10px;
             font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
+            box-shadow: 0 5px 15px rgba(124, 255, 124, 0.3);
+            background: white;
         }
-        input:focus, select:focus {
-            border-color: #3498db;
-            outline: none;
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 15px 0;
+            margin-bottom: 20px;
         }
-        .testimonials {
-            background-color: #2c3e50;
-            color: white;
-            border-radius: 15px;
-            padding: 50px;
-            margin: 50px 0;
-            text-align: center;
+
+        .category-btn {
+            padding: 10px 20px;
+            border: 2px solid #7CFF7C;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #1a1a1a;
         }
-        .testimonial {
-            max-width: 800px;
-            margin: 30px auto;
-            font-style: italic;
-            font-size: 1.1em;
+
+        .category-btn:hover {
+            background: #7CFF7C;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 255, 124, 0.3);
         }
-        .testimonial-author {
+
+        .category-btn-active {
+            background: #7CFF7C;
+            color: #1a1a1a;
+            border-color: #6AE86A;
             font-weight: bold;
-            margin-top: 15px;
-            color: #3498db;
         }
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #7f8c8d;
-            margin-top: 50px;
+
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #7CFF7C;
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(124, 255, 124, 0.3);
+            background: white;
+            box-sizing: border-box;
         }
-        .hidden {
-            display: none;
+
+        .search-input:focus {
+            outline: none;
+            border-color: #6AE86A;
+            box-shadow: 0 5px 15px rgba(124, 255, 124, 0.5);
         }
-        .success-message {
-            background-color: #27ae60;
-            color: white;
-            padding: 30px;
+
+        .store-card {
+            background: white;
             border-radius: 15px;
-            text-align: center;
-            margin: 30px 0;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 3px solid #7CFF7C;
+        }
+
+        .store-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: #6AE86A;
+        }
+
+        .store-image {
+            height: 150px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+        }
+
+        .store-info {
+            padding: 20px;
+        }
+
+        .store-info h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .store-info p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .store-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rating {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .delivery-time {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .delivery-fee {
+            color: #2d5017;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- Header Banner Space -->
-    <div class="header-banner">
-        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
-    </div>
-    
-    <div class="page-wrapper">
+    <header>
+        <div class="logo">🍽️ Cardápio Digital Universal</div>
+        <a href="landing-page.html" class="landing-page-btn">⚙️ Cadastro Admin/Motoboy</a>
+    </header>
+
     <div class="container">
-        <header>
-            <div class="logo">📱 CARDÁPIO DIGITAL UNIVERSAL</div>
-            <div class="tagline">A solução completa para digitalizar seu estabelecimento e melhorar a experiência dos seus clientes</div>
-        </header>
-
-        <div class="hero">
-            <h1>Cardápio Digital Universal</h1>
-            <p>O sistema completo de pedidos automatizados para restaurantes e estabelecimentos comerciais</p>
-            <div class="price-tag">R$ 500,00</div>
-            <p>Investimento único com acesso vitalício</p>
-            <button class="btn" onclick="showPurchaseForm()">Adquirir Sistema</button>
-            <button class="btn btn-secondary" onclick="window.location.href='login.html'">Login Administrativo</button>
-        </div>
-
-        <!-- Aviso sobre domínio -->
-        <section class="domain-warning">
-            <div class="warning-container">
-                <div class="warning-icon">🌐</div>
-                <div class="warning-content">
-                    <h2 style="color: #27ae60; margin-bottom: 15px;">Domínio Personalizado Incluso</h2>
-                    <div class="warning-details">
-                        <p style="font-size: 18px; margin-bottom: 15px;">
-                            <strong>Valor anual do domínio: R$ 60,00</strong>
-                        </p>
-                        <div class="warning-features">
-                            <div class="feature-item">
-                                <span class="check-mark">✓</span>
-                                <span>Domínio personalizado no formato: seu-restaurante.cardapiodigital.com.br</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="check-mark">✓</span>
-                                <span>Aviso automático 30 dias antes do vencimento</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="check-mark">✓</span>
-                                <span>Contagem regressiva de dias restantes</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="check-mark">✓</span>
-                                <span>Bloqueio automático após vencimento</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="check-mark">✓</span>
-                                <span>Liberação imediata após pagamento</span>
-                            </div>
-                        </div>
-                        <div class="warning-note">
-                            <p style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 20px;">
-                                <strong>Importante:</strong> O domínio é renovado anualmente. Após a compra inicial do sistema,
-                                você receberá um domínio gratuito pelo primeiro ano. A partir do segundo ano,
-                                será cobrado R$ 60,00 anualmente para manter o domínio ativo.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="features" class="features">
-            <div class="feature-card">
-                <div class="feature-icon">📋</div>
-                <h3>Cardápio Digital</h3>
-                <p>Interface moderna e intuitiva para seus clientes acessarem seu cardápio</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3>Sem Aplicativo</h3>
-                <p>Seus clientes acessam diretamente pelo navegador, sem precisar baixar nada</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💳</div>
-                <h3>Pagamento via PIX</h3>
-                <p>Receba pagamentos instantâneos com validação automática de comprovantes</p>
-            </div>
-        </section>
-
-        <section class="features">
-            <div class="feature-card">
-                <div class="feature-icon">🕒</div>
-                <h3>Tempo Real</h3>
-                <p>Atualizações instantâneas do status do pedido para clientes e equipe</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Relatórios</h3>
-                <p>Análise completa de vendas, produtos e desempenho do seu estabelecimento</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚙️</div>
-                <h3>Fácil de Usar</h3>
-                <p>Sistema intuitivo que sua equipe aprenderá em minutos</p>
-            </div>
-        </section>
-
-        <section class="how-it-works">
-            <h2 style="text-align: center; color: #2c3e50;">Como Funciona?</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Adquira o Sistema</h3>
-                    <p>Faça o pagamento único de R$ 500,00</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Configure seu Estabelecimento</h3>
-                    <p>Personalize seu cardápio, adicione logo, redes sociais e horário de funcionamento</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Receba seu QR Code Único</h3>
-                    <p>Obtenha um único QR code para todo seu estabelecimento</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Coloque em Prática</h3>
-                    <p>Imprima e posicione o mesmo QR code em todas as mesas</p>
-                </div>
-            </div>
-        </section>
-
-        <div id="purchaseForm" class="purchase-form hidden">
-            <h2 style="text-align: center; color: #2c3e50;">Adquirir Cardápio Digital Universal</h2>
-            <p style="text-align: center; font-size: 1.2em; color: #e74c3c;">Investimento único: <strong>R$ 500,00</strong></p>
+        <!-- Marketplace Header -->
+        <div class="marketplace-header">
+            <h2>🍽️ Bares, Restaurantes e Mercados</h2>
+            <p>Escolha sua loja favorita e faça seu pedido</p>
             
-            <form id="purchaseFormElement">
-                <div class="form-group">
-                    <label for="establishmentName">Nome do Estabelecimento *</label>
-                    <input type="text" id="establishmentName" required placeholder="Ex: Restaurante Sabores">
-                </div>
-                
-                <div class="form-group">
-                    <label for="adminName">Nome do Responsável *</label>
-                    <input type="text" id="adminName" required placeholder="Seu nome completo">
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">E-mail *</label>
-                    <input type="email" id="email" required placeholder="seu@email.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Telefone *</label>
-                    <input type="tel" id="phone" required placeholder="(00) 00000-0000">
-                </div>
-                
-                <div class="form-group">
-                    <label for="cnpj">CNPJ do Estabelecimento *</label>
-                    <input type="text" id="cnpj" required placeholder="00.000.000/0000-00">
-                </div>
-                
-                <div class="form-group">
-                    <label for="adminPassword">Senha de Acesso *</label>
-                    <input type="password" id="adminPassword" required placeholder="Crie uma senha para acessar a área administrativa">
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirmAdminPassword">Confirmar Senha *</label>
-                    <input type="password" id="confirmAdminPassword" required placeholder="Digite a senha novamente">
-                </div>
-                
-                <div class="form-group">
-                    <label for="paymentMethod">Forma de Pagamento *</label>
-                    <select id="paymentMethod" required>
-                        <option value="">Selecione uma forma de pagamento</option>
-                        <option value="pix">PIX</option>
-                        <option value="bank_transfer">Transferência Bancária</option>
-                        <option value="credit_card">Cartão de Crédito</option>
-                    </select>
-                </div>
-                
-                <button type="button" class="btn" onclick="processPurchase()" style="width: 100%; padding: 15px; font-size: 1.2em;">Finalizar Compra</button>
-                <button type="button" class="btn btn-secondary" onclick="cancelPurchase()" style="width: 100%; padding: 15px; font-size: 1.2em; margin-top: 10px;">Cancelar</button>
-            </form>
+            <div class="search-section">
+                <input type="text" id="searchRestaurant" class="search-input" placeholder="🔍 Buscar produtos..." onkeyup="searchStores()">
+            </div>
         </div>
 
-        <div id="successMessage" class="purchase-form hidden">
-                <h2>✅ Compra Realizada com Sucesso!</h2>
-                <p>Obrigado por adquirir o Cardápio Digital Universal!</p>
-                <p>Seu acesso foi liberado e está pronto para uso.</p>
-                <h3>Próximos passos:</h3>
-                <ol>
-                    <li>Verifique seu e-mail para instruções de acesso</li>
-                    <li>Acesse sua área administrativa para personalizar seu cardápio</li>
-                    <li>Adicione seu logo, redes sociais e horário de funcionamento</li>
-                    <li>Receba seu QR code único para todo o estabelecimento</li>
-                    <li>Imprima e posicione o mesmo QR code em todas as mesas</li>
-                </ol>
-                <button class="btn" onclick="goToAdmin()" style="background-color: #2c3e50; margin-right: 10px;">Acessar Área Administrativa</button>
-                <button class="btn btn-secondary" onclick="window.location.href='login.html'" style="margin-left: 10px;">Login</button>
-            </div>
-
-        <section class="testimonials">
-            <h2>O que nossos clientes dizem</h2>
-            <div class="testimonial">
-                "O Cardápio Digital Universal transformou nosso restaurante. Reduzimos 40% o tempo de atendimento e aumentamos a satisfação dos clientes."
-                <div class="testimonial-author">- Carlos Silva, Restaurante Sabores</div>
-            </div>
-            <div class="testimonial">
-                "Implementamos o sistema há 3 meses e já recuperamos o investimento. A praticidade para os clientes e a eficiência para nossa equipe são impressionantes."
-                <div class="testimonial-author">- Ana Oliveira, Pizzaria Bella Napoli</div>
-            </div>
-        </section>
-
-        <footer>
-            <p>Cardápio Digital Universal &copy; 2025</p>
-            <p>Sistema de pedidos automatizado para restaurantes e estabelecimentos comerciais</p>
-            <p>Contato: santossilvac992@gmail.com | (38) 98828-3318</p>
-        </footer>
-    </div>
-    </div>
-
-    <!-- Footer Banner Space -->
-    <div class="footer-banner">
-        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
-    </div>
-    
-    <!-- Mini Banner Container -->
-    <div class="mini-banner-container">
-        <div class="mini-banner">
-            <img src="public/img/banner1.png" alt="Banner Pequeno 1" style="width: 100%; height: 100%; object-fit: cover;">
+        <!-- Categories -->
+        <div class="categories">
+            <button onclick="filterCategory('all')" class="category-btn category-btn-active">Todos</button>
+            <button onclick="filterCategory('appetizer')" class="category-btn">🥗 Entradas</button>
+            <button onclick="filterCategory('main')" class="category-btn">🍽️ Pratos Principais</button>
+            <button onclick="filterCategory('drink')" class="category-btn">🥤 Bebidas</button>
+            <button onclick="filterCategory('dessert')" class="category-btn">🍰 Sobremesas</button>
+            <button onclick="filterCategory('outros')" class="category-btn">📦 Outros</button>
+            <button onclick="filterCategory('mercado')" class="category-btn">🛒 Mercados</button>
         </div>
-        <div class="mini-banner">
-            <img src="public/img/banner2.png" alt="Banner Pequeno 2" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div class="mini-banner">
-            <img src="public/img/banner3.png" alt="Banner Pequeno 3" style="width: 100%; height: 100%; object-fit: cover;">
+
+        <!-- Stores Grid -->
+        <div id="storesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            <!-- Lojas serão carregadas aqui -->
         </div>
     </div>
 
     <script>
-        // Show purchase form
-        function showPurchaseForm() {
-            document.getElementById('purchaseForm').classList.remove('hidden');
-            document.querySelector('.hero').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        // Cancel purchase
-        function cancelPurchase() {
-            document.getElementById('purchaseForm').classList.add('hidden');
-        }
-        
-        // Process purchase
-        function processPurchase() {
-            const establishmentName = document.getElementById('establishmentName').value;
-            const adminName = document.getElementById('adminName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const cnpj = document.getElementById('cnpj').value;
-            const adminPassword = document.getElementById('adminPassword').value;
-            const confirmAdminPassword = document.getElementById('confirmAdminPassword').value;
-            const paymentMethod = document.getElementById('paymentMethod').value;
-            
-            if (!establishmentName || !adminName || !email || !phone || !cnpj || !adminPassword || !confirmAdminPassword || !paymentMethod) {
-                alert('Por favor, preencha todos os campos obrigatórios.');
-                return;
+    // Criar marketplace - ABRE AUTOMATICAMENTE NO INÍCIO
+    function createMarketplace() {
+        console.log('[MARKETPLACE] Criando marketplace inicial...');
+        loadStores();
+    }
+    
+    // Carregar lojas
+    function loadStores() {
+        // Lojas de exemplo (em produção, viriam do backend)
+        const stores = [
+            {
+                id: 1,
+                name: 'Pizza Express',
+                category: 'pizzaria',
+                image: '🍕',
+                rating: 4.8,
+                deliveryTime: '30-40 min',
+                deliveryFee: 'R$ 5,99',
+                description: 'As melhores pizzas da cidade'
+            },
+            {
+                id: 2,
+                name: 'Burger King',
+                category: 'lanchonete',
+                image: '🍔',
+                rating: 4.5,
+                deliveryTime: '20-30 min',
+                deliveryFee: 'R$ 7,99',
+                description: 'Hambúrgueres artesanais'
+            },
+            {
+                id: 3,
+                name: 'Sushi House',
+                category: 'restaurante',
+                image: '🍣',
+                rating: 4.9,
+                deliveryTime: '40-50 min',
+                deliveryFee: 'R$ 12,99',
+                description: 'Comida japonesa autêntica'
+            },
+            {
+                id: 4,
+                name: 'Mercadão',
+                category: 'mercado',
+                image: '🛒',
+                rating: 4.7,
+                deliveryTime: '60-90 min',
+                deliveryFee: 'R$ 9,99',
+                description: 'Tudo para sua casa'
             }
-            
-            // Validate password confirmation
-            if (adminPassword !== confirmAdminPassword) {
-                alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
-                return;
-            }
-            
-            // Validate password strength (minimum 6 characters)
-            if (adminPassword.length < 6) {
-                alert('A senha deve ter pelo menos 6 caracteres.');
-                return;
-            }
-            
-            // Generate unique identifier for the establishment
-            const uniqueId = generateEstablishmentId(establishmentName);
-            
-            // Save establishment data to localStorage
-            const establishmentData = {
-                establishmentName: establishmentName,
-                adminName: adminName,
-                email: email,
-                phone: phone,
-                cnpj: cnpj,
-                adminPassword: adminPassword, // Store the password
-                paymentMethod: paymentMethod,
-                purchaseDate: new Date().toISOString(),
-                isAuthenticated: true,
-                uniqueId: uniqueId,
-                // Inicializar assinatura do domínio
-                assinatura: {
-                    valorDominio: 60.00, // R$ 60,00 anualmente
-                    dataCompra: new Date().toISOString(),
-                    dataVencimento: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-                    ultimoPagamento: new Date().toISOString(),
-                    statusPagamento: 'pago',
-                    avisoMostrado: false
-                }
-            };
-            
-            localStorage.setItem('establishmentData', JSON.stringify(establishmentData));
-            
-            // Hide form and show success message
-            document.getElementById('purchaseForm').classList.add('hidden');
-            document.getElementById('successMessage').classList.remove('hidden');
-            
-            // Update success message with domain information
-            updateSuccessMessageWithDomain(uniqueId);
-            
-            // Scroll to success message
-            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        ];
+        
+        const storesList = document.getElementById('storesList');
+        storesList.innerHTML = '';
+        
+        function createCard(store) {
+            var onclickAttr = 'viewStoreProducts(' + store.id + ')';
+            var html = '<div onclick="' + onclickAttr + '" class="store-card">';
+            html += '<div class="store-image">' + store.image + '</div>';
+            html += '<div class="store-info">';
+            html += '<h3>' + store.name + '</h3>';
+            html += '<p>' + store.description + '</p>';
+            html += '<div class="store-meta">';
+            html += '<span class="rating">⭐ ' + store.rating + '</span>';
+            html += '<span class="delivery-time">⏱️ ' + store.deliveryTime + '</span>';
+            html += '<span class="delivery-fee">🚴 ' + store.deliveryFee + '</span>';
+            html += '</div></div></div>';
+            return html;
         }
         
-        // Generate a unique ID for the establishment based on its name
-        function generateEstablishmentId(establishmentName) {
-            // Create a URL-friendly version of the name
-            const urlName = establishmentName
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '') // Remove accents
-                .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
-                .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-            
-            // Add a timestamp to ensure uniqueness
-            const timestamp = Date.now();
-            
-            // Combine the normalized name with timestamp
-            return `${urlName}-${timestamp}`;
-        }
+        stores.forEach(store => {
+            const storeCard = createCard(store);
+            storesList.innerHTML += storeCard;
+        });
+    }
+    
+    // Ver produtos da loja
+    function viewStoreProducts(storeId) {
+        console.log('Visualizando produtos da loja:', storeId);
         
-        // Update success message with domain information
-        function updateSuccessMessageWithDomain(uniqueId) {
-            const establishmentData = JSON.parse(localStorage.getItem('establishmentData'));
-            const domainName = `${uniqueId}.cardapiodigital.com.br`;
-            
-            const successMessageElement = document.getElementById('successMessage');
-            if (successMessageElement) {
-                successMessageElement.innerHTML = `
-                    <h2>✅ Compra Realizada com Sucesso!</h2>
-                    <p>Obrigado por adquirir o Cardápio Digital Universal!</p>
-                    <p>Seu acesso foi liberado e está pronto para uso.</p>
-                    
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                        <h3 style="margin: 0 0 10px 0; font-size: 18px;">📱 Seu Domínio Único</h3>
-                        <p style="margin: 0 0 10px 0; font-size: 16px; font-weight: bold;">${domainName}</p>
-                        <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.8;">Acesse seu cardápio em: http://${domainName}</p>
+        // Carregar vitrine para pegar informações da loja
+        const showcase = JSON.parse(localStorage.getItem('productShowcase') || '[]');
+        const storeProduct = showcase.find(p => p.storeId == storeId);
+        
+        if (storeProduct && storeProduct.storeId) {
+            // Redirecionar para delivery.html com parâmetro da loja
+            window.location.href = `delivery.html?storeId=${storeProduct.storeId}&storeName=${encodeURIComponent(storeProduct.storeName)}`;
+        } else {
+            // Fallback: redirecionar para delivery.html genérico
+            window.location.href = `delivery.html?storeId=${storeId}`;
+        }
+    }
+    
+    // 🏪 CARREGAR VITRINE DE PRODUTOS
+    function loadVitrineProducts() {
+        const vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
+        
+        if (vitrineProducts.length > 0) {
+            // Substituir as lojas padrão pelos produtos da vitrine
+            const vitrineContainer = document.getElementById('storesList');
+            if (vitrineContainer) {
+                vitrineContainer.innerHTML = '';
+                
+                vitrineProducts.forEach(product => {
+                    const productCard = createProductCard(product);
+                    vitrineContainer.innerHTML += productCard;
+                });
+                
+                console.log('[INDEX] Vitrine carregada com', vitrineProducts.length, 'produtos');
+            }
+        } else {
+            console.log('[INDEX] Nenhum produto na vitrine, usando lojas padrão');
+        }
+    }
+    
+    // Criar card de produto para a vitrine
+    function createProductCard(product) {
+        // Obter logo do admin
+        const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+        const logo = customizations.logo || '';
+        
+        return `
+            <div class="store-card" onclick="viewProductDetail(${product.id})">
+                <div class="store-image" style="position: relative;">
+                    ${product.image ? 
+                        `<img src="${product.image}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                        `<div style="font-size: 60px; color: #ccc;">🍽️</div>`
+                    }
+                    ${logo ? 
+                        `<div style="position: absolute; top: 5px; right: 5px; width: 40px; height: 40px; background: white; border-radius: 50%; padding: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">
+                            <img src="${logo}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                        </div>` : ''
+                    }
+                    <!-- Botão de Compartilhar -->
+                    <button onclick="event.stopPropagation(); shareProduct('${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'")}', '${(product.image || '').replace(/'/g, "\\'")}')" 
+                            style="position: absolute; bottom: 10px; right: 10px; width: 40px; height: 40px; background: #3498db; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3); transition: all 0.3s; z-index: 10;"
+                            onmouseover="this.style.transform='scale(1.1)'; this.style.background='#2980b9';"
+                            onmouseout="this.style.transform='scale(1)'; this.style.background='#3498db';">
+                        <span style="color: white; font-size: 18px;">➤</span>
+                    </button>
+                </div>
+                <div class="store-info">
+                    <h3>${product.name}</h3>
+                    <p>${product.description || 'Delicioso produto especial'}</p>
+                    <div class="store-meta">
+                        <span class="rating">⭐ 4.8</span>
+                        <span class="delivery-time">⏱️ 20-30 min</span>
+                        <span class="delivery-fee">🚴 R$ 5,99</span>
                     </div>
-                    
-                    <h3>Próximos passos:</h3>
-                    <ol>
-                        <li>Verifique seu e-mail para instruções de acesso</li>
-                        <li>Acesse sua área administrativa para personalizar seu cardápio</li>
-                        <li>Adicione seu logo, redes sociais e horário de funcionamento</li>
-                        <li>Receba seu QR code único para todo o estabelecimento</li>
-                        <li>Imprima e posicione o mesmo QR code em todas as mesas</li>
-                    </ol>
-                    <button class="btn" onclick="goToAdmin()" style="background-color: #2c3e50; margin-right: 10px;">Acessar Área Administrativa</button>
-                    <button class="btn btn-secondary" onclick="window.location.href='login.html'" style="margin-left: 10px;">Login</button>
-                `;
-            }
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: #27ae60;">
+                        R$ ${parseFloat(product.price).toFixed(2)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Função de compartilhamento
+    function shareProduct(name, description, image) {
+        const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+        const establishmentName = customizations.establishmentName || 'Cardápio Digital';
+        const shareText = `🍽️ ${name} - ${establishmentName}\n${description}\n\nConfira no cardápio digital!`;
+        const shareUrl = window.location.href;
+        
+        // Criar menu de compartilhamento
+        const shareMenu = `
+            <div id="shareMenu" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; min-width: 300px;">
+                <h3 style="margin: 0 0 15px 0; color: #333;">Compartilhar Produto</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button onclick="shareOnWhatsApp('${encodeURIComponent(shareText)}', '${encodeURIComponent(shareUrl)}')" style="padding: 10px; background: #25D366; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        📱 WhatsApp
+                    </button>
+                    <button onclick="shareOnFacebook('${encodeURIComponent(shareText)}', '${encodeURIComponent(shareUrl)}')" style="padding: 10px; background: #1877F2; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        📘 Facebook
+                    </button>
+                    <button onclick="shareOnInstagram('${encodeURIComponent(shareText)}')" style="padding: 10px; background: #E4405F; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        📷 Instagram
+                    </button>
+                    <button onclick="shareOnTwitter('${encodeURIComponent(shareText)}', '${encodeURIComponent(shareUrl)}')" style="padding: 10px; background: #1DA1F2; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        🐦 Twitter
+                    </button>
+                    <button onclick="copyShareLink('${shareUrl}')" style="padding: 10px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        📋 Copiar Link
+                    </button>
+                    <button onclick="closeShareMenu()" style="padding: 10px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        ❌ Fechar
+                    </button>
+                </div>
+            </div>
+            <div id="shareOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;" onclick="closeShareMenu()"></div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', shareMenu);
+    }
+    
+    function shareOnWhatsApp(encodedText, encodedUrl) {
+        const text = decodeURIComponent(encodedText);
+        const url = decodeURIComponent(encodedUrl);
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+    
+    function shareOnFacebook(encodedText, encodedUrl) {
+        const text = decodeURIComponent(encodedText);
+        const url = decodeURIComponent(encodedUrl);
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+        window.open(facebookUrl, '_blank');
+    }
+    
+    function shareOnInstagram(encodedText) {
+        const text = decodeURIComponent(encodedText);
+        // Instagram não permite compartilhamento direto via URL
+        alert(`Para compartilhar no Instagram:\n\n1. Copie o texto abaixo:\n${text}\n\n2. Abra o Instagram e cole na sua story ou post!`);
+    }
+    
+    function shareOnTwitter(encodedText, encodedUrl) {
+        const text = decodeURIComponent(encodedText);
+        const url = decodeURIComponent(encodedUrl);
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(twitterUrl, '_blank');
+    }
+    
+    function copyShareLink(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert('📋 Link copiado para a área de transferência!');
+        });
+    }
+    
+    function closeShareMenu() {
+        const shareMenu = document.getElementById('shareMenu');
+        const shareOverlay = document.getElementById('shareOverlay');
+        if (shareMenu) shareMenu.remove();
+        if (shareOverlay) shareOverlay.remove();
+    }
+    
+    // Ver detalhes do produto
+    function viewProductDetail(productId) {
+        window.location.href = `delivery.html?productId=${productId}`;
+    }
+    
+    // Filtrar por categoria
+    function filterCategory(category) {
+        console.log('Filtrando por:', category);
+        const buttons = document.querySelectorAll('.categories .category-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('category-btn-active');
+        });
+        event.target.classList.add('category-btn-active');
+        
+        const storesList = document.getElementById('storesList');
+        
+        // Se for categoria de produtos, filtrar pela categoria do produto
+        if (category === 'appetizer' || category === 'main' || category === 'drink' || category === 'dessert' || category === 'outros') {
+            // Filtrar produtos da vitrine por categoria
+            const vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
+            const filteredProducts = category === 'all' ? vitrineProducts : 
+                vitrineProducts.filter(product => product.category === category);
+            
+            // Mostrar produtos filtrados
+            storesList.innerHTML = '';
+            filteredProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                storesList.innerHTML += productCard;
+            });
+        } else {
+            // Para "mercado" ou "all", mostrar tudo
+            const vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
+            storesList.innerHTML = '';
+            vitrineProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                storesList.innerHTML += productCard;
+            });
+        }
+    }
+    
+    // Buscar produtos
+    function searchStores() {
+        const searchTerm = document.getElementById('searchRestaurant').value.toLowerCase();
+        console.log('Buscando:', searchTerm);
+        const storesList = document.getElementById('storesList');
+        
+        // Carregar produtos da vitrine para busca
+        const vitrineProducts = JSON.parse(localStorage.getItem('vitrineProducts') || '[]');
+        
+        if (searchTerm === '') {
+            // Se busca vazia, mostrar todos os produtos da vitrine
+            storesList.innerHTML = '';
+            vitrineProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                storesList.innerHTML += productCard;
+            });
+            return;
         }
         
-        // Go to admin
-        function goToAdmin() {
-            // Check if user has admin access
-            const adminAccess = localStorage.getItem('adminAccess');
-            const establishmentData = localStorage.getItem('establishmentData');
-            
-            if (adminAccess && establishmentData) {
-                // User has admin access, redirect to admin panel
-                window.location.href = 'admin.html';
-            } else {
-                // User doesn't have admin access, redirect to login page
-                window.location.href = 'login.html';
-            }
-        }
+        // Filtrar produtos por nome, descrição ou categoria
+        const filteredProducts = vitrineProducts.filter(product => 
+            product.name.toLowerCase().includes(searchTerm) || 
+            (product.description && product.description.toLowerCase().includes(searchTerm)) ||
+            (product.category && product.category.toLowerCase().includes(searchTerm)) ||
+            (product.category === 'outros' && 'outros'.includes(searchTerm))
+        );
+        
+        // Mostrar produtos filtrados
+        storesList.innerHTML = '';
+        filteredProducts.forEach(product => {
+            const productCard = createProductCard(product);
+            storesList.innerHTML += productCard;
+        });
+        
+        console.log('Encontrados', filteredProducts.length, 'produtos para:', searchTerm);
+    }
+    
+    // Inicializar marketplace quando página carregar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            createMarketplace();
+            setTimeout(loadVitrineProducts, 1000); // Carregar vitrine após marketplace
+        });
+    } else {
+        createMarketplace();
+        setTimeout(loadVitrineProducts, 1000); // Carregar vitrine após marketplace
+    }
     </script>
 </body>
 </html>
+
+
+

@@ -721,32 +721,33 @@
             </div>
             <div class="user-info">
                 <span id="adminName">Administrador</span>
-                <button class="btn btn-warning" onclick="logout()" style="background: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">SAIR</button>
+                <button class="btn btn-warning" onclick="logout()">Sair</button>
             </div>
         </header>
 
         <div class="tabs">
-            <div class="tab active" onclick="showTab('dashboard')" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Dashboard</div>
-            <div class="tab" onclick="showTab('orders')" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Pedidos</div>
-            <div class="tab" onclick="showTab('delivery')" style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Delivery</div>
-            <div class="tab" onclick="showTab('customers')" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Clientes</div>
-            <div class="tab" onclick="showTab('loyalty')" style="background: linear-gradient(135deg, #e91e63, #c2185b); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Fidelidade</div>
-            <div class="tab" onclick="showTab('financial')" style="background: linear-gradient(135deg, #27ae60, #229954); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Financeiro</div>
-            <div class="tab" onclick="showTab('totems')" style="background: linear-gradient(135deg, #00bcd4, #0097a7); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Totens</div>
-            <div class="tab" onclick="window.location.href='merchant-dashboard.html'" style="background: linear-gradient(135deg, #795548, #5d4037); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Comerciante</div>
-            <div class="tab" onclick="showTab('waiters')" style="background: linear-gradient(135deg, #ff5722, #e64a19); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Garçons</div>
-            <div class="tab" onclick="window.open('garcom.html', '_blank')" style="background: linear-gradient(135deg, #607d8b, #455a64); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Área do Garçom</div>
-            <div class="tab" onclick="viewMenuAsCustomer()" style="background: linear-gradient(135deg, #4caf50, #388e3c); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Ver Cardápio</div>
-            <div class="tab" onclick="showTab('payments')" style="background: linear-gradient(135deg, #ffc107, #ffa000); color: #333; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Pagamentos</div>
-            <div class="tab" onclick="showTab('tables')" style="background: linear-gradient(135deg, #3f51b5, #303f9f); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">_Blocos de Mesas_</div>
-            <div class="tab" onclick="showTab('reports')" style="background: linear-gradient(135deg, #009688, #00796b); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Relatórios</div>
-            <div class="tab" onclick="window.open('qr-management.html','_blank')" style="background: linear-gradient(135deg, #673ab7, #512da8); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Mesas & QR Codes</div>
-            <div class="tab" onclick="showTab('inventory')" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Estoque</div>
-            <div class="tab" onclick="showTab('notifications')" style="background: linear-gradient(135deg, #795548, #5d4037); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Notificações</div>
-            <div class="tab" onclick="showTab('history')" style="background: linear-gradient(135deg, #9e9e9e, #757575); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Histórico</div>
-            <div class="tab" onclick="showTab('combined')" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Pedidos Combinados</div>
-            <div class="tab" onclick="window.open('cozinha.html', '_blank')" style="background: linear-gradient(135deg, #ff5722, #e64a19); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Cozinha HTML</div>
-            <div class="tab" onclick="window.open('balcao.html', '_blank')" style="background: linear-gradient(135deg, #4caf50, #388e3c); color: white; font-size: 1.3em; font-weight: bold; padding: 15px 20px; border-radius: 8px; margin: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">Balcão HTML</div>
+            <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+            <div class="tab" onclick="showTab('orders')">Pedidos</div>
+            <div class="tab" onclick="showTab('delivery')">🚚 Delivery</div>
+            <div class="tab" onclick="showTab('customers')">👥 Clientes</div>
+            <div class="tab" onclick="showTab('loyalty')">🎁 Fidelidade</div>
+            <div class="tab" onclick="showTab('financial')">💰 Financeiro</div>
+            <div class="tab" onclick="showTab('totems')">🖥️ Totens</div>
+            <div class="tab" onclick="showTab('merchant')">💼 Comerciante</div>
+            <div class="tab" onclick="showTab('waiters')">Garçons</div>
+            <div class="tab" onclick="window.open('garcom.html', '_blank')">Área do Garçom</div>
+            <div class="tab" onclick="viewMenuAsCustomer()">Ver Cardápio</div>
+            <div class="tab" onclick="showTab('payments')">Pagamentos</div>
+            <div class="tab" onclick="showTab('tables')">_Blocos de Mesas_</div>
+            <div class="tab" onclick="showTab('reports')">Relatórios</div>
+            <div class="tab" onclick="window.open('qr-management.html','_blank')">Mesas & QR Codes</div>
+            <div class="tab" onclick="showTab('inventory')">Estoque</div>
+            <div class="tab" onclick="showTab('notifications')">Notificações</div>
+            <div class="tab" onclick="showTab('history')">Histórico</div>
+            <div class="tab" onclick="showTab('combined')">Pedidos Combinados</div>
+            <!-- Botões com acesso direto aos HTMLs da cozinha e balcão -->
+            <div class="tab" onclick="window.open('cozinha.html', '_blank')">Cozinha HTML</div>
+            <div class="tab" onclick="window.open('balcao.html', '_blank')">Balcão HTML</div>
         </div>
         <!-- Waiters Section -->
         <section id="waiters" class="content-section">
@@ -839,24 +840,24 @@
                     <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.8;">Acesse em: http://172.24.154.187:3002/qr-management.html</p>
                 </div>
                 
-                <button class="btn btn-primary" onclick="openQrManagementWithAuth()" style="background: #3498db; color: white; border: none; padding: 15px 25px; border-radius: 8px; font-size: 1.2em; font-weight: bold; min-width: 200px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">⚙️ ACESSAR PERSONALIZAÇÃO</button>
+                <button class="btn btn-primary" onclick="window.location.href='qr-management.html'">Acessar Personalização</button>
                 <div class="url-display-box">
                     <p><strong>URL do Cardápio:</strong> <span id="menuUrl">Carregando...</span></p>
-                    <button class="btn btn-success copy-url-button" onclick="copyMenuUrl()" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">📋 COPIAR URL</button>
+                    <button class="btn btn-success copy-url-button" onclick="copyMenuUrl()">Copiar URL</button>
                 </div>
                 
                 <!-- Botões de Acesso Direto aos Módulos -->
                 <div style="margin-top: 20px;">
                     <h4>Acesso Rápido aos Módulos:</h4>
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
-                        <button class="btn btn-success" onclick="openCardapioDigital()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; padding: 15px 25px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                            🍽️ CARDÁPIO DIGITAL
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                        <button class="btn btn-success" onclick="openCardapioDigital()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); border: none;">
+                            <i class="fas fa-utensils"></i> Cardápio Digital
                         </button>
-                        <button class="btn btn-primary" onclick="openDeliveryModule()" style="background: linear-gradient(135deg, #3498db, #2980b9); border: none; padding: 15px 25px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                            🛵 DELIVERY
+                        <button class="btn btn-primary" onclick="openDeliveryModule()" style="background: linear-gradient(135deg, #3498db, #2980b9); border: none;">
+                            <i class="fas fa-motorcycle"></i> Delivery
                         </button>
-                        <button class="btn btn-warning" onclick="openTotemModule()" style="background: linear-gradient(135deg, #f39c12, #e67e22); border: none; padding: 15px 25px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                            📟 TOTEM
+                        <button class="btn btn-warning" onclick="openTotemModule()" style="background: linear-gradient(135deg, #f39c12, #e67e22); border: none;">
+                            <i class="fas fa-tablet-alt"></i> Totem
                         </button>
                     </div>
                 </div>
@@ -967,7 +968,7 @@
                 <div class="delivery-map-column">
                     <div class="column-header">
                         <h3>🗺️ Mapa de Entregas</h3>
-                        <button class="btn btn-small" onclick="refreshDeliveryMap()" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🔄 ATUALIZAR</button>
+                        <button class="btn btn-small" onclick="refreshDeliveryMap()">Atualizar</button>
                     </div>
                     <div id="deliveryMap">
                         <div style="background: #f8f9fa; border: 2px dashed #ddd; border-radius: 10px; padding: 40px; text-align: center;">
@@ -980,9 +981,9 @@
             </div>
 
             <div class="delivery-actions">
-                <button class="btn" onclick="exportDeliveryOrders()" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">📥 EXPORTAR PEDIDOS</button>
-                <button class="btn btn-secondary" onclick="printDeliverySummary()" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🖨️ IMPRIMIR RESUMO</button>
-                <button class="btn btn-warning" onclick="openDeliverySettings()" style="background: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">⚙️ CONFIGURAÇÕES</button>
+                <button class="btn" onclick="exportDeliveryOrders()">📥 Exportar Pedidos</button>
+                <button class="btn btn-secondary" onclick="printDeliverySummary()">🖨️ Imprimir Resumo</button>
+                <button class="btn btn-warning" onclick="openDeliverySettings()">⚙️ Configurações</button>
             </div>
         </section>
 
@@ -1050,8 +1051,8 @@
                 </div>
             </div>
             
-            <button class="btn btn-success" onclick="savePaymentCredentials()" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">💾 SALVAR CREDENCIAIS</button>
-            <button class="btn" onclick="testPaymentConnection()" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🧪 TESTAR CONEXÃO</button>
+            <button class="btn btn-success" onclick="savePaymentCredentials()">Salvar Credenciais</button>
+            <button class="btn" onclick="testPaymentConnection()">Testar Conexão</button>
             
             <div id="paymentTestResult" class="form-group" style="margin-top: 20px; display: none;">
                 <h3>Resultado do Teste:</h3>
@@ -1443,35 +1444,6 @@
                 localStorage.removeItem('establishmentData');
                 window.location.href = 'index.html';
             }
-        }
-
-        // Abrir QR Management com autenticação
-        function openQrManagementWithAuth() {
-            // Verificar se está autenticado
-            const adminAccess = localStorage.getItem('adminAccess');
-            const establishmentData = localStorage.getItem('establishmentData');
-            
-            if (!adminAccess || !establishmentData) {
-                alert('⚠️ Você precisa estar logado para acessar a personalização!');
-                return;
-            }
-            
-            // Abrir em nova aba passando os dados de autenticação via localStorage
-            const newWindow = window.open('qr-management.html', '_blank');
-            
-            // Aguardar a nova janela carregar e passar os dados
-            setTimeout(() => {
-                if (newWindow && !newWindow.closed) {
-                    // Passar dados de autenticação para a nova janela
-                    newWindow.localStorage.setItem('adminAccess', adminAccess);
-                    newWindow.localStorage.setItem('establishmentData', establishmentData);
-                    
-                    // Recarregar a página para aplicar a autenticação
-                    newWindow.location.reload();
-                    
-                    console.log('🔐 Autenticação passada para qr-management.html');
-                }
-            }, 1000);
         }
 
         // View menu as customer

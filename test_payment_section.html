@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Seção de Pagamento Delivery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .payment-method {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        #result {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .log-entry {
+            font-family: monospace;
+            font-size: 12px;
+            padding: 5px;
+            margin: 5px 0;
+            background: #f0f0f0;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste - Seção de Pagamento Delivery</h1>
+    
+    <div class="test-section">
+        <h2>Instruções</h2>
+        <ol>
+            <li>Abra o arquivo <strong>delivery.html</strong> no navegador</li>
+            <li>Adicione itens ao carrinho</li>
+            <li>Clique em "Finalizar Pedido" ou "Ir para Pagamento"</li>
+            <li>A seção de pagamento deve aparecer com as opções PIX e Cartão</li>
+            <li>Selecione uma forma de pagamento</li>
+            <li>O pedido deve ser confirmado</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Elementos para Verificar</h2>
+        <ul>
+            <li>✅ A seção de pagamento (paymentSection) existe no HTML</li>
+            <li>✅ O botão "Ir para Pagamento" está visível no carrinho</li>
+            <li>✅ As opções PIX e Cartão estão visíveis</li>
+            <li>✅ Ao clicar em uma opção, ela fica destacada (azul)</li>
+            <li>✅ O botão "Confirmar Pedido" aparece após selecionar pagamento</li>
+            <li>✅ Validação ocorre se tentar finalizar sem pagamento</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Simulação Rápida</h2>
+        <button onclick="showPaymentTest()">Mostrar Seção de Pagamento</button>
+        <button onclick="hidePaymentTest()">Esconder Seção de Pagamento</button>
+        
+        <div id="paymentSection" style="display: none; margin-top: 20px; background: white; padding: 20px; border-radius: 10px;">
+            <h3>💳 Forma de Pagamento</h3>
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i> 
+                O pagamento deve ser feito antes da entrega para liberação do pedido
+            </p>
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectTestPayment('pix', this)">
+                    <div style="font-size: 2em; color: #3498db;">📱</div>
+                    <h3>PIX</h3>
+                    <p>Pagamento instantâneo</p>
+                </div>
+                
+                <div class="payment-method" onclick="selectTestPayment('cartao', this)">
+                    <div style="font-size: 2em; color: #27ae60;">💳</div>
+                    <h3>Cartão</h3>
+                    <p>Crédito/Débito online</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button onclick="confirmTestOrder()" style="flex: 1;">
+                    ✅ Confirmar Pedido
+                </button>
+                <button onclick="hidePaymentTest()" style="background: #95a5a6;">
+                    Voltar
+                </button>
+            </div>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="logContainer"></div>
+    </div>
+
+    <script>
+        let selectedPayment = '';
+
+        function log(message) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('logContainer').appendChild(logEntry);
+            console.log('[TESTE]', message);
+        }
+
+        function showPaymentTest() {
+            log('showPaymentTest() chamado');
+            document.getElementById('paymentSection').style.display = 'block';
+            log('Seção de pagamento exibida com sucesso');
+        }
+
+        function hidePaymentTest() {
+            log('hidePaymentTest() chamado');
+            document.getElementById('paymentSection').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function selectTestPayment(method, element) {
+            log(`selectTestPayment('${method}') chamado`);
+            selectedPayment = method;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.payment-method').forEach(m => {
+                m.classList.remove('selected');
+            });
+            
+            // Adicionar nova seleção
+            element.classList.add('selected');
+            log(`Método de pagamento selecionado: ${method}`);
+            
+            // Mostrar resultado
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <strong>✅ Pagamento selecionado:</strong> ${method === 'pix' ? 'PIX' : 'Cartão'}<br>
+                <small>Agora você pode clicar em "Confirmar Pedido"</small>
+            `;
+        }
+
+        function confirmTestOrder() {
+            log('confirmTestOrder() chamado');
+            
+            if (!selectedPayment) {
+                alert('Por favor, selecione um método de pagamento.');
+                log('❌ Erro: Nenhum método de pagamento selecionado');
+                return;
+            }
+            
+            log(`✅ Pedido confirmado com pagamento via ${selectedPayment === 'pix' ? 'PIX' : 'Cartão'}`);
+            alert(`Pedido confirmado!\nForma de pagamento: ${selectedPayment === 'pix' ? 'PIX' : 'Cartão'}`);
+        }
+
+        // Inicialização
+        window.onload = function() {
+            log('Página de teste carregada com sucesso');
+            log('Pronto para testar a seção de pagamento');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,2920 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motoboy - Sistema de Entregas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    
+    <!-- MyGateway Integration -->
+    <script src="mygateway-integration.js"></script>
+    
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .motoboy-status {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .status-card.online {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+        
+        .status-card.busy {
+            border-left-color: #f39c12;
+            background: #fff3cd;
+        }
+        
+        .status-card.offline {
+            border-left-color: #e74c3c;
+            background: #f8d7da;
+        }
+        
+        .orders-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .order-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+        
+        .order-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .order-card.pending {
+            border-left-color: #f39c12;
+            background: #fff3cd;
+        }
+        
+        .order-card.preparing {
+            border-left-color: #3498db;
+            background: #e3f2fd;
+        }
+        
+        .order-card.ready {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+        
+        .order-card.delivering {
+            border-left-color: #9b59b6;
+            background: #f3e5f5;
+        }
+        
+        .order-card.completed {
+            border-left-color: #95a5a6;
+            background: #ecf0f1;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .order-number {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+        
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .order-status.pending {
+            background: #f39c12;
+        }
+        
+        .order-status.preparing {
+            background: #3498db;
+        }
+        
+        .order-status.ready {
+            background: #27ae60;
+        }
+        
+        .order-status.delivering {
+            background: #9b59b6;
+        }
+        
+        .order-status.completed {
+            background: #95a5a6;
+        }
+        
+        .order-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .order-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .order-info strong {
+            color: #2c3e50;
+        }
+        
+        .order-items {
+            margin-bottom: 10px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .map-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .map-container {
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ddd;
+            margin-top: 15px;
+        }
+        
+        .stats-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 300px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid #27ae60;
+        }
+        
+        .notification.warning {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #3498db;
+        }
+        
+        /* Animação da rota tipo Google Maps */
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -25;
+            }
+        }
+        
+        .route-animation {
+            stroke-dasharray: 15, 10;
+            animation: dash 2s linear infinite;
+        }
+        
+        .direction-arrow {
+            background: transparent;
+            border: none;
+            z-index: 1000;
+        }
+        
+        .motoboy-marker, .restaurant-marker, .customer-marker {
+            background: transparent;
+            border: none;
+        }
+        
+        /* Layout prioridade para mapa */
+        .orders-section {
+            transition: opacity 0.3s ease;
+        }
+        
+        .map-section {
+            background: linear-gradient(135deg, #1a1a2a, #2d2d2d);
+            border: 2px solid #e74c3c;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        
+        .map-section h3 {
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        #map {
+            border: 2px solid #0066cc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        /* Botão toggle pedidos */
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(23,26,184,0.4);
+        }
+        
+        .time-estimate {
+            background: #e3f2fd;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .time-estimate strong {
+            color: #3498db;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-motorcycle"></i>
+                Sistema de Entregas - Motoboy
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-weight: bold; color: #667eea;" id="motoboyName">Carregando...</div>
+                    <div style="font-size: 0.8em; color: #666;" id="motoboyCPF">-</div>
+                    <div style="font-size: 0.9em; color: #666;" id="motoboyVehicle">-</div>
+                </div>
+                <button class="btn btn-secondary" onclick="logoutMotoboy()" style="background: #e74c3c; padding: 8px 15px;">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+            <p>Gerencie suas entregas de forma eficiente</p>
+        </header>
+
+        <!-- Status do Motoboy -->
+        <section class="motoboy-status">
+            <h3>📊 Status do Motoboy</h3>
+            <div class="status-grid">
+                <div class="status-card online">
+                    <i class="fas fa-circle" style="color: #27ae60;"></i>
+                    <h4>Online</h4>
+                    <p>Disponível para entregas</p>
+                </div>
+                <div class="status-card">
+                    <i class="fas fa-clock"></i>
+                    <h4>Tempo Médio</h4>
+                    <p id="avgDeliveryTime">25 min</p>
+                </div>
+                <div class="status-card">
+                    <i class="fas fa-route"></i>
+                    <h4>Entregas Hoje</h4>
+                    <p id="todayDeliveries">0</p>
+                </div>
+                <div class="status-card">
+                    <i class="fas fa-motorcycle"></i>
+                    <h4>Status Atual</h4>
+                    <p id="currentStatus">Disponível</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mapa (PRIORIDADE MÁXIMA) -->
+        <section class="map-section" style="order: 1; background: linear-gradient(135deg, #1a1a2a, #2d2d2d); padding: 20px; border-radius: 15px; box-shadow: 0 8px 16px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: white; font-size: 1.5em; margin: 0;">🗺️ ROTA DE ENTREGA - NAVEGAÇÃO GPS</h3>
+                <div style="background: #e74c3c; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
+                    📍 <span id="mapStatus">AGUARDANDO ROTA</span>
+                </div>
+            </div>
+            <div class="map-container" style="height: 500px; border: 3px solid #e74c3c; border-radius: 10px; overflow: hidden;">
+                <div id="map" style="width: 100%; height: 100%;"></div>
+            </div>
+            
+            <!-- Informações da Rota -->
+            <div id="routeInfo" style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, #2196f3, #1976d2); color: white; border-radius: 10px; display: none;">
+                <h4 style="margin: 0 0 10px 0;">📍 INFORMAÇÕES DA ROTA</h4>
+                <div id="routeDetails">
+                    <p><strong>📍 Partida:</strong> <span id="routeStart">--</span></p>
+                    <p><strong>🏁 Destino:</strong> <span id="routeEnd">--</span></p>
+                    <p><strong>📏 Distância:</strong> <span id="routeDistance">--</span></p>
+                    <p><strong>⏱️ Tempo Estimado:</strong> <span id="routeTime">--</span></p>
+                    <p><strong>📍 Endereço:</strong> <span id="routeAddress">--</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pedidos (OCULTOS POR PADRÃO) -->
+        <section class="orders-section" id="ordersSection" style="order: 2; background: #2c3e50; padding: 20px; border-radius: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: white; font-size: 1.5em; margin: 0;">📦 PEDIDOS DISPONÍVEIS</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="limparPedidosManually()" class="btn btn-sm" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 0.9em;" title="Limpar todos os pedidos">
+                        🧹 Limpar
+                    </button>
+                    <button onclick="toggleOrdersVisibility()" class="btn btn-sm" style="background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 0.9em;">
+                        👁️ Ver/Ocultar
+                    </button>
+                </div>
+            </div>
+            
+            <div id="ordersList" class="orders-list" style="max-height: 400px; overflow-y: auto; display: none;">
+                <!-- Pedidos REAIS serão carregados aqui -->
+            </div>
+        </section>
+
+        <!-- Estatísticas -->
+        <section class="stats-section" id="statsSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: pointer;" onclick="toggleStats()">
+                <h3 style="margin: 0;">📈 Estatísticas do Dia</h3>
+                <button id="toggleStatsBtn" style="background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em;" title="Mostrar/Ocultar estatísticas">
+                    👁️ Ocultar
+                </button>
+            </div>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Pedidos Totais</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completedOrders">0</div>
+                    <div class="stat-label">Entregues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pendingOrders">0</div>
+                    <div class="stat-label">Pendentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRevenue">R$ 0</div>
+                    <div class="stat-label">Faturamento</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Elementos de Áudio -->
+    <audio id="bellSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="delightSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="fryingSound" preload="auto">
+        <source src="public/img/audio/ti62duxfbrf-bells-sfx-7.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Notificações -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Scripts do Mapa -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="communication.js"></script>
+    
+    <script>
+        // Variáveis globais
+        let motoboyData = {
+            id: null,
+            name: '',
+            status: 'online', // online, busy, offline
+            currentOrder: null,
+            location: null,
+            stats: {
+                todayDeliveries: 0,
+                totalDeliveries: 0,
+                avgTime: 25
+            }
+        };
+
+        let orders = [];
+        let notifications = [];
+        let map = null;
+        let currentRoute = null;
+        
+        // Controle de pedidos processados (anti-loop)
+        const processedOrderIds = new Set();
+        let motoboyMarker = null;
+        let restaurantMarker = null;
+        let customerMarker = null;
+        let routingControl = null;
+        let navigationInstructions = [];
+        let currentInstructionIndex = 0;
+        let speechSynthesis = window.speechSynthesis;
+        let isNavigating = false;
+
+        // Inicialização
+        window.onload = function() {
+            checkMotoboyAuth();
+            loadOrders();
+            startRealTimeUpdates();
+            
+            // Inicializar mapa com mais tempo
+            setTimeout(() => {
+                initializeMap();
+                // ❌ REMOVIDO: Não criar pedidos de teste - sistema 100% real
+            }, 2000);
+            
+            // ✅ NOVO: Carregar estado das estatísticas
+            loadStatsVisibility();
+        };
+        
+        // ✅ NOVO: Alternar visibilidade das estatísticas
+        window.toggleStats = function() {
+            const statsGrid = document.getElementById('statsGrid');
+            const toggleBtn = document.getElementById('toggleStatsBtn');
+            
+            if (statsGrid.style.display === 'none') {
+                // Mostrar estatísticas
+                statsGrid.style.display = 'grid';
+                toggleBtn.textContent = '👁️ Ocultar';
+                localStorage.setItem('motoboyStatsVisible', 'true');
+                console.log('[MOTOBOY] 📈 Estatísticas mostradas');
+            } else {
+                // Ocultar estatísticas
+                statsGrid.style.display = 'none';
+                toggleBtn.textContent = '👁️ Mostrar';
+                localStorage.setItem('motoboyStatsVisible', 'false');
+                console.log('[MOTOBOY] 👁️ Estatísticas ocultadas');
+            }
+        };
+        
+        // ✅ NOVO: Carregar visibilidade salva
+        function loadStatsVisibility() {
+            const isVisible = localStorage.getItem('motoboyStatsVisible') !== 'false'; // Padrão: true
+            const statsGrid = document.getElementById('statsGrid');
+            const toggleBtn = document.getElementById('toggleStatsBtn');
+            
+            if (!isVisible) {
+                statsGrid.style.display = 'none';
+                toggleBtn.textContent = '👁️ Mostrar';
+            }
+        };
+
+        // ============================================
+        // FUNÇÃO DE NOTIFICAÇÃO
+        // ============================================
+        window.showNotification = function(message, type = 'info') {
+            const notificationElement = document.getElementById('notification');
+            if (!notificationElement) {
+                console.warn('[NOTIFICATION] Elemento de notificação não encontrado');
+                return;
+            }
+            
+            // Remover classes antigas
+            notificationElement.className = 'notification';
+            
+            // Adicionar classe do tipo
+            notificationElement.classList.add(type);
+            
+            // Definir mensagem
+            notificationElement.textContent = message;
+            
+            // Mostrar notificação
+            notificationElement.classList.add('show');
+            
+            // Esconder após 5 segundos
+            setTimeout(() => {
+                notificationElement.classList.remove('show');
+            }, 5000);
+            
+            console.log(`[NOTIFICATION ${type.toUpperCase()}] ${message}`);
+        };
+
+        // Verificar autenticação do motoboy
+        function checkMotoboyAuth() {
+            const session = sessionStorage.getItem('motoboySession');
+            const motoboyAccess = localStorage.getItem('motoboyAccess');
+            
+            // Se for o criador acessando, dar acesso direto
+            if (motoboyAccess === 'true') {
+                const creatorMotoboyData = {
+                    name: 'Motoboy Criador',
+                    phone: '(11) 99999-5555',
+                    vehicle: 'Moto Criador',
+                    plate: 'CREATOR-001',
+                    status: 'active',
+                    role: 'creator-motoboy'
+                };
+                sessionStorage.setItem('motoboySession', JSON.stringify(creatorMotoboyData));
+                motoboyData = creatorMotoboyData;
+                initializeMotoboy();
+                console.log('[MOTOBOY] Criador acessando painel com permissões totais');
+                return;
+            }
+            
+            // Se já tiver sessão normal, carregar
+            if (session) {
+                motoboyData = JSON.parse(session);
+                // Limpar pedidos antigos ao carregar
+                limparPedidosAntigos();
+                initializeMotoboy();
+                return;
+            }
+            
+            // Se não tiver nada, criar acesso automático
+            const autoMotoboyData = {
+                name: 'Motoboy Teste',
+                phone: '(11) 99999-5555',
+                vehicle: 'Moto Teste',
+                plate: 'AUTO-001',
+                status: 'active',
+                role: 'auto-access'
+            };
+            sessionStorage.setItem('motoboySession', JSON.stringify(autoMotoboyData));
+            motoboyData = autoMotoboyData;
+            
+            // Inicializar módulo de comunicação
+            if (window.DeliveryCommunication) {
+                DeliveryCommunication.init();
+                console.log('[MOTOBOY] Módulo de comunicação inicializado');
+                
+                // Registrar login do motoboy
+                DeliveryCommunication.registerMotoboyLogin({
+                    name: motoboyData.name,
+                    phone: motoboyData.phone,
+                    vehicle: motoboyData.vehicle
+                });
+            }
+            
+            initializeMotoboy();
+            console.log('[MOTOBOY] Acesso automático concedido');
+        }
+
+        // ============================================
+        // LIMPEZA DE PEDIDOS ANTIGOS
+        // ============================================
+        
+        function limparPedidosAntigos() {
+            console.log('[MOTOBOY] 🧹 Limpando pedidos antigos do localStorage...');
+            
+            // Limpar orders antigas (mais de 1 hora)
+            const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            if (savedOrders.length > 0) {
+                const now = Date.now();
+                const oneHour = 60 * 60 * 1000; // 1 hora em ms
+                
+                const pedidosValidos = savedOrders.filter(order => {
+                    const orderTime = new Date(order.timestamp).getTime();
+                    return (now - orderTime) < oneHour;
+                });
+                
+                if (pedidosValidos.length !== savedOrders.length) {
+                    console.log(`[MOTOBOY] Removidos ${savedOrders.length - pedidosValidos.length} pedidos antigos`);
+                    localStorage.setItem('orders', JSON.stringify(pedidosValidos));
+                }
+            }
+            
+            // Limpar motoboyOrders
+            localStorage.removeItem('motoboyOrders');
+            
+            // Limpar deliveryOrders antigas
+            const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+            if (deliveryOrders.length > 0) {
+                const now = Date.now();
+                const oneHour = 60 * 60 * 1000;
+                
+                const pedidosValidos = deliveryOrders.filter(order => {
+                    const orderTime = new Date(order.orderTime || order.timestamp).getTime();
+                    return (now - orderTime) < oneHour;
+                });
+                
+                if (pedidosValidos.length !== deliveryOrders.length) {
+                    console.log(`[MOTOBOY] Removidos ${deliveryOrders.length - pedidosValidos.length} pedidos antigos do delivery`);
+                    localStorage.setItem('deliveryOrders', JSON.stringify(pedidosValidos));
+                }
+            }
+            
+            console.log('[MOTOBOY] ✅ Limpeza concluída!');
+        }
+        
+        // Limpar pedidos manualmente (botão)
+        window.limparPedidosManually = function() {
+            if (confirm('Deseja realmente limpar TODOS os pedidos do painel?')) {
+                console.log('[MOTOBOY] 🧹 Limpando TODOS os pedidos manualmente...');
+                
+                // Limpar tudo
+                localStorage.setItem('orders', JSON.stringify([]));
+                localStorage.setItem('motoboyOrders', JSON.stringify([]));
+                localStorage.setItem('deliveryOrders', JSON.stringify([]));
+                
+                // Resetar variáveis
+                orders = [];
+                processedOrderIds.clear();
+                
+                // Atualizar interface
+                renderOrders();
+                updateStats();
+                
+                showNotification('🧹 Todos os pedidos foram limpos!', 'success');
+                console.log('[MOTOBOY] ✅ Limpeza manual concluída!');
+            }
+        };
+        
+        // ============================================
+        // FUNÇÃO PARA RECEBER PEDIDOS REAIS
+        // ============================================
+        
+        // Função para receber pedidos REAIS do sistema de delivery
+        function receiveRealOrder(orderData) {
+            // Verificar se já processou este pedido (anti-loop)
+            if (processedOrderIds.has(orderData.id)) {
+                console.log('[MOTOBOY] ⚠️ Pedido já processado, ignorando:', orderData.id);
+                return null;
+            }
+            
+            console.log('[MOTOBOY] 📦 PEDIDO REAL RECEBIDO:', orderData);
+            
+            // 🔥 DIFERENCIAÇÃO IMPORTANTE DE PEDIDOS
+            let orderType = 'DELIVERY';
+            let orderIcon = '🛵';
+            let orderColor = '#e74c3c'; // Vermelho para delivery
+            let orderTitle = 'DELIVERY PARA ENTREGA';
+            
+            if (orderData.isTakeaway) {
+                orderType = 'BALCAO';
+                orderIcon = '🏃';
+                orderColor = '#f39c12'; // Laranja para balção
+                orderTitle = 'DELIVERY VIAGEM (BALCÃO)';
+            } else if (orderData.orderType === 'MESA') {
+                orderType = 'MESA';
+                orderIcon = '🍽️';
+                orderColor = '#27ae60'; // Verde para mesa
+                orderTitle = 'PEDIDO MESA/TOTEM';
+            }
+            
+            // Adicionar pedido real ao sistema
+            const realOrder = {
+                id: 'REAL-' + Date.now(),
+                customerName: orderData.customerName,
+                customerPhone: orderData.customerPhone,
+                customerAddress: orderData.customerAddress,
+                coordinates: orderData.coordinates,
+                items: orderData.items,
+                total: orderData.total,
+                status: 'pending',
+                timestamp: new Date().toISOString(),
+                estimatedTime: orderData.estimatedTime || 35,
+                motoboyId: null,
+                restaurant: orderData.restaurant || 'Pizza Express Digital',
+                restaurantAddress: orderData.restaurantAddress || 'Rua das Pizzas, 123 - Centro, São Paulo - SP',
+                restaurantCoordinates: orderData.restaurantCoordinates || { lat: -23.5505, lng: -46.6333 },
+                paymentMethod: orderData.paymentMethod || 'PIX',
+                paymentStatus: orderData.paymentStatus || 'Pendente',
+                // 🔥 CAMPOS DE DIFERENCIAÇÃO
+                orderType: orderType,
+                orderIcon: orderIcon,
+                orderColor: orderColor,
+                orderTitle: orderTitle,
+                isDelivery: orderData.isDelivery || false,
+                isTakeaway: orderData.isTakeaway || false,
+                isTableOrder: orderData.orderType === 'MESA'
+            };
+            
+            // Adicionar ao início da lista
+            orders.unshift(realOrder);
+            saveOrders();
+            renderOrders();
+            updateStats();
+            
+            // 🔔 NOTIFICAÇÃO DIFERENCIADA
+            showNotification(`${orderIcon} ${orderTitle}! ${realOrder.customerName}`, orderType === 'DELIVERY' ? 'error' : orderType === 'BALCAO' ? 'warning' : 'success');
+            playNotificationSound();
+            
+            console.log('[MOTOBOY] Pedido real adicionado. Tipo:', orderType, 'Total:', orders.length);
+            
+            // Notificar cliente
+            notifyCustomerOrderReceived(realOrder);
+            
+            // Marcar como processado (anti-loop)
+            processedOrderIds.add(orderData.id);
+            console.log('[MOTOBOY] ✅ Pedido marcado como processado:', orderData.id);
+            
+            return realOrder;
+        }
+
+        // Notificar cliente que pedido foi recebido
+        function notifyCustomerOrderReceived(order) {
+            console.log('[MOTOBOY] 📱 Notificando cliente:', order.customerName);
+            
+            const customerNotification = {
+                type: 'ORDER_RECEIVED',
+                orderId: order.id,
+                message: `📝 Seu pedido #${order.id} foi recebido!`,
+                timestamp: new Date().toISOString()
+            };
+            
+            const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+            customerNotifications.push(customerNotification);
+            localStorage.setItem('customerNotifications', JSON.stringify(customerNotifications));
+        }
+
+        // Aceitar pedido real
+        function acceptOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            console.log('[MOTOBOY] 🏍️ Aceitando pedido REAL:', orderId);
+            
+            // Atualizar status
+            order.status = 'preparing';
+            order.motoboyId = motoboyData.id;
+            order.motoboyName = motoboyData.name;
+            order.acceptedAt = new Date().toISOString();
+            
+            saveOrders();
+            renderOrders();
+            updateStats();
+            
+            showNotification(`✅ Pedido ${orderId} aceito! Preparando...`, 'success');
+            
+            // 🔊 Tocar som de pedido aceito
+            playAcceptedSound();
+            
+            // Notificar cliente
+            notifyCustomerOrderAccepted(order);
+            
+            // Simular tempo de preparação real
+            setTimeout(() => {
+                startDelivery(order);
+            }, 15000); // 15 segundos de preparação
+        }
+
+        // Notificar cliente que pedido foi aceito
+        function notifyCustomerOrderAccepted(order) {
+            console.log('[MOTOBOY] 📱 Notificando cliente - Pedido aceito:', order.customerName);
+            
+            const customerNotification = {
+                type: 'ORDER_ACCEPTED',
+                orderId: order.id,
+                message: `✅ Pedido #${order.id} aceito! ${order.motoboyName} está preparando.`,
+                motoboyName: order.motoboyName,
+                timestamp: new Date().toISOString()
+            };
+            
+            const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+            customerNotifications.push(customerNotification);
+            localStorage.setItem('customerNotifications', JSON.stringify(customerNotifications));
+        }
+
+        // Iniciar entrega
+        function startDelivery(order) {
+            console.log('[MOTOBOY] 🚚 Iniciando entrega:', order.id);
+            
+            // Atualizar status
+            order.status = 'delivering';
+            order.deliveringAt = new Date().toISOString();
+            
+            saveOrders();
+            renderOrders();
+            updateStats();
+            
+            showNotification(`🚚 Entregando pedido ${order.id}!`, 'info');
+            
+            // 🔊 Tocar som de entrega iniciada
+            playStartDeliverySound();
+            
+            // Notificar cliente
+            notifyCustomerDeliveryStarted(order);
+            
+            // Iniciar GPS e rota
+            if (map) {
+                showRealTimeRoute(order.id);
+            }
+            
+            // Iniciar rastreamento GPS
+            startLocationTracking(order);
+        }
+
+        // Notificar cliente que entrega começou
+        function notifyCustomerDeliveryStarted(order) {
+            console.log('[MOTOBOY] 📱 Notificando cliente - Entrega iniciada:', order.customerName);
+            
+            const customerNotification = {
+                type: 'DELIVERY_STARTED',
+                orderId: order.id,
+                message: `🚚 Pedido #${order.id} a caminho! ${order.motoboyName} está entregando.`,
+                motoboyName: order.motoboyName,
+                motoboyPhone: motoboyData.phone,
+                timestamp: new Date().toISOString()
+            };
+            
+            const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+            customerNotifications.push(customerNotification);
+            localStorage.setItem('customerNotifications', JSON.stringify(customerNotifications));
+        }
+
+        // Inicializar mapa
+        function initializeMap() {
+            console.log('[MOTOBOY] Inicializando mapa...');
+            
+            // Verificar se o mapa já foi inicializado
+            if (map) {
+                console.log('[MOTOBOY] Mapa já foi inicializado, ignorando...');
+                return;
+            }
+            
+            // Verificar se há pedidos do delivery para processar
+            // checkDeliveryOrders(); // ❌ REMOVIDO - Usando apenas eventos
+            
+            // Configurar listener para novos pedidos
+            window.addEventListener('newOrderForMotoboy', function(event) {
+                console.log('[MOTOBOY] Novo pedido recebido via evento:', event.detail);
+                receiveRealOrder(event.detail);
+            });
+            
+            // ❌ REMOVIDO: Polling do localStorage - usando apenas eventos
+            
+            try {
+                map = L.map('map').setView([-23.5505, -46.6333], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                
+                // Adicionar controle de escala
+                L.control.scale().addTo(map);
+                
+                // Obter localização atual do motoboy
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            
+                            if (motoboyMarker) {
+                                map.removeLayer(motoboyMarker);
+                            }
+                            
+                            motoboyMarker = L.marker([lat, lng], {
+                                icon: L.divIcon({
+                                    html: '<div style="background: #3498db; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">🏍️</div>',
+                                    iconSize: [34, 34],
+                                    className: 'motoboy-marker'
+                                })
+                            }).addTo(map);
+                            
+                            map.setView([lat, lng], 15);
+                            
+                            // Adicionar círculo de precisão
+                            L.circle([lat, lng], {
+                                color: '#3498db',
+                                fillColor: '#3498db',
+                                fillOpacity: 0.1,
+                                radius: 50
+                            }).addTo(map);
+                            
+                            console.log('[MOTOBOY] Localização obtida:', {lat, lng});
+                            showNotification('📍 Localização obtida com sucesso!', 'success');
+                        },
+                        (error) => {
+                            console.error('[MOTOBOY] Erro ao obter localização:', error);
+                            showNotification('⚠️ Não foi possível obter sua localização. Usando localização padrão.', 'warning');
+                        }
+                    );
+                }
+                
+                // Adicionar controle de instruções
+                const mapInstructions = L.control({position: 'bottomleft'});
+                mapInstructions.onAdd = function(map) {
+                    const div = L.DomUtil.create('div', 'map-instructions');
+                    div.style.background = 'rgba(255, 255, 255, 0.9)';
+                    div.style.padding = '10px';
+                    div.style.borderRadius = '5px';
+                    div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                    div.innerHTML = `
+                        <div style="font-size: 12px; color: #333;">
+                            <strong>🗺️ CONTROLES DO MAPA</strong><br>
+                            🖱️ Clique e arraste para mover<br>
+                            🔍 Scroll para zoom<br>
+                            📍 Clique em marcadores para detalhes
+                        </div>
+                    `;
+                    return div;
+                };
+                mapInstructions.addTo(map);
+                
+                console.log('[MOTOBOY] Mapa inicializado com sucesso');
+                showNotification('🗺️ Mapa carregado! Aguardando pedidos...', 'success');
+                
+            } catch (error) {
+                console.error('[MOTOBOY] Erro ao inicializar mapa:', error);
+                showNotification('❌ Erro ao carregar o mapa. Recarregue a página.', 'error');
+            }
+        }
+
+        // ============================================
+        // MOSTRAR ROTA EM TEMPO REAL
+        // ============================================
+        
+        // Mostrar rota em tempo real
+        function showRealTimeRoute(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            console.log('[MOTOBOY] Mostrando rota para pedido:', order.id);
+            
+            // Limpar rota anterior
+            if (currentRoute) {
+                map.removeLayer(currentRoute);
+            }
+            if (restaurantMarker) {
+                map.removeLayer(restaurantMarker);
+            }
+            if (customerMarker) {
+                map.removeLayer(customerMarker);
+            }
+            
+            // Adicionar marcador do restaurante
+            if (order.restaurantCoordinates) {
+                restaurantMarker = L.marker([order.restaurantCoordinates.lat, order.restaurantCoordinates.lng], {
+                    icon: L.divIcon({
+                        html: '<i class="fas fa-store" style="color: #27ae60; font-size: 24px;"></i>',
+                        iconSize: [30, 30],
+                        className: 'restaurant-marker'
+                    })
+                }).addTo(map);
+                
+                restaurantMarker.bindPopup(`<strong>🏪 ${order.restaurant}</strong><br>${order.restaurantAddress}`);
+            }
+            
+            // Adicionar marcador do cliente
+            if (order.coordinates) {
+                customerMarker = L.marker([order.coordinates.lat, order.coordinates.lng], {
+                    icon: L.divIcon({
+                        html: '<i class="fas fa-home" style="color: #3498db; font-size: 24px;"></i>',
+                        iconSize: [30, 30],
+                        className: 'customer-marker'
+                    })
+                }).addTo(map);
+                
+                customerMarker.bindPopup(`<strong>📍 Entrega</strong><br>${order.customerName}<br>${order.customerAddress}`);
+            }
+            
+            // Criar rota (linha reta simplificada)
+            const routePoints = [];
+            
+            // Adicionar ponto do restaurante se existir
+            if (order.restaurantCoordinates) {
+                routePoints.push([order.restaurantCoordinates.lat, order.restaurantCoordinates.lng]);
+            }
+            
+            // Adicionar ponto do cliente
+            if (order.coordinates) {
+                routePoints.push([order.coordinates.lat, order.coordinates.lng]);
+            }
+            
+            // Desenhar rota
+            if (routePoints.length > 1) {
+                currentRoute = L.polyline(routePoints, {
+                    color: '#0066cc', // Azul igual Google Maps
+                    weight: 6, // Linha mais grossa
+                    opacity: 0.8,
+                    smoothFactor: 1, // Linha suave
+                    className: 'route-animation' // Classe para animação
+                }).addTo(map);
+                
+                // Adicionar animação de movimento na rota
+                animateRoute(currentRoute);
+                
+                // Ajustar zoom para mostrar toda a rota
+                const group = new L.featureGroup([restaurantMarker, customerMarker]);
+                map.fitBounds(group.getBounds().pad(0.1));
+                
+                // Adicionar setas de direção na rota
+                addDirectionArrows(routePoints);
+            }
+            
+            // Mostrar informações da rota
+            showRouteInfo(order);
+            
+            showNotification(`📍 Rota para ${order.customerName} mostrada no mapa!`, 'info');
+        }
+
+        // Animar rota com movimento
+        function animateRoute(route) {
+            const routeElement = route.getElement();
+            if (routeElement) {
+                routeElement.style.strokeDasharray = '15, 10';
+                routeElement.style.strokeDashoffset = '0';
+                routeElement.style.animation = 'dash 2s linear infinite';
+            }
+        }
+
+        // Adicionar setas de direção na rota
+        function addDirectionArrows(routePoints) {
+            for (let i = 0; i < routePoints.length - 1; i++) {
+                const start = routePoints[i];
+                const end = routePoints[i + 1];
+                
+                // Calcular ponto médio para a seta
+                const midPoint = [
+                    (start[0] + end[0]) / 2,
+                    (start[1] + end[1]) / 2
+                ];
+                
+                // Calcular ângulo da seta
+                const angle = Math.atan2(end[1] - start[1], end[0] - start[0]) * 180 / Math.PI;
+                
+                // Criar ícone de seta
+                const arrowIcon = L.divIcon({
+                    html: `<div style="transform: rotate(${angle}deg); color: #0066cc; font-size: 16px; font-weight: bold;">➤</div>`,
+                    iconSize: [20, 20],
+                    className: 'direction-arrow'
+                });
+                
+                // Adicionar seta no mapa
+                const arrow = L.marker(midPoint, { icon: arrowIcon }).addTo(map);
+            }
+        }
+
+        // Mostrar rota em tempo real tipo GPS com navegação por voz
+        async function showRealTimeRoute(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!map || !order) {
+                console.log('[MOTOBOY] Mapa não inicializado ou pedido não encontrado');
+                return;
+            }
+            
+            console.log('[MOTOBOY] Iniciando navegação GPS com voz para pedido:', order.id);
+            
+            // Limpar rota anterior
+            if (routingControl) {
+                try {
+                    if (map && routingControl) {
+                        map.removeControl(routingControl);
+                    }
+                    routingControl = null;
+                } catch (error) {
+                    console.warn('[MOTOBOY] Erro ao remover routing control:', error);
+                }
+            }
+            
+            if (restaurantMarker) {
+                try {
+                    map.removeLayer(restaurantMarker);
+                    restaurantMarker = null;
+                } catch (error) {
+                    console.warn('[MOTOBOY] Erro ao remover marcador restaurante:', error);
+                }
+            }
+            
+            if (customerMarker) {
+                try {
+                    map.removeLayer(customerMarker);
+                    customerMarker = null;
+                } catch (error) {
+                    console.warn('[MOTOBOY] Erro ao remover marcador cliente:', error);
+                }
+            }
+            
+            // Adicionar marcador do restaurante (ponto de partida)
+            if (order.restaurantCoordinates) {
+                try {
+                    restaurantMarker = L.marker([order.restaurantCoordinates.lat, order.restaurantCoordinates.lng], {
+                        icon: L.divIcon({
+                            html: '<div style="background: #27ae60; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">🏪</div>',
+                            iconSize: [46, 46],
+                            className: 'restaurant-marker'
+                        })
+                    }).addTo(map);
+                    
+                    restaurantMarker.bindPopup(`<strong>🏪 PONTO DE PARTIDA</strong><br>${order.restaurant}<br>${order.restaurantAddress}`);
+                } catch (error) {
+                    console.warn('[MOTOBOY] Erro ao criar marcador restaurante:', error);
+                }
+            }
+            
+            // Adicionar marcador do cliente (destino)
+            if (order.coordinates) {
+                try {
+                    customerMarker = L.marker([order.coordinates.lat, order.coordinates.lng], {
+                        icon: L.divIcon({
+                            html: '<div style="background: #e74c3c; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">🏁</div>',
+                            iconSize: [46, 46],
+                            className: 'customer-marker'
+                        })
+                    }).addTo(map);
+                    
+                    customerMarker.bindPopup(`<strong>🏁 DESTINO FINAL</strong><br>${order.customerName}<br>${order.customerAddress}`);
+                } catch (error) {
+                    console.warn('[MOTOBOY] Erro ao criar marcador cliente:', error);
+                }
+            }
+            
+            // Criar rota real com API personalizada
+            if (order.restaurantCoordinates && order.coordinates && map) {
+                try {
+                    // USAR SUA API PERSONALIZADA
+                    const routeData = await calculateCustomRoute(
+                        order.restaurantCoordinates.lat, 
+                        order.restaurantCoordinates.lng,
+                        order.coordinates.lat, 
+                        order.coordinates.lng
+                    );
+                    
+                    if (routeData && routeData.success) {
+                        // Criar rota com dados da sua API
+                        const routePoints = routeData.coordinates;
+                        
+                        if (routePoints.length > 1) {
+                            routingControl = L.polyline(routePoints, {
+                                color: '#0066cc',
+                                weight: 8,
+                                opacity: 0.8,
+                                smoothFactor: 1,
+                                dashArray: '15, 10',
+                                className: 'main-route'
+                            }).addTo(map);
+                            
+                            // Adicionar setas de direção
+                            addDirectionArrows(routePoints);
+                            
+                            // Ajustar zoom
+                            const group = new L.featureGroup([restaurantMarker, customerMarker]);
+                            map.fitBounds(group.getBounds().pad(0.1));
+                        }
+                        
+                        // Usar instruções da sua API
+                        navigationInstructions = routeData.instructions || [];
+                        currentInstructionIndex = 0;
+                        isNavigating = true;
+                        
+                        console.log('[MOTOBOY] Rota calculada com SUA API:', navigationInstructions.length, 'instruções');
+                        
+                        // Iniciar navegação por voz
+                        startVoiceNavigation();
+                        
+                        // Mostrar instruções detalhadas
+                        showNavigationInstructions(routeData);
+                        
+                        showNotification('🗣️ NAVEGAÇÃO POR VOZ ATIVADA! Usando sua API personalizada...', 'success');
+                    } else {
+                        throw new Error('Sua API não retornou dados válidos');
+                    }
+                } catch (error) {
+                    console.warn('[MOTOBOY] Erro na sua API, usando fallback OSRM:', error);
+                    
+                    // FALLBACK: Usar OSRM se sua API falhar
+                    routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(order.restaurantCoordinates.lat, order.restaurantCoordinates.lng),
+                            L.latLng(order.coordinates.lat, order.coordinates.lng)
+                        ],
+                        routeWhileDragging: true,
+                        addWaypoints: false,
+                        createMarker: function() { return null; },
+                        lineOptions: {
+                            styles: [
+                                {color: '#0066cc', opacity: 0.8, weight: 8},
+                                {color: '#ffffff', opacity: 0.3, weight: 6, dashArray: '10, 10'}
+                            ]
+                        },
+                        router: L.Routing.osrmv1({
+                            serviceUrl: 'https://router.project-osrm.org/route/v1',
+                            profile: 'driving',
+                            useHints: true
+                        })
+                        // REMOVIDO: formatter que estava causando erro
+                    }).addTo(map);
+                    
+                    routingControl.on('routesfound', function(e) {
+                        const routes = e.routes;
+                        const bestRoute = routes[0];
+                        
+                        if (bestRoute && bestRoute.instructions) {
+                            navigationInstructions = bestRoute.instructions;
+                            currentInstructionIndex = 0;
+                            isNavigating = true;
+                            
+                            console.log('[MOTOBOY] Usando fallback OSRM com', navigationInstructions.length, 'instruções');
+                            
+                            startVoiceNavigation();
+                            showNavigationInstructions(bestRoute);
+                            
+                            showNotification('🗣️ NAVEGAÇÃO POR VOZ ATIVADA! (Modo fallback)', 'warning');
+                        }
+                    });
+                    
+                    // Ajustar zoom para mostrar toda a rota
+                    const group = new L.featureGroup([restaurantMarker, customerMarker]);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+            }
+            
+            // Mostrar informações detalhadas
+            showRealTimeRouteInfo(order);
+            
+            showNotification(`📍 ROTA GPS COM NAVEGAÇÃO ATIVADA! Voz: ${speechSynthesis ? '✅' : '❌'}`, 'success');
+        }
+
+        // FUNÇÃO DA SUA API PERSONALIZADA - CORRIGIDO
+        async function calculateCustomRoute(startLat, startLng, endLat, endLng) {
+            try {
+                console.log('[MOTOBOY] Usando SUA API para calcular rota...');
+                console.log('[MOTOBOY] Coordenadas:', {startLat, startLng, endLat, endLng});
+                
+                // CORREÇÃO: Validar coordenadas antes de enviar
+                if (!startLat || !startLng || !endLat || !endLng) {
+                    throw new Error('Coordenadas inválidas');
+                }
+                
+                // CORREÇÃO: Endpoint correto do OpenRouteService
+                const response = await fetch('https://api.openrouteservice.org/v2/directions/driving-car', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjY0NDViYjFiOTEwMTQ2NDdhYjRmMWFiNzEwODVjMGVkIiwiaCI6Im11cm11cjY0In0='
+                    },
+                    body: JSON.stringify({
+                        coordinates: [
+                            [parseFloat(startLng), parseFloat(startLat)], // OpenRoute usa [lng, lat]
+                            [parseFloat(endLng), parseFloat(endLat)]
+                        ],
+                        instructions: true,
+                        geometry: true,
+                        language: 'pt-BR',
+                        units: 'metric'
+                    })
+                });
+                
+                console.log('[MOTOBOY] Status da resposta:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('[MOTOBOY] Erro da API:', errorText);
+                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                console.log('[MOTOBOY] Resposta da sua API:', data);
+                
+                // Processar resposta do OpenRouteService
+                if (data.routes && data.routes.length > 0) {
+                    const route = data.routes[0];
+                    
+                    // Converter coordenadas do formato GeoJSON
+                    const coordinates = route.geometry.coordinates.map(coord => ({
+                        lat: coord[1], 
+                        lng: coord[0]
+                    }));
+                    
+                    // Converter instruções
+                    const instructions = route.segments[0]?.steps?.map(step => ({
+                        text: step.maneuver.instruction || step.maneuver.type || 'Continue',
+                        type: step.maneuver.type || 'straight',
+                        distance: step.distance
+                    })) || [];
+                    
+                    console.log('[MOTOBOY] Rota processada:', {
+                        distance: (route.distance / 1000).toFixed(2),
+                        time: Math.round(route.duration / 60),
+                        instructions: instructions.length
+                    });
+                    
+                    return {
+                        success: true,
+                        distance_km: (route.distance / 1000).toFixed(2),
+                        time_minutes: Math.round(route.duration / 60),
+                        coordinates: coordinates,
+                        instructions: instructions
+                    };
+                } else {
+                    throw new Error('Nenhuma rota encontrada na resposta');
+                }
+                
+            } catch (error) {
+                console.error('[MOTOBOY] Erro na sua API:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+        }
+
+        // Iniciar navegação por voz
+        function startVoiceNavigation() {
+            if (!speechSynthesis) {
+                showNotification('❌ Seu navegador não suporta síntese de voz', 'error');
+                return;
+            }
+            
+            console.log('[MOTOBOY] Iniciando navegação por voz');
+            
+            // Falar primeira instrução imediatamente
+            if (navigationInstructions.length > 0) {
+                speakInstruction(navigationInstructions[0]);
+            }
+            
+            // Configurar atualização automática de instruções
+            startInstructionUpdates();
+        }
+
+        // Falar instrução
+        function speakInstruction(instruction) {
+            if (!instruction || !speechSynthesis) return;
+            
+            // Parar fala anterior
+            speechSynthesis.cancel();
+            
+            // Preparar texto para fala
+            let instructionText = instruction.text || instruction.instruction || '';
+            
+            // Melhorar instruções para português
+            instructionText = improveInstructionText(instructionText);
+            
+            // Criar utterance
+            const utterance = new SpeechSynthesisUtterance(instructionText);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            // Falar
+            speechSynthesis.speak(utterance);
+            
+            console.log('[MOTOBOY] 🗣️ Falando:', instructionText);
+        }
+
+        // Melhorar texto das instruções
+        function improveInstructionText(text) {
+            // Substituir comandos em inglês por português
+            text = text.replace(/Head north/gi, 'Siga para o norte');
+            text = text.replace(/Head south/gi, 'Siga para o sul');
+            text = text.replace(/Head east/gi, 'Siga para o leste');
+            text = text.replace(/Head west/gi, 'Siga para o oeste');
+            text = text.replace(/Turn right/gi, 'Vire à direita');
+            text = text.replace(/Turn left/gi, 'Vire à esquerda');
+            text = text.replace(/Turn slight right/gi, 'Vire ligeiramente à direita');
+            text = text.replace(/Turn slight left/gi, 'Vire ligeiramente à esquerda');
+            text = text.replace(/Keep right/gi, 'Mantenha-se à direita');
+            text = text.replace(/Keep left/gi, 'Mantenha-se à esquerda');
+            text = text.replace(/Continue straight/gi, 'Siga em frente');
+            text = text.replace(/Continue/gi, 'Continue');
+            text = text.replace(/In (\d+) meters/gi, 'Em $1 metros');
+            text = text.replace(/(\d+) meters/gi, '$1 metros');
+            text = text.replace(/You will arrive/gi, 'Você chegará');
+            text = text.replace(/You have arrived/gi, 'Você chegou ao destino');
+            text = text.replace(/Destination/gi, 'destino');
+            text = text.replace(/Roundabout/gi, 'Rotatória');
+            
+            return text;
+        }
+
+        // Iniciar atualizações de instruções
+        function startInstructionUpdates() {
+            // Verificar posição atual e atualizar instruções
+            setInterval(() => {
+                if (isNavigating && motoboyData.location && navigationInstructions.length > 0) {
+                    updateCurrentInstruction();
+                }
+            }, 10000); // Verificar a cada 10 segundos
+        }
+
+        // Atualizar instrução atual baseada na posição
+        function updateCurrentInstruction() {
+            if (!motoboyData.location || navigationInstructions.length === 0) return;
+            
+            // Lógica simplificada: avançar para próxima instrução a cada 30 segundos
+            const timeSinceLastInstruction = Date.now() - (window.lastInstructionTime || 0);
+            
+            if (timeSinceLastInstruction > 30000) { // 30 segundos
+                currentInstructionIndex = Math.min(currentInstructionIndex + 1, navigationInstructions.length - 1);
+                window.lastInstructionTime = Date.now();
+                
+                const currentInstruction = navigationInstructions[currentInstructionIndex];
+                if (currentInstruction) {
+                    speakInstruction(currentInstruction);
+                    showNotification(`🗣️ ${currentInstruction.text}`, 'info');
+                }
+            }
+        }
+
+        // Mostrar instruções de navegação na tela
+        function showNavigationInstructions(route) {
+            const routeInfo = document.getElementById('routeInfo');
+            if (!routeInfo) return;
+            
+            // Criar painel de instruções
+            const instructionsPanel = document.createElement('div');
+            instructionsPanel.id = 'navigationPanel';
+            instructionsPanel.style.cssText = `
+                background: linear-gradient(135deg, #2196f3, #1976d2);
+                color: white;
+                padding: 15px;
+                border-radius: 10px;
+                margin-top: 10px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            `;
+            
+            instructionsPanel.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: white;">🗣️ NAVEGAÇÃO POR VOZ ATIVA</h4>
+                <div id="currentInstruction" style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-bottom: 10px; font-size: 18px; font-weight: bold;">
+                    Aguardando primeira instrução...
+                </div>
+                <div id="nextInstructions" style="font-size: 14px;">
+                    <strong>Próximas instruções:</strong>
+                    <div id="instructionsList"></div>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                    📍 <strong>Dica:</strong> Mantenha o GPS ativo e siga as instruções de voz
+                </div>
+            `;
+            
+            // Adicionar ao painel de informações
+            const detailsDiv = routeInfo.querySelector('#routeDetails');
+            if (detailsDiv) {
+                detailsDiv.appendChild(instructionsPanel);
+            }
+            
+            // Atualizar instruções
+            updateInstructionsDisplay();
+        }
+
+        // Atualizar display das instruções
+        function updateInstructionsDisplay() {
+            const currentDiv = document.getElementById('currentInstruction');
+            const nextDiv = document.getElementById('instructionsList');
+            
+            if (currentDiv && navigationInstructions.length > 0) {
+                const current = navigationInstructions[currentInstructionIndex] || navigationInstructions[0];
+                currentDiv.textContent = improveInstructionText(current.text || current.instruction || '');
+            }
+            
+            if (nextDiv) {
+                nextDiv.innerHTML = navigationInstructions.slice(currentInstructionIndex + 1, currentInstructionIndex + 4)
+                    .map((inst, index) => `
+                        <div style="padding: 5px; margin: 2px 0; background: rgba(255,255,255,0.1); border-radius: 3px;">
+                            ${index + 1}. ${improveInstructionText(inst.text || inst.instruction || '')}
+                        </div>
+                    `).join('');
+            }
+        }
+
+        // Parar navegação por voz
+        function stopVoiceNavigation() {
+            isNavigating = false;
+            navigationInstructions = [];
+            currentInstructionIndex = 0;
+            
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+            }
+            
+            // Remover painel de navegação
+            const navPanel = document.getElementById('navigationPanel');
+            if (navPanel) {
+                navPanel.remove();
+            }
+            
+            console.log('[MOTOBOY] Navegação por voz parada');
+        }
+
+        // Mostrar informações da rota em tempo real
+        function showRealTimeRouteInfo(order) {
+            const routeInfo = document.getElementById('routeInfo');
+            const routeDistance = document.getElementById('routeDistance');
+            const routeTime = document.getElementById('routeTime');
+            const routeAddress = document.getElementById('routeAddress');
+            
+            // Calcular distância
+            let distance = '--';
+            if (order.coordinates && order.restaurantCoordinates) {
+                const lat1 = order.restaurantCoordinates.lat;
+                const lng1 = order.restaurantCoordinates.lng;
+                const lat2 = order.coordinates.lat;
+                const lng2 = order.coordinates.lng;
+                
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                distance = (R * c).toFixed(1) + ' km';
+            }
+            
+            routeDistance.textContent = distance;
+            routeTime.textContent = order.estimatedTime + ' min';
+            routeAddress.textContent = order.customerAddress;
+            
+            routeInfo.style.display = 'block';
+            routeInfo.style.background = 'linear-gradient(135deg, #e3f2fd, #bbdefb)';
+            routeInfo.innerHTML = `
+                <h4>🗺️ ROTA GPS EM TEMPO REAL</h4>
+                <div id="routeDetails">
+                    <p><strong>📍 Partida:</strong> ${order.restaurant}</p>
+                    <p><strong>🏁 Destino:</strong> ${order.customerName}</p>
+                    <p><strong>📏 Distância:</strong> <span id="routeDistance">${distance}</span></p>
+                    <p><strong>⏱️ Tempo Estimado:</strong> <span id="routeTime">${order.estimatedTime} min</span></p>
+                    <p><strong>📍 Endereço:</strong> <span id="routeAddress">${order.customerAddress}</span></p>
+                    <p><strong>📡 Status GPS:</strong> <span style="color: #27ae60;">🟢 ATIVO</span></p>
+                </div>
+            `;
+        }
+
+        // Mostrar informações da rota
+        function showRouteInfo(order) {
+            const routeInfo = document.getElementById('routeInfo');
+            const routeDistance = document.getElementById('routeDistance');
+            const routeTime = document.getElementById('routeTime');
+            const routeAddress = document.getElementById('routeAddress');
+            
+            // Calcular distância aproximada (simplificado)
+            let distance = '--';
+            if (order.coordinates && motoboyData.location) {
+                const lat1 = motoboyData.location.lat;
+                const lng1 = motoboyData.location.lng;
+                const lat2 = order.coordinates.lat;
+                const lng2 = order.coordinates.lng;
+                
+                // Fórmula de Haversine simplificada
+                const R = 6371; // Raio da Terra em km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                distance = (R * c).toFixed(1) + ' km';
+            }
+            
+            routeDistance.textContent = distance;
+            routeTime.textContent = order.estimatedTime + ' min';
+            routeAddress.textContent = order.customerAddress;
+            
+            routeInfo.style.display = 'block';
+        }
+        function initializeMotoboy() {
+            // Garantir que stats exista antes de tudo
+            if (!motoboyData.stats) {
+                motoboyData.stats = {
+                    todayDeliveries: 0,
+                    totalDeliveries: 0,
+                    avgTime: 25
+                };
+            }
+            
+            // Carregar dados completos do localStorage
+            const motoboys = JSON.parse(localStorage.getItem('motoboys') || '[]');
+            const fullMotoboyData = motoboys.find(m => m.email === motoboyData.email);
+            
+            if (fullMotoboyData) {
+                motoboyData = fullMotoboyData;
+                // Garantir stats novamente
+                if (!motoboyData.stats) {
+                    motoboyData.stats = {
+                        todayDeliveries: 0,
+                        totalDeliveries: 0,
+                        avgTime: 25
+                    };
+                }
+                // Atualizar sessão com dados completos
+                sessionStorage.setItem('motoboySession', JSON.stringify(motoboyData));
+            }
+            
+            // Atualizar status do motoboy na interface
+            function updateMotoboyStatus() {
+                const statusElement = document.getElementById('motoboyStatus');
+                const statusText = document.getElementById('statusText');
+                
+                if (statusElement && statusText) {
+                    statusElement.textContent = motoboyData.status;
+                    statusText.textContent = getStatusText(motoboyData.status);
+                }
+                
+                // Atualizar cor do status
+                const statusCard = document.querySelector('.motoboy-status');
+                if (statusCard) {
+                    statusCard.className = `motoboy-status status-${motoboyData.status}`;
+                }
+            }
+            
+            function getStatusText(status) {
+                const statusMap = {
+                    'online': '🟢 Online',
+                    'busy': '🟡 Ocupado',
+                    'offline': '🔴 Offline',
+                    'delivering': '🚴 Entregando'
+                };
+                return statusMap[status] || '❓ Desconhecido';
+            }
+            
+            updateMotoboyStatus();
+            showNotification(`Bem-vindo(a), ${motoboyData.name}!`, 'success');
+        }
+
+        // Salvar dados do motoboy
+        function saveMotoboyData() {
+            const motoboys = JSON.parse(localStorage.getItem('motoboys') || '[]');
+            const index = motoboys.findIndex(m => m.email === motoboyData.email);
+            
+            if (index !== -1) {
+                motoboys[index] = motoboyData;
+                localStorage.setItem('motoboys', JSON.stringify(motoboys));
+                
+                // Atualizar sessão
+                sessionStorage.setItem('motoboySession', JSON.stringify(motoboyData));
+            }
+        }
+
+        // Salvar dados do motoboy
+        function saveMotoboyData() {
+            sessionStorage.setItem('motoboySession', JSON.stringify(motoboyData));
+        }
+
+        // Carregar pedidos do delivery
+        function loadOrders() {
+            // Carregar pedidos APENAS do localStorage (comunicando com delivery)
+            const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+            
+            // ✅ SEM PEDIDOS SIMULADOS - Sistema 100% real
+            orders = deliveryOrders;
+            
+            console.log('[MOTOBOY] 📦 Pedidos carregados:', orders.length);
+            
+            renderOrders();
+            updateStats();
+        }
+
+        // ============================================
+        // RENDERIZAR PEDIDOS
+        // ============================================
+        
+        // Renderizar pedidos
+        function renderOrders() {
+            const ordersList = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p style="text-align: center; color: #666;">Nenhum pedido de entrega no momento.</p>';
+                return;
+            }
+            
+            ordersList.innerHTML = orders.map(order => createOrderHTML(order)).join('');
+        }
+
+        // Criar HTML do pedido
+        function createOrderHTML(order) {
+            const statusText = getStatusText(order.status);
+            const timeEstimate = calculateDeliveryTime(order);
+            
+            // 🔥 DIFERENCIAÇÃO VISUAL DE PEDIDOS
+            const orderTypeIcon = order.orderIcon || '📦';
+            const orderTypeColor = order.orderColor || '#666';
+            const orderTypeTitle = order.orderTitle || 'PEDIDO';
+            
+            return `
+                <div class="order-card ${order.status}" style="border-left: 5px solid ${orderTypeColor};">
+                    <div class="order-header" style="background: ${orderTypeColor}20;">
+                        <div class="order-number">
+                            ${orderTypeIcon} ${orderTypeTitle} #${order.id}
+                        </div>
+                        <div class="order-status ${order.status}">${statusText}</div>
+                    </div>
+                    
+                    <div class="order-details">
+                        <div class="order-info">
+                            <strong>Cliente:</strong> ${order.customerName}
+                        </div>
+                        <div class="order-info">
+                            <strong>Telefone:</strong> ${order.customerPhone}
+                        </div>
+                        ${order.orderType !== 'MESA' ? `
+                        <div class="order-info">
+                            <strong>Endereço:</strong> ${order.customerAddress}
+                        </div>
+                        ` : `
+                        <div class="order-info">
+                            <strong>Mesa:</strong> ${order.customerAddress}
+                        </div>
+                        `}
+                        <div class="order-info">
+                            <strong>Horário:</strong> ${new Date(order.timestamp).toLocaleTimeString()}
+                        </div>
+                        <div class="order-info" style="background: ${orderTypeColor}20; padding: 5px; border-radius: 5px;">
+                            <strong style="color: ${orderTypeColor};">Tipo:</strong> ${orderTypeTitle}
+                        </div>
+                    </div>
+                    
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.name} x${item.quantity}</span>
+                                <span>R$ ${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="order-info">
+                        <strong>Total:</strong> R$ ${order.total.toFixed(2)}
+                    </div>
+                    
+                    ${order.orderType !== 'MESA' ? `
+                    <div class="time-estimate">
+                        <strong>⏱️ Tempo estimado:</strong> ${timeEstimate} minutos
+                    </div>
+                    ` : `
+                    <div class="time-estimate">
+                        <strong>🍽️ Pedido para:</strong> Consumir no local
+                    </div>
+                    `}
+                    
+                    <div class="order-actions">
+                        ${getOrderActions(order)}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Obter texto do status
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Pendente',
+                'preparing': 'Em Preparo',
+                'ready': 'Pronto',
+                'delivering': 'A Caminho',
+                'completed': 'Entregue'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Calcular tempo de entrega
+        function calculateDeliveryTime(order) {
+            if (order.status === 'completed') return 0;
+            
+            const baseTime = 15; // Tempo base de preparo
+            const distanceTime = 10; // Tempo estimado de distância
+            const queueTime = getQueueTime(order.id) * 5; // 5 min por pedido na frente
+            
+            return baseTime + distanceTime + queueTime;
+        }
+
+        // Calcular tempo de fila
+        function getQueueTime(orderId) {
+            const pendingOrders = orders.filter(o => 
+                o.status !== 'completed' && 
+                o.id !== orderId &&
+                new Date(o.orderTime) < new Date()
+            );
+            return pendingOrders.length;
+        }
+
+        // Obter ações do pedido
+        function getOrderActions(order) {
+            switch(order.status) {
+                case 'pending':
+                    return `
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn btn-warning" onclick="acceptOrder('${order.id}')" style="background: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                ✅ ACEITAR
+                            </button>
+                            <button class="btn btn-info" onclick="showRouteOnMap('${order.id}')" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                🗺️ VER ROTA
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewOrderDetails('${order.id}')" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                👁️ DETALHES
+                            </button>
+                        </div>
+                    `;
+                case 'preparing':
+                    return `
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn btn-success" onclick="startDelivery('${order.id}')" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                🏍️ INICIAR ENTREGA
+                            </button>
+                            <button class="btn btn-info" onclick="showRouteOnMap('${order.id}')" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                🗺️ VER ROTA
+                            </button>
+                        </div>
+                    `;
+                case 'delivering':
+                    return `
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="updateLocation('${order.id}')" style="background: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                📍 ATUALIZAR LOCALIZAÇÃO
+                            </button>
+                            <button class="btn btn-success" onclick="completeDelivery('${order.id}')" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                ✅ ENTREGUE
+                            </button>
+                            <button class="btn btn-info" onclick="showRouteOnMap('${order.id}')" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                🗺️ VER ROTA
+                            </button>
+                        </div>
+                    `;
+                case 'completed':
+                    return `
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="viewOrderDetails('${order.id}')" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                👁️ VER DETALHES
+                            </button>
+                        </div>
+                    `;
+                default:
+                    return '';
+            }
+        }
+
+        // Aceitar pedido
+        function acceptOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'preparing';
+                order.motoboyId = motoboyData.id;
+                motoboyData.currentOrder = orderId;
+                motoboyData.status = 'busy';
+                
+                saveOrders();
+                saveMotoboyData();
+                renderOrders();
+                updateMotoboyStatus();
+                
+                showNotification(`🏍️ Pedido #${orderId} ACEITO! Rota calculada...`, 'success');
+                
+                // Mostrar rota IMEDIATAMENTE igual Google Maps
+                if (map) {
+                    setTimeout(() => {
+                        showRouteOnMap(orderId);
+                        showNotification(`📍 ROTA MOSTRADA no mapa! Linha azul = caminho mais rápido`, 'info');
+                    }, 500);
+                }
+                
+                // Usar módulo de comunicação para notificar
+                if (window.DeliveryCommunication) {
+                    DeliveryCommunication.send({
+                        type: 'acceptDeliveryOrder',
+                        orderId: orderId,
+                        motoboyName: motoboyData.name,
+                        motoboyPhone: motoboyData.phone
+                    });
+                } else {
+                    // Fallback para método antigo
+                    console.log('[MOTOBOY] Usando fallback de comunicação');
+                }
+            }
+        }
+
+        // Mostrar rota no mapa (FUNÇÃO FALTANTE)
+        async function showRouteOnMap(orderId) {
+            console.log('[MOTOBOY] Mostrando rota para pedido:', orderId);
+            
+            try {
+                const order = orders.find(o => o.id === orderId);
+                if (!order) {
+                    showNotification('Pedido não encontrado', 'error');
+                    return;
+                }
+                
+                // Coordenadas do motoboy (atual ou fixa)
+                const motoboyLat = motoboyData.location?.lat || -23.5505;
+                const motoboyLng = motoboyData.location?.lng || -46.6333;
+                
+                // Coordenadas do cliente (do pedido ou fixa)
+                const customerLat = order.customerLat || -23.5489;
+                const customerLng = order.customerLng || -46.6388;
+                
+                console.log('[MOTOBOY] Coordenadas:', {
+                    motoboy: { lat: motoboyLat, lng: motoboyLng },
+                    customer: { lat: customerLat, lng: customerLng }
+                });
+                
+                // Limpar mapa
+                if (window.routeLine) {
+                    map.removeLayer(window.routeLine);
+                }
+                if (window.customerMarker) {
+                    map.removeLayer(window.customerMarker);
+                }
+                
+                // Adicionar marcador do cliente
+                window.customerMarker = L.marker([customerLat, customerLng], {
+                    icon: L.divIcon({
+                        html: '<div style="background: #e74c3c; color: white; padding: 8px; border-radius: 50%; font-weight: bold;">🏠</div>',
+                        iconSize: [30, 30],
+                        className: 'customer-marker'
+                    })
+                }).addTo(map)
+                .bindPopup(`<strong>📍 Endereço de Entrega</strong><br>${order.customerAddress || 'Endereço não informado'}`);
+                
+                // Obter rota da API personalizada
+                const routeData = await calculateCustomRoute(motoboyLat, motoboyLng, customerLat, customerLng);
+                
+                if (routeData.success) {
+                    // Desenhar rota no mapa
+                    const routeCoordinates = routeData.coordinates.map(coord => [coord.lat, coord.lng]);
+                    
+                    window.routeLine = L.polyline(routeCoordinates, {
+                        color: '#3498db',
+                        weight: 5,
+                        opacity: 0.8,
+                        dashArray: '10, 5'
+                    }).addTo(map);
+                    
+                    // Ajustar mapa para mostrar rota completa
+                    const bounds = L.latLngBounds([
+                        [motoboyLat, motoboyLng],
+                        [customerLat, customerLng]
+                    ]);
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                    
+                    // Mostrar informações da rota
+                    showNotification(`
+                        📍 **ROTA CALCULADA!**
+                        📏 Distância: ${routeData.distance_km} km
+                        ⏱️ Tempo: ${routeData.time_minutes} minutos
+                        🛣️ Rota: ${routeData.instructions.length} instruções
+                    `, 'success');
+                    
+                    console.log('[MOTOBOY] Rota desenhada com sucesso:', routeData);
+                    
+                } else {
+                    // Fallback: desenhar linha reta
+                    console.log('[MOTOBOY] Usando fallback - linha reta');
+                    
+                    window.routeLine = L.polyline([
+                        [motoboyLat, motoboyLng],
+                        [customerLat, customerLng]
+                    ], {
+                        color: '#e74c3c',
+                        weight: 4,
+                        opacity: 0.7,
+                        dashArray: '15, 10'
+                    }).addTo(map);
+                    
+                    // Ajustar mapa
+                    const bounds = L.latLngBounds([
+                        [motoboyLat, motoboyLng],
+                        [customerLat, customerLng]
+                    ]);
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                    
+                    showNotification('📍 Rota direta traçada (API indisponível)', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('[MOTOBOY] Erro ao mostrar rota:', error);
+                showNotification('Erro ao traçar rota: ' + error.message, 'error');
+            }
+        }
+
+// Obter ações do pedido
+function getOrderActions(order) {
+    switch(order.status) {
+        case 'pending':
+            return `
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-warning" onclick="acceptOrder('${order.id}')" style="background: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        ACEITAR
+                    </button>
+                    <button class="btn btn-info" onclick="showRouteOnMap('${order.id}')" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        VER ROTA
+                    </button>
+                    <button class="btn btn-secondary" onclick="viewOrderDetails('${order.id}')" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        DETALHES
+                    </button>
+                </div>
+            `;
+        case 'preparing':
+            return `
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="startDelivery('${order.id}')" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        INICIAR ENTREGA
+                    </button>
+                    <button class="btn btn-info" onclick="showRouteOnMap('${order.id}')" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        VER ROTA
+                    </button>
+                </div>
+            `;
+        case 'delivering':
+            return `
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="updateLocation('${order.id}')" style="background: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        ATUALIZAR LOCALIZAÇÃO
+                    </button>
+                    <button class="btn btn-success" onclick="completeDelivery('${order.id}')" style="background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        ENTREGUE
+                    </button>
+                    <button class="btn btn-info" onclick="showRouteOnMap('${order.id}')" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        VER ROTA
+                    </button>
+                </div>
+            `;
+        case 'completed':
+            return `
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="viewOrderDetails('${order.id}')" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1.1em; font-weight: bold; min-width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        VER DETALHES
+                    </button>
+                </div>
+            `;
+        default:
+            return '';
+    }
+}
+
+// Completar entrega
+function completeDelivery(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'completed';
+                order.deliveryTime = new Date().toISOString();
+                order.actualDeliveryTime = Math.floor((new Date() - new Date(order.timestamp)) / 60000); // minutos
+                
+                motoboyData.currentOrder = null;
+                motoboyData.status = 'online';
+                motoboyData.stats.todayDeliveries++;
+                motoboyData.stats.totalDeliveries++;
+                
+                // Calcular média de tempo
+                const completedOrders = orders.filter(o => o.status === 'completed' && o.actualDeliveryTime);
+                if (completedOrders.length > 0) {
+                    const totalTime = completedOrders.reduce((sum, o) => sum + o.actualDeliveryTime, 0);
+                    motoboyData.stats.avgTime = Math.floor(totalTime / completedOrders.length);
+                }
+                
+                saveOrders();
+                saveMotoboyData();
+                renderOrders();
+                updateMotoboyStatus();
+                updateStats();
+                
+                // Mostrar notificação completa
+                showNotification(`✅ PEDIDO #${orderId} FINALIZADO COM SUCESSO!`, 'success');
+                
+                // 🔊 Tocar som de entrega concluída
+                playCompletedSound();
+                
+                // Calcular valor ganho
+                const deliveryFee = (order.total * 0.10).toFixed(2); // 10% de taxa
+                showNotification(`💰 Ganho nesta entrega: R$ ${deliveryFee}`, 'success');
+                
+                // Usar módulo de comunicação para notificar
+                if (window.DeliveryCommunication) {
+                    DeliveryCommunication.send({
+                        type: 'completeDeliveryOrder',
+                        orderId: orderId
+                    });
+                } else {
+                    // Fallback para método antigo
+                    notifyDeliverySystem(orderId, 'completed');
+                }
+                
+                // Notificar cliente
+                notifyCustomer(order, 'completed');
+                
+                // Limpar mapa
+                if (currentRoute) {
+                    map.removeLayer(currentRoute);
+                    currentRoute = null;
+                }
+                if (restaurantMarker) {
+                    map.removeLayer(restaurantMarker);
+                    restaurantMarker = null;
+                }
+                if (customerMarker) {
+                    map.removeLayer(customerMarker);
+                    customerMarker = null;
+                }
+                
+                // Esconder informações da rota
+                document.getElementById('routeInfo').style.display = 'none';
+                
+                // Parar rastreamento
+                stopLocationTracking();
+                
+                // Verificar se há mais pedidos pendentes
+                checkNewOrders();
+                
+                console.log('[MOTOBOY] Entrega finalizada:', {
+                    orderId: order.id,
+                    customerName: order.customerName,
+                    total: order.total,
+                    deliveryFee: deliveryFee,
+                    actualTime: order.actualDeliveryTime
+                });
+                
+                // Enviar relatório para o criador
+                if (typeof window.parent !== 'undefined') {
+                    window.parent.postMessage({
+                        type: 'DELIVERY_COMPLETED',
+                        delivery: {
+                            orderId: order.id,
+                            motoboyName: motoboyData.name,
+                            customerName: order.customerName,
+                            total: order.total,
+                            deliveryFee: deliveryFee,
+                            deliveryTime: order.actualDeliveryTime
+                        }
+                    }, '*');
+                }
+            }
+        }
+
+        // Iniciar rastreamento de localização em tempo real
+        let locationTrackingInterval = null;
+        let realTimeTrackingInterval = null;
+        
+        function startLocationTracking(orderId) {
+            console.log('[MOTOBOY] Iniciando rastreamento para pedido:', orderId);
+            
+            // Em implementação real, usar GPS a cada 30 segundos
+            locationTrackingInterval = setInterval(() => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            
+                            // Atualizar localização do motoboy
+                            motoboyData.location = { lat, lng };
+                            
+                            // Atualizar marcador no mapa
+                            if (motoboyMarker && map) {
+                                motoboyMarker.setLatLng([lat, lng]);
+                            }
+                            
+                            // Salvar localização no pedido
+                            const order = orders.find(o => o.id === orderId);
+                            if (order) {
+                                order.currentLocation = { lat, lng, timestamp: new Date().toISOString() };
+                                saveOrders();
+                            }
+                            
+                            // 🔵 Enviar localização para o cliente via WebSocket
+                            if (window.DeliveryCommunication && window.DeliveryCommunication.ws) {
+                                window.DeliveryCommunication.send({
+                                    type: 'updateMotoboyLocation',
+                                    orderId: orderId,
+                                    latitude: lat,
+                                    longitude: lng,
+                                    motoboyName: motoboyData.name,
+                                    motoboyPhone: motoboyData.phone,
+                                    status: 'delivering'
+                                });
+                                console.log('[MOTOBOY] 📍 Localização enviada para cliente:', lat, lng);
+                            }
+                            
+                            console.log('[MOTOBOY] Localização atualizada:', { lat, lng });
+                        },
+                        (error) => {
+                            console.warn('[MOTOBOY] Erro ao obter localização:', error);
+                        }
+                    );
+                }
+            }, 30000); // A cada 30 segundos
+        }
+
+        // Iniciar rastreamento em tempo real (função nova)
+        function startRealTimeTracking(orderId) {
+            console.log('[MOTOBOY] Iniciando rastreamento GPS em tempo real para pedido:', orderId);
+            
+            // Parar rastreamento anterior
+            stopRealTimeTracking();
+            
+            // Obter localização imediata
+            updateMotoboyLocation(orderId);
+            
+            // Atualizar localização a cada 5 segundos (tempo real)
+            realTimeTrackingInterval = setInterval(() => {
+                updateMotoboyLocation(orderId);
+            }, 5000);
+            
+            showNotification('📡 Rastreamento GPS em tempo real ATIVADO (atualiza a cada 5s)', 'success');
+        }
+
+        // Parar rastreamento em tempo real
+        function stopRealTimeTracking() {
+            if (realTimeTrackingInterval) {
+                clearInterval(realTimeTrackingInterval);
+                realTimeTrackingInterval = null;
+                console.log('[MOTOBOY] Rastreamento GPS em tempo real parado');
+            }
+        }
+
+        // Atualizar localização do motoboy em tempo real
+        function updateMotoboyLocation(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Atualizar localização do motoboy
+                        motoboyData.location = { lat, lng };
+                        
+                        // Atualizar ou criar marcador do motoboy
+                        if (motoboyMarker) {
+                            motoboyMarker.setLatLng([lat, lng]);
+                        } else {
+                            motoboyMarker = L.marker([lat, lng], {
+                                icon: L.divIcon({
+                                    html: '<div style="background: #e74c3c; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">🏍️</div>',
+                                    iconSize: [36, 36],
+                                    className: 'motoboy-live-marker'
+                                })
+                            }).addTo(map);
+                            
+                            motoboyMarker.bindPopup('<strong>🏍️ SUA LOCALIZAÇÃO AO VIVO</strong><br>Você está aqui!').openPopup();
+                        }
+                        
+                        // Criar linha do motoboy até o destino (rota dinâmica)
+                        if (order.coordinates) {
+                            const dynamicRoute = L.polyline([[lat, lng], [order.coordinates.lat, order.coordinates.lng]], {
+                                color: '#ff0000',
+                                weight: 4,
+                                opacity: 0.8,
+                                dashArray: '10, 5',
+                                className: 'dynamic-route'
+                            }).addTo(map);
+                            
+                            // Remover rota dinâmica anterior se existir
+                            if (window.dynamicRouteLine) {
+                                map.removeLayer(window.dynamicRouteLine);
+                            }
+                            window.dynamicRouteLine = dynamicRoute;
+                        }
+                        
+                        // Salvar localização no pedido
+                        order.currentLocation = { lat, lng, timestamp: new Date().toISOString() };
+                        saveOrders();
+                        
+                        // Calcular distância restante
+                        const remainingDistance = calculateDistance(lat, lng, order.coordinates.lat, order.coordinates.lng);
+                        
+                        // Atualizar informações em tempo real
+                        updateRealTimeInfo(remainingDistance, order);
+                        
+                        console.log('[MOTOBOY] Localização atualizada:', { lat, lng, distance: remainingDistance });
+                    },
+                    (error) => {
+                        console.warn('[MOTOBOY] Erro ao obter localização:', error);
+                        showNotification('⚠️ Erro no GPS. Verifique sua localização.', 'error');
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                showNotification('⚠️ Seu navegador não suporta geolocalização GPS.', 'error');
+            }
+        }
+
+        // Calcular distância entre dois pontos
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Raio da Terra em km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return (R * c).toFixed(2); // Distância em km
+        }
+
+        // Atualizar informações em tempo real
+        function updateRealTimeInfo(remainingDistance, order) {
+            const routeInfo = document.getElementById('routeInfo');
+            if (routeInfo) {
+                const detailsDiv = routeInfo.querySelector('#routeDetails');
+                if (detailsDiv) {
+                    // Adicionar informações de tempo real
+                    const realTimeInfo = document.getElementById('realTimeInfo');
+                    if (!realTimeInfo) {
+                        const realTimeDiv = document.createElement('div');
+                        realTimeDiv.id = 'realTimeInfo';
+                        realTimeDiv.innerHTML = `
+                            <hr style="margin: 10px 0; border: 1px solid #ccc;">
+                            <p><strong>📍 Sua Posição:</strong> <span style="color: #e74c3c;">🟢 RASTREADO</span></p>
+                            <p><strong>📏 Distância Restante:</strong> <span style="color: #ff0000; font-weight: bold;">${remainingDistance} km</span></p>
+                            <p><strong>⏱️ Tempo Restante:</strong> <span style="color: #ff6600;">${Math.ceil(remainingDistance * 2)} min</span></p>
+                            <p><strong>📶 Última Atualização:</strong> <span id="lastUpdate">${new Date().toLocaleTimeString()}</span></p>
+                        `;
+                        detailsDiv.appendChild(realTimeDiv);
+                    } else {
+                        // Atualizar informações existentes
+                        const distanceSpan = realTimeInfo.querySelector('span:nth-child(2)');
+                        const timeSpan = realTimeInfo.querySelector('span:nth-child(3)');
+                        const updateSpan = document.getElementById('lastUpdate');
+                        
+                        if (distanceSpan) distanceSpan.textContent = remainingDistance + ' km';
+                        if (timeSpan) timeSpan.textContent = Math.ceil(remainingDistance * 2) + ' min';
+                        if (updateSpan) updateSpan.textContent = new Date().toLocaleTimeString();
+                    }
+                }
+            }
+        }
+
+        // Parar rastreamento de localização
+        function stopLocationTracking() {
+            if (locationTrackingInterval) {
+                clearInterval(locationTrackingInterval);
+                locationTrackingInterval = null;
+                console.log('[MOTOBOY] Rastreamento de localização parado');
+            }
+            
+            // Parar também rastreamento em tempo real
+            stopRealTimeTracking();
+            
+            // Parar navegação por voz
+            stopVoiceNavigation();
+        }
+
+        // Notificar cliente
+        function notifyCustomer(order, status) {
+            console.log('[MOTOBOY] Notificando cliente:', order.customerName, 'Status:', status);
+            
+            // Em implementação real, enviar SMS/WhatsApp/Push Notification
+            const messages = {
+                'accepted': `🏍️ ${motoboyData.name} aceitou seu pedido! Preparando para entrega.`,
+                'delivering': `🚚 ${motoboyData.name} está a caminho! Tempo estimado: ${order.estimatedTime} minutos.`,
+                'completed': `✅ Pedido entregue! Agradecemos a preferência. Avalie nosso serviço!`
+            };
+            
+            const message = messages[status] || 'Status do seu pedido atualizado.';
+            
+            // Simular envio de notificação
+            console.log('[MOTOBOY] Mensagem para cliente:', message);
+            
+            // Salvar notificação enviada
+            const notifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+            notifications.push({
+                orderId: order.id,
+                customerName: order.customerName,
+                customerPhone: order.customerPhone,
+                message: message,
+                timestamp: new Date().toISOString(),
+                status: status
+            });
+            localStorage.setItem('customerNotifications', JSON.stringify(notifications));
+        }
+
+        // Atualizar localização
+        function updateLocation(orderId) {
+            // Simular atualização de localização
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                // Em implementação real, usar GPS
+                showNotification(`Localização atualizada para pedido #${orderId}`, 'info');
+            }
+        }
+
+        // Contatar cliente
+        function contactCustomer(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                // Em implementação real, abrir interface de contato
+                window.open(`tel:${order.customerPhone}`, '_blank');
+                showNotification(`Ligando para ${order.customerName}...`, 'info');
+            }
+        }
+
+        // Ver detalhes do pedido
+        function viewOrderDetails(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                const details = `
+                    Pedido: #${order.id}
+                    Cliente: ${order.customerName}
+                    Telefone: ${order.customerPhone}
+                    Endereço: ${order.address}
+                    Status: ${getStatusText(order.status)}
+                    Total: R$ ${order.total.toFixed(2)}
+                `;
+                alert(details);
+            }
+        }
+
+        // Atualizar status do motoboy
+        function updateMotoboyStatus() {
+            // Garantir que stats exista
+            if (!motoboyData.stats) {
+                motoboyData.stats = {
+                    todayDeliveries: 0,
+                    totalDeliveries: 0,
+                    avgTime: 25
+                };
+            }
+            
+            document.getElementById('currentStatus').textContent = getStatusText(motoboyData.status);
+            document.getElementById('todayDeliveries').textContent = motoboyData.stats.todayDeliveries || 0;
+            document.getElementById('avgDeliveryTime').textContent = `${motoboyData.stats.avgTime || 25} min`;
+            
+            // Atualizar informações no header
+            document.getElementById('motoboyName').textContent = motoboyData.name;
+            document.getElementById('motoboyCPF').textContent = `CPF: ${motoboyData.cpf || '-'}`;
+            
+            if (motoboyData.vehicle) {
+                document.getElementById('motoboyVehicle').textContent = 
+                    `${motoboyData.vehicle.model} - ${motoboyData.vehicle.plate}`;
+            }
+        }
+
+        // Fazer logout
+        function logoutMotoboy() {
+            if (confirm('Tem certeza que deseja sair do sistema?')) {
+                sessionStorage.removeItem('motoboySession');
+                window.location.href = 'motoboy-login.html';
+            }
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            // Garantir que stats exista
+            if (!motoboyData.stats) {
+                motoboyData.stats = {
+                    todayDeliveries: 0,
+                    totalDeliveries: 0,
+                    avgTime: 25
+                };
+            }
+            
+            const todayOrders = orders.filter(o => {
+                const orderDate = new Date(o.orderTime || o.timestamp).toDateString();
+                const today = new Date().toDateString();
+                return orderDate === today;
+            });
+            
+            const completed = todayOrders.filter(o => o.status === 'completed').length;
+            const pending = todayOrders.filter(o => o.status !== 'completed').length;
+            const revenue = todayOrders.reduce((sum, o) => sum + o.total, 0);
+            
+            // Atualizar estatísticas do motoboy
+            motoboyData.stats.todayDeliveries = completed;
+            
+            document.getElementById('totalOrders').textContent = todayOrders.length;
+            document.getElementById('completedOrders').textContent = completed;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('totalRevenue').textContent = `R$ ${revenue.toFixed(2)}`;
+        }
+
+        // Notificar sistema de delivery
+        function notifyDeliverySystem(orderId, action) {
+            // Salvar no localStorage para comunicação com delivery
+            const notifications = JSON.parse(localStorage.getItem('motoboyNotifications') || '[]');
+            notifications.push({
+                orderId: orderId,
+                action: action,
+                motoboyId: motoboyData.id,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('motoboyNotifications', JSON.stringify(notifications));
+        }
+
+        // Notificar cliente
+        function notifyCustomer(order, status) {
+            // Em implementação real, enviar SMS/WhatsApp
+            console.log(`Notificando cliente ${order.customerName}: Pedido ${getStatusText(status)}`);
+        }
+
+        // Iniciar rastreamento de localização
+        function startLocationTracking(orderId) {
+            // Em implementação real, usar GPS do dispositivo
+            console.log(`Iniciando rastreamento para pedido #${orderId}`);
+        }
+
+        // Parar rastreamento de localização
+        function stopLocationTracking() {
+            console.log('Rastreamento de localização parado');
+        }
+
+        // Salvar pedidos
+        function saveOrders() {
+            localStorage.setItem('deliveryOrders', JSON.stringify(orders));
+        }
+
+        // Iniciar atualizações em tempo real
+        function startRealTimeUpdates() {
+            // Atualizar pedidos a cada 30 segundos
+            setInterval(() => {
+                loadOrders();
+                checkNewOrders();
+            }, 30000);
+            
+            // Atualizar estatísticas a cada 60 segundos
+            setInterval(() => {
+                updateStats();
+            }, 60000);
+        }
+
+        // Verificar novos pedidos
+        function checkNewOrders() {
+            const newOrders = orders.filter(o => o.status === 'pending' && o.motoboyId === null);
+            if (newOrders.length > 0) {
+                showNotification(`${newOrders.length} novo(s) pedido(s) disponível(is)!`, 'warning');
+                
+                // 🔊 Tocar som de novo pedido
+                playNewOrderSound();
+            }
+        }
+
+        // Reproduzir som de notificação
+        function playNotificationSound() {
+            // Em implementação real, reproduzir arquivo de áudio
+            console.log('🔔 Novo pedido disponível!');
+        }
+
+        // ============================================
+        // FUNÇÕES DE SOM MELHORADAS
+        // ============================================
+        
+        // Tocar som de novo pedido disponível
+        function playNewOrderSound() {
+            console.log('🔔 [MOTOBOY] Tocando som de NOVO PEDIDO...');
+            playTripleBeep('bellSound');
+        }
+        
+        // Tocar som de pedido aceito
+        function playAcceptedSound() {
+            console.log('✅ [MOTOBOY] Tocando som de PEDIDO ACEITO...');
+            playTripleBeep('delightSound');
+        }
+        
+        // Tocar som de entrega iniciada
+        function playStartDeliverySound() {
+            console.log('🛵 [MOTOBOY] Tocando som de ENTREGA INICIADA...');
+            playTripleBeep('fryingSound');
+        }
+        
+        // Tocar som de entrega concluída
+        function playCompletedSound() {
+            console.log('🎉 [MOTOBOY] Tocando som de ENTREGA CONCLUÍDA!');
+            playTripleBeep('delightSound');
+        }
+        
+        // Tocar som de notificação genérica
+        function playNotificationSound() {
+            console.log('📬 [MOTOBOY] Tocando som de NOTIFICAÇÃO...');
+            playTripleBeep('bellSound');
+        }
+        
+        // Função genérica para tocar sons com fallback
+        function playTripleBeep(soundId = 'bellSound') {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.play().catch(e => {
+                    console.warn(`[MOTOBOY] Erro ao tocar som ${soundId}:`, e);
+                    // Tentar próximo som disponível
+                    const nextSound = soundId === 'bellSound' ? 'delightSound' : 'bellSound';
+                    const fallback = document.getElementById(nextSound);
+                    if (fallback) {
+                        fallback.play().catch(err => {
+                            console.log(`[MOTOBOY] Fallback também falhou:`, err);
+                        });
+                    }
+                });
+            } else {
+                console.warn(`[MOTOBOY] Elemento de áudio ${soundId} não encontrado`);
+            }
+        }
+        
+        // Sistema MyGateway para Motoboy
+        let myGateway = null;
+        let motoboyId = null;
+        let totalGanho = 0;
+        let totalEntregas = 0;
+        
+        // Inicializar MyGateway
+        function initMyGateway() {
+            try {
+                myGateway = new MyGatewayIntegration();
+                motoboyId = localStorage.getItem('motoboyId') || 'motoboy_demo';
+                console.log('[MOTOBOY] MyGateway inicializado com sucesso!');
+            } catch (error) {
+                console.error('[MOTOBOY] Erro ao inicializar MyGateway:', error);
+            }
+        }
+        
+        // Consultar ganhos do motoboy
+        async function consultarGanhos() {
+            try {
+                if (!myGateway) {
+                    initMyGateway();
+                }
+                
+                const stats = myGateway.getEstatisticasMotoboy(motoboyId);
+                
+                if (stats) {
+                    alert(`
+💰 Ganhos do Motoboy:
+📊 Total de Entregas: ${stats.totalEntregas}
+💵 Total Ganho: R$${stats.totalGanho.toFixed(2)}
+📈 Média por Entrega: R$${stats.mediaPorEntrega.toFixed(2)}
+🚴 Pedidos Pendentes: ${stats.pedidosPendentes}
+🏃 Pedidos em Andamento: ${stats.pedidosEmAndamento}
+                    `);
+                }
+                
+            } catch (error) {
+                console.error('[MOTOBOY] Erro ao consultar ganhos:', error);
+                alert('Erro ao consultar ganhos');
+            }
+        }
+        
+        // Atualizar ganhos após entrega
+        function atualizarGanhos(valorEntrega) {
+            totalGanho += valorEntrega;
+            totalEntregas++;
+            
+            console.log(`[MOTOBOY] Ganhos atualizados: +R$${valorEntrega.toFixed(2)} | Total: R$${totalGanho.toFixed(2)} | Entregas: ${totalEntregas}`);
+            
+            // Salvar no localStorage
+            localStorage.setItem('motoboyStats', JSON.stringify({
+                totalGanho: totalGanho,
+                totalEntregas: totalEntregas,
+                ultimaAtualizacao: new Date().toISOString()
+            }));
+        }
+        
+        // Mostrar painel de ganhos
+        function mostrarPainelGanhos() {
+            const stats = JSON.parse(localStorage.getItem('motoboyStats') || '{}');
+            
+            const painel = document.createElement('div');
+            painel.innerHTML = `
+                <div style="position: fixed; top: 10px; right: 10px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; min-width: 250px;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">💰 Meus Ganhos</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div style="text-align: center; padding: 10px; background: #e8f5e8; border-radius: 5px;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${stats.totalEntregas || 0}</div>
+                            <div style="font-size: 0.8rem; color: #666;">Entregas</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #856404;">R$${(stats.totalGanho || 0).toFixed(2)}</div>
+                            <div style="font-size: 0.8rem; color: #666;">Total Ganho</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button onclick="consultarGanhos()" style="width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            📊 Ver Detalhes
+                        </button>
+                        <button onclick="this.parentElement.parentElement.remove()" style="width: 100%; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px;">
+                            ❌ Fechar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(painel);
+        }
+        
+        // Adicionar botão de ganhos na interface
+        function adicionarBotaoGanhos() {
+            const header = document.querySelector('header');
+            if (header && !document.getElementById('btn-ganhos')) {
+                const btnGanhos = document.createElement('button');
+                btnGanhos.id = 'btn-ganhos';
+                btnGanhos.innerHTML = '💰 Meus Ganhos';
+                btnGanhos.onclick = mostrarPainelGanhos;
+                btnGanhos.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    padding: 10px 20px;
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    z-index: 100;
+                `;
+                
+                header.appendChild(btnGanhos);
+            }
+        }
+        
+        // Função global para alternar visibilidade dos pedidos
+        window.toggleOrdersVisibility = function() {
+            const ordersSection = document.querySelector('.orders-section');
+            const ordersList = document.getElementById('ordersList');
+            const toggleText = document.getElementById('toggleText');
+            
+            if (ordersList.style.display === 'none') {
+                // Mostrar pedidos
+                ordersList.style.display = 'block';
+                ordersSection.style.opacity = '1';
+                if (toggleText) toggleText.textContent = 'OCULTAR PEDIDOS';
+                
+                showNotification('📦 Lista de pedidos visível', 'info');
+            } else {
+                // Ocultar pedidos
+                ordersList.style.display = 'none';
+                ordersSection.style.opacity = '0.7';
+                if (toggleText) toggleText.textContent = 'MOSTRAR PEDIDOS';
+                
+                showNotification('👁️ Lista de pedidos oculta. Foque no mapa!', 'info');
+            }
+        };
+        
+        // Inicializar MyGateway ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                initMyGateway();
+                adicionarBotaoGanhos();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

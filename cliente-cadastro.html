@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo - Cardápio Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .page-wrapper {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-section {
+            margin-bottom: 30px;
+        }
+        
+        .logo-icon {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .establishment-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-text {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .cadastro-form {
+            text-align: left;
+            margin: 30px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .mesa-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .mesa-btn {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .mesa-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .mesa-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .returning-customer {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #e8ecff;
+            display: none;
+        }
+        
+        .returning-customer.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .welcome-back {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .last-order-info {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .repeat-order-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        
+        .repeat-order-btn:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+        
+        .new-order-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        
+        .new-order-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .cadastro-rapido-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #856404;
+        }
+        
+        .cadastro-rapido-info i {
+            margin-right: 8px;
+            color: #ffc107;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .page-wrapper {
+                padding: 10px;
+            }
+            
+            .welcome-container {
+                padding: 30px 20px;
+            }
+            
+            .mesa-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
+        <div class="welcome-container">
+            <div class="logo-section">
+                <div class="logo-icon">🍽️</div>
+                <div class="establishment-name" id="establishmentName">Restaurante Sabores</div>
+            </div>
+            
+            <div class="welcome-text">
+                Bem-vindo ao nosso cardápio digital!<br>
+                Faça um cadastro rápido para começar.
+            </div>
+            
+            <div class="cadastro-rapido-info">
+                <i class="fas fa-info-circle"></i>
+                Cadastro rápido: menos de 10 segundos. Seus dados ficam salvos para próxima vez!
+            </div>
+            
+            <!-- Cliente Retornando -->
+            <div class="returning-customer" id="returningCustomer">
+                <div class="welcome-back">Olá, <span id="customerName"></span>! 👋</div>
+                <p>Reconhecemos seu CPF. Mesa sugerida: <span id="suggestedMesa"></span></p>
+                
+                <div class="last-order-info" id="lastOrderInfo" style="display: none;">
+                    <strong>Seu último pedido:</strong>
+                    <div id="lastOrderItems"></div>
+                    <div id="lastOrderTotal"></div>
+                </div>
+                
+                <div>
+                    <button class="repeat-order-btn" onclick="repeatLastOrder()" id="repeatBtn">
+                        🔄 Repetir Último Pedido
+                    </button>
+                    <button class="new-order-btn" onclick="startNewOrder()">
+                        📋 Fazer Novo Pedido
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Formulário de Cadastro -->
+            <div class="cadastro-form" id="cadastroForm">
+                <div class="form-group">
+                    <label for="nome">Seu Nome *</label>
+                    <input type="text" id="nome" required placeholder="Ex: João Silva" autocomplete="name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cpf">CPF *</label>
+                    <input type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14" autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefone">Telefone (opcional)</label>
+                    <input type="tel" id="telefone" placeholder="(00) 00000-0000" maxlength="15" autocomplete="tel">
+                </div>
+                
+                <div class="form-group">
+                    <label>Número da Mesa *</label>
+                    <div class="mesa-selector" id="mesaSelector">
+                        <!-- Mesas serão geradas por JavaScript -->
+                    </div>
+                </div>
+                
+                <button class="btn-primary" onclick="proceedToMenu()" id="continueBtn">
+                    Continuar para o Cardápio →
+                </button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Verificando seus dados...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentCustomer = null;
+        let selectedMesa = null;
+        let lastOrder = null;
+        let customizationData = {};
+
+        // Carregar personalizações do estabelecimento
+        function loadEstablishmentData() {
+            try {
+                const savedData = localStorage.getItem('establishmentCustomizations');
+                if (savedData) {
+                    customizationData = JSON.parse(savedData);
+                    applyCustomizations();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do estabelecimento:', error);
+            }
+        }
+
+        // Aplicar personalizações
+        function applyCustomizations() {
+            if (customizationData.establishmentName) {
+                document.getElementById('establishmentName').textContent = customizationData.establishmentName;
+            }
+            
+            if (customizationData.primaryColor) {
+                document.documentElement.style.setProperty('--primary-color', customizationData.primaryColor);
+            }
+        }
+
+        // Gerar mesas
+        function generateMesas() {
+            const mesaSelector = document.getElementById('mesaSelector');
+            const numMesas = 20; // Pode ser configurável
+            
+            for (let i = 1; i <= numMesas; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'mesa-btn';
+                btn.textContent = `Mesa ${i.toString().padStart(2, '0')}`;
+                btn.onclick = () => selectMesa(i, btn);
+                mesaSelector.appendChild(btn);
+            }
+        }
+
+        // Selecionar mesa
+        function selectMesa(mesa, btn) {
+            // Remover seleção anterior
+            document.querySelectorAll('.mesa-btn').forEach(b => b.classList.remove('selected'));
+            
+            // Adicionar seleção atual
+            btn.classList.add('selected');
+            selectedMesa = mesa;
+        }
+
+        // Formatar CPF
+        function formatCPF(value) {
+            return value
+                .replace(/\D/g, '')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+                .replace(/(-\d{2})\d+?$/, '$1');
+        }
+
+        // Formatar telefone
+        function formatPhone(value) {
+            return value
+                .replace(/\D/g, '')
+                .replace(/(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{5})(\d)/, '$1-$2')
+                .replace(/(-\d{4})\d+?$/, '$1');
+        }
+
+        // Validar CPF
+        function validateCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            
+            if (cpf.length !== 11) return false;
+            
+            // Verificar se todos os dígitos são iguais
+            if (/^(\d)\1{10}$/.test(cpf)) return false;
+            
+            // Algoritmo de validação de CPF
+            let sum = 0;
+            let remainder;
+            
+            for (let i = 1; i <= 9; i++) {
+                sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            }
+            
+            remainder = (sum * 10) % 11;
+            if (remainder === 10 || remainder === 11) remainder = 0;
+            if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+            
+            sum = 0;
+            for (let i = 1; i <= 10; i++) {
+                sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            }
+            
+            remainder = (sum * 10) % 11;
+            if (remainder === 10 || remainder === 11) remainder = 0;
+            if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+            
+            return true;
+        }
+
+        // Verificar CPF existente
+        function checkExistingCustomer(cpf) {
+            try {
+                const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+                return customers.find(c => c.cpf === cpf);
+            } catch (error) {
+                console.error('Erro ao verificar cliente:', error);
+                return null;
+            }
+        }
+
+        // Buscar último pedido do cliente
+        function getLastOrder(customerCpf) {
+            try {
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                const customerOrders = orders.filter(o => o.customerCpf === customerCpf);
+                
+                if (customerOrders.length === 0) return null;
+                
+                // Ordenar por data (mais recente primeiro)
+                customerOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                return customerOrders[0];
+            } catch (error) {
+                console.error('Erro ao buscar último pedido:', error);
+                return null;
+            }
+        }
+
+        // Verificar CPF em tempo real
+        document.getElementById('cpf')?.addEventListener('input', function(e) {
+            const value = e.target.value;
+            const formatted = formatCPF(value);
+            e.target.value = formatted;
+            
+            // Se CPF completo, verificar cliente existente
+            if (formatted.length === 14) {
+                if (validateCPF(formatted)) {
+                    document.getElementById('loading').classList.add('show');
+                    
+                    setTimeout(() => {
+                        const existingCustomer = checkExistingCustomer(formatted);
+                        
+                        if (existingCustomer) {
+                            // Cliente existente encontrado
+                            currentCustomer = existingCustomer;
+                            lastOrder = getLastOrder(formatted);
+                            
+                            // Mostrar interface de cliente retornando
+                            showReturningCustomerInterface();
+                        } else {
+                            // Novo cliente
+                            currentCustomer = null;
+                            lastOrder = null;
+                            document.getElementById('loading').classList.remove('show');
+                        }
+                    }, 800); // Simular tempo de verificação
+                } else {
+                    // CPF inválido
+                    e.target.style.borderColor = '#e74c3c';
+                }
+            } else {
+                e.target.style.borderColor = '#e1e8ed';
+            }
+        });
+
+        // Mostrar interface de cliente retornando
+        function showReturningCustomerInterface() {
+            const returningDiv = document.getElementById('returningCustomer');
+            const cadastroForm = document.getElementById('cadastroForm');
+            const loading = document.getElementById('loading');
+            
+            // Preencher informações
+            document.getElementById('customerName').textContent = currentCustomer.nome;
+            document.getElementById('suggestedMesa').textContent = `Mesa ${currentCustomer.lastMesa || '01'}`;
+            
+            // Mostrar último pedido se existir
+            if (lastOrder) {
+                const lastOrderInfo = document.getElementById('lastOrderInfo');
+                const lastOrderItems = document.getElementById('lastOrderItems');
+                const lastOrderTotal = document.getElementById('lastOrderTotal');
+                
+                lastOrderItems.innerHTML = lastOrder.items.map(item => 
+                    `${item.name} x${item.quantity}`
+                ).join('<br>');
+                
+                lastOrderTotal.innerHTML = `<strong>Total: R$ ${lastOrder.total.toFixed(2)}</strong>`;
+                lastOrderInfo.style.display = 'block';
+                document.getElementById('repeatBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('repeatBtn').style.display = 'none';
+            }
+            
+            // Selecionar mesa automaticamente
+            if (currentCustomer.lastMesa) {
+                const mesaBtns = document.querySelectorAll('.mesa-btn');
+                const targetBtn = Array.from(mesaBtns).find(btn => 
+                    btn.textContent.includes(`Mesa ${currentCustomer.lastMesa.toString().padStart(2, '0')}`)
+                );
+                if (targetBtn) {
+                    selectMesa(currentCustomer.lastMesa, targetBtn);
+                }
+            }
+            
+            // Mudar interface
+            loading.classList.remove('show');
+            cadastroForm.style.display = 'none';
+            returningDiv.classList.add('show');
+        }
+
+        // Repetir último pedido
+        function repeatLastOrder() {
+            if (!lastOrder) return;
+            
+            // Criar sessão do cliente
+            const customerSession = {
+                nome: currentCustomer.nome,
+                cpf: currentCustomer.cpf,
+                telefone: currentCustomer.telefone,
+                mesa: selectedMesa || currentCustomer.lastMesa,
+                isReturning: true,
+                repeatingOrder: true,
+                orderData: lastOrder
+            };
+            
+            localStorage.setItem('currentCustomerSession', JSON.stringify(customerSession));
+            
+            // Redirecionar para o cardápio
+            window.location.href = 'usuario.html';
+        }
+
+        // Iniciar novo pedido
+        function startNewOrder() {
+            if (!selectedMesa && currentCustomer.lastMesa) {
+                selectedMesa = currentCustomer.lastMesa;
+            }
+            
+            // Criar sessão do cliente
+            const customerSession = {
+                nome: currentCustomer.nome,
+                cpf: currentCustomer.cpf,
+                telefone: currentCustomer.telefone,
+                mesa: selectedMesa || 1,
+                isReturning: true,
+                repeatingOrder: false
+            };
+            
+            localStorage.setItem('currentCustomerSession', JSON.stringify(customerSession));
+            
+            // Redirecionar para o cardápio
+            window.location.href = 'usuario.html';
+        }
+
+        // Prosseguir para o cardápio (novo cliente)
+        function proceedToMenu() {
+            const nome = document.getElementById('nome').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+            
+            // Validações
+            if (!nome) {
+                alert('Por favor, informe seu nome.');
+                document.getElementById('nome').focus();
+                return;
+            }
+            
+            if (!cpf || cpf.length !== 14) {
+                alert('Por favor, informe um CPF válido.');
+                document.getElementById('cpf').focus();
+                return;
+            }
+            
+            if (!validateCPF(cpf)) {
+                alert('CPF inválido. Por favor, verifique.');
+                document.getElementById('cpf').focus();
+                return;
+            }
+            
+            if (!selectedMesa) {
+                alert('Por favor, selecione sua mesa.');
+                return;
+            }
+            
+            // Salvar novo cliente
+            const newCustomer = {
+                nome: nome,
+                cpf: cpf,
+                telefone: telefone,
+                lastMesa: selectedMesa,
+                registrationDate: new Date().toISOString(),
+                visitCount: 1
+            };
+            
+            try {
+                const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+                customers.push(newCustomer);
+                localStorage.setItem('customers', JSON.stringify(customers));
+            } catch (error) {
+                console.error('Erro ao salvar cliente:', error);
+            }
+            
+            // Criar sessão do cliente
+            const customerSession = {
+                nome: nome,
+                cpf: cpf,
+                telefone: telefone,
+                mesa: selectedMesa,
+                isReturning: false,
+                repeatingOrder: false
+            };
+            
+            localStorage.setItem('currentCustomerSession', JSON.stringify(customerSession));
+            
+            // Redirecionar para o cardápio
+            window.location.href = 'usuario.html';
+        }
+
+        // Formatar telefone
+        document.getElementById('telefone')?.addEventListener('input', function(e) {
+            e.target.value = formatPhone(e.target.value);
+        });
+
+        // Inicializar
+        window.onload = function() {
+            loadEstablishmentData();
+            generateMesas();
+            
+            // Verificar parâmetros da URL (mesa pré-selecionada)
+            const urlParams = new URLSearchParams(window.location.search);
+            const mesaParam = urlParams.get('mesa');
+            
+            if (mesaParam) {
+                const mesaNum = parseInt(mesaParam);
+                if (!isNaN(mesaNum) && mesaNum > 0 && mesaNum <= 20) {
+                    const mesaBtns = document.querySelectorAll('.mesa-btn');
+                    const targetBtn = Array.from(mesaBtns).find(btn => 
+                        btn.textContent.includes(`Mesa ${mesaNum.toString().padStart(2, '0')}`)
+                    );
+                    if (targetBtn) {
+                        selectMesa(mesaNum, targetBtn);
+                    }
+                }
+            }
+            
+            // Foco no primeiro campo
+            document.getElementById('nome').focus();
+        };
+    </script>
+</body>
+</html>

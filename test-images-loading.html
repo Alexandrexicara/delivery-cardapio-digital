@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Carregamento de Imagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .image-test {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .image-test img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .loading { background: #fff3cd; color: #856404; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de Carregamento de Imagens</h1>
+    
+    <div class="test-container">
+        <h2>📁 Testar Imagens do Sistema</h2>
+        <button onclick="testUploadsFolder()">Testar Pasta Uploads</button>
+        <button onclick="testSpecificImages()">Testar Imagens Específicas</button>
+        <button onclick="testMenuItems()">Testar Imagens dos Itens do Menu</button>
+        <button onclick="testCustomizations()">Testar Imagens de Customização</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>📊 Resultados dos Testes</h2>
+        <div id="imageTests"></div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'loading') {
+            const results = document.getElementById('results');
+            results.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addImageTest(url, description) {
+            const container = document.getElementById('imageTests');
+            const testDiv = document.createElement('div');
+            testDiv.className = 'image-test';
+            testDiv.innerHTML = `
+                <img src="${url}" alt="${description}" 
+                     onload="this.nextElementSibling.innerHTML='<span class=status success>✅ Carregou</span>'"
+                     onerror="this.nextElementSibling.innerHTML='<span class=status error>❌ Erro ao carregar</span>'">
+                <div>
+                    <strong>${description}</strong><br>
+                    <small>URL: ${url}</small><br>
+                    <span class="status loading">⏳ Testando...</span>
+                </div>
+            `;
+            container.appendChild(testDiv);
+        }
+
+        function testUploadsFolder() {
+            showStatus('Testando pasta uploads...', 'loading');
+            
+            // Testar algumas imagens que existem na pasta uploads
+            const testImages = [
+                '/uploads/1758642917233-508455064.png',
+                '/uploads/1765581455496-988671.png',
+                '/uploads/1765581481553-966829.png',
+                '/uploads/1765922508779-658236832.png'
+            ];
+
+            document.getElementById('imageTests').innerHTML = '';
+            testImages.forEach((img, index) => {
+                addImageTest(img, `Teste ${index + 1}`);
+            });
+
+            showStatus(`Testando ${testImages.length} imagens da pasta uploads...`, 'loading');
+        }
+
+        function testSpecificImages() {
+            showStatus('Testando imagens específicas...', 'loading');
+            
+            const specificImages = [
+                '/uploads/1758642917233-508455064.png',
+                '/uploads/1758642590368-578727251.png',
+                '/uploads/1765581455496-988671.png'
+            ];
+
+            document.getElementById('imageTests').innerHTML = '';
+            specificImages.forEach((img, index) => {
+                addImageTest(img, `Logo/Background ${index + 1}`);
+            });
+
+            showStatus(`Testando ${specificImages.length} imagens específicas...`, 'loading');
+        }
+
+        function testMenuItems() {
+            showStatus('Testando imagens dos itens do menu...', 'loading');
+            
+            try {
+                const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+                document.getElementById('imageTests').innerHTML = '';
+                
+                if (menuItems.length === 0) {
+                    showStatus('Nenhum item encontrado no menu', 'error');
+                    return;
+                }
+
+                menuItems.forEach((item, index) => {
+                    if (item.image) {
+                        addImageTest(item.image, `Item: ${item.name}`);
+                    }
+                });
+
+                showStatus(`Testando ${menuItems.length} itens do menu...`, 'loading');
+            } catch (error) {
+                showStatus(`Erro ao carregar menu: ${error.message}`, 'error');
+            }
+        }
+
+        function testCustomizations() {
+            showStatus('Testando imagens de customização...', 'loading');
+            
+            try {
+                const customizations = JSON.parse(localStorage.getItem('establishmentCustomizations') || '{}');
+                document.getElementById('imageTests').innerHTML = '';
+                
+                const tests = [];
+                
+                if (customizations.logo) {
+                    addImageTest(customizations.logo, 'Logo do Estabelecimento');
+                }
+                
+                if (customizations.background) {
+                    addImageTest(customizations.background, 'Background do Estabelecimento');
+                }
+
+                if (!customizations.logo && !customizations.background) {
+                    showStatus('Nenhuma imagem de customização encontrada', 'error');
+                } else {
+                    showStatus('Testando imagens de customização...', 'loading');
+                }
+            } catch (error) {
+                showStatus(`Erro ao carregar customizações: ${error.message}`, 'error');
+            }
+        }
+
+        // Teste automático ao carregar a página
+        window.onload = function() {
+            console.log('🧪 Página de teste carregada');
+            showStatus('Página pronta para testes. Clique nos botões acima.', 'loading');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery - Cardápio Digital Universal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .header-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: auto;
+        }
+        .footer-banner {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        .footer-banner img {
+            width: 100%;
+            height: auto;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .delivery-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .delivery-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .delivery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .delivery-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .delivery-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        
+        .delivery-card p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .delivery-form {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .address-list {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .address-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .address-item button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-color: #e74c3c;
+        }
+        
+        .item-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0),
+                        linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: #ccc;
+        }
+        
+        .item-info {
+            padding: 15px;
+            flex: 1;
+        }
+        
+        .item-info h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .item-info p {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .item-price {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: right;
+        }
+        
+        .add-to-cart {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .add-to-cart:hover {
+            background: #229954;
+            transform: scale(1.05);
+        }
+        
+        .cart-summary {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .delivery-fee {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .payment-method {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .order-status {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .status-step.active {
+            color: #27ae60;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .category-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .category-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Banner Space -->
+    <div class="header-banner">
+        <img src="public/img/img.cabeçalhohorizontal.png" alt="Banner Cabeçalho" style="max-width: 100%; max-height: 100%;">
+    </div>
+    
+    <div class="page-wrapper">
+    <div class="container">
+        <header>
+            <div class="logo">🚚 DELIVERY</div>
+            <p>Peça no conforto da sua casa e receba onde estiver!</p>
+        </header>
+
+        <!-- Opções de Delivery -->
+        <section class="delivery-options">
+            <div class="delivery-card" onclick="showMenu()">
+                <div class="delivery-icon">🍽️</div>
+                <h3>Ver Cardápio</h3>
+                <p>Ver todos os produtos disponíveis</p>
+            </div>
+            
+            <div class="delivery-card" onclick="showNewAddressForm()">
+                <div class="delivery-icon">🏠</div>
+                <h3>Novo Endereço</h3>
+                <p>Cadastrar endereço para entrega</p>
+            </div>
+            
+            <div class="delivery-card" onclick="showAddressList()">
+                <div class="delivery-icon">📍</div>
+                <h3>Meus Endereços</h3>
+                <p>Usar endereço já cadastrado</p>
+            </div>
+            
+            <div class="delivery-card" onclick="showRetiradaForm()">
+                <div class="delivery-icon">🏪</div>
+                <h3>Retirada no Local</h3>
+                <p>Retirar seu pedido no estabelecimento</p>
+            </div>
+        </section>
+
+        <!-- Cardápio de Produtos -->
+        <section id="menuSection" class="delivery-form" style="display: none;">
+            <h2>🍽️ Cardápio</h2>
+            <div class="categories" id="menuCategories" style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;">
+                <button class="category-btn active" onclick="filterMenuItems('all')">Todos</button>
+                <button class="category-btn" onclick="filterMenuItems('bebidas')">Bebidas</button>
+                <button class="category-btn" onclick="filterMenuItems('pratos')">Pratos</button>
+                <button class="category-btn" onclick="filterMenuItems('porcoes')">Porções</button>
+                <button class="category-btn" onclick="filterMenuItems('sobremesas')">Sobremesas</button>
+            </div>
+            
+            <div class="menu-items" id="deliveryMenuItems" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <!-- Produtos serão carregados aqui -->
+            </div>
+            
+            <button class="btn" onclick="proceedToPayment()" style="margin-top: 20px;">
+                <i class="fas fa-shopping-cart"></i> Finalizar Pedido
+            </button>
+        </section>
+
+        <!-- Carrinho de Compras -->
+        <div class="cart-summary">
+            <h3>🛒 Carrinho</h3>
+            <div id="cartItems"></div>
+            <div class="delivery-fee">
+                <strong>Taxa de Entrega: R$ <span id="deliveryFee">0,00</span></strong>
+            </div>
+            <div style="margin-top: 15px;">
+                <strong>Total: R$ <span id="cartTotal">0,00</span></strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Banner Space -->
+    <div class="footer-banner">
+        <img src="public/img/img.rodapehorizontal.png" alt="Banner Rodapé" style="max-width: 100%; max-height: 100%;">
+    </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let customizationData = {};
+        let cart = [];
+        let selectedPayment = '';
+        let deliveryAddress = null;
+        let deliveryFee = 0;
+
+        // Funções principais
+        function showMenu() {
+            console.log('[DELIVERY] showMenu() chamado');
+            hideAllForms();
+            document.getElementById('menuSection').style.display = 'block';
+            renderMenuItems();
+        }
+
+        function showNewAddressForm() {
+            console.log('[DELIVERY] showNewAddressForm() chamado');
+            hideAllForms();
+            document.getElementById('newAddressForm').style.display = 'block';
+        }
+
+        function showAddressList() {
+            console.log('[DELIVERY] showAddressList() chamado');
+            hideAllForms();
+            document.getElementById('addressList').style.display = 'block';
+        }
+
+        function showRetiradaForm() {
+            console.log('[DELIVERY] showRetiradaForm() chamado');
+            hideAllForms();
+            document.getElementById('retiradaForm').style.display = 'block';
+            deliveryFee = 0;
+            updateCartSummary();
+        }
+
+        function hideAllForms() {
+            document.getElementById('newAddressForm').style.display = 'none';
+            document.getElementById('addressList').style.display = 'none';
+            document.getElementById('retiradaForm').style.display = 'none';
+            document.getElementById('paymentSection').style.display = 'none';
+        }
+
+        // Carregar produtos do cardápio principal
+        function loadMenuItems() {
+            try {
+                const savedMenuItems = localStorage.getItem('menuItems');
+                if (savedMenuItems) {
+                    window.menuItems = JSON.parse(savedMenuItems);
+                    console.log('[DELIVERY] Menu items carregados do localStorage:', window.menuItems.length);
+                    renderMenuItems();
+                } else {
+                    console.log('[DELIVERY] Nenhum item encontrado no localStorage');
+                    window.menuItems = [];
+                }
+            } catch (error) {
+                console.error('[DELIVERY] Erro ao carregar menu items:', error);
+                window.menuItems = [];
+            }
+        }
+
+        // Renderizar itens do menu
+        function renderMenuItems() {
+            const menuContainer = document.getElementById('deliveryMenuItems');
+            if (!menuContainer) return;
+            
+            if (window.menuItems && window.menuItems.length > 0) {
+                menuContainer.innerHTML = window.menuItems.map(item => createMenuItemHTML(item)).join('');
+                console.log('[DELIVERY] Renderizando', window.menuItems.length, 'itens no cardápio');
+            } else {
+                menuContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">Nenhum produto encontrado no cardápio. Por favor, cadastre produtos primeiro.</p>';
+                console.log('[DELIVERY] Nenhum item encontrado para exibir');
+            }
+        }
+
+        // Criar HTML do item do menu
+        function createMenuItemHTML(item) {
+            return `
+                <div class="menu-item" onclick="addToCart({name: '${item.name}', price: ${item.price}, quantity: 1, id: ${item.id}})">
+                    <div class="item-image">
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">` : '🍽️'}
+                    </div>
+                    <div class="item-info">
+                        <h4>${item.name}</h4>
+                        <p>${item.description || ''}</p>
+                        <div class="item-price">R$ ${parseFloat(item.price).toFixed(2)}</div>
+                    </div>
+                    <button class="add-to-cart">
+                        <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                </div>
+            `;
+        }
+
+        // Filtrar itens do menu
+        function filterMenuItems(category) {
+            const allButtons = document.querySelectorAll('#menuCategories .category-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            
+            if (!window.menuItems || window.menuItems.length === 0) {
+                return;
+            }
+            
+            const filteredItems = category === 'all' 
+                ? window.menuItems 
+                : window.menuItems.filter(item => item.category === category);
+            
+            const menuContainer = document.getElementById('deliveryMenuItems');
+            menuContainer.innerHTML = filteredItems.map(item => createMenuItemHTML(item)).join('');
+        }
+
+        // Adicionar ao carrinho
+        function addToCart(item) {
+            cart.push(item);
+            updateCartSummary();
+        }
+
+        // Atualizar resumo do carrinho
+        function updateCartSummary() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p>Carrinho vazio</p>';
+                cartTotal.textContent = '0,00';
+                return;
+            }
+
+            let subtotal = 0;
+            cartItems.innerHTML = cart.map(item => {
+                subtotal += item.price;
+                return `
+                    <div class="cart-item">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>R$ ${item.price.toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            cartTotal.textContent = subtotal.toFixed(2);
+        }
+
+        // Ir para pagamento
+        function proceedToPayment() {
+            alert('Funcionalidade de pagamento em desenvolvimento.');
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadMenuItems();
+        };
+    </script>
+</body>
+</html>

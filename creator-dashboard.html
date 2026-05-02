@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Criador - Cardápio Digital Universal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-size: 1.1em;
+        }
+        
+        .creator-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .global-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.premium {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stat-card.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        .stat-card.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+        
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .stat-change {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .taxa-config {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .taxa-config label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .taxa-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .taxa-info small {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .merchant-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .merchant-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .merchant-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .merchant-item.warning {
+            border-left-color: #f39c12;
+            background: #fff3cd;
+        }
+        
+        .merchant-item.danger {
+            border-left-color: #e74c3c;
+            background: #f8d7da;
+        }
+        
+        .merchant-item.success {
+            border-left-color: #27ae60;
+            background: #d4edda;
+        }
+        
+        .merchant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .merchant-info {
+            flex: 1;
+        }
+        
+        .merchant-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .merchant-establishment {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .merchant-date {
+            color: #95a5a6;
+            font-size: 0.8em;
+        }
+        
+        .merchant-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .merchant-stat {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .merchant-stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .merchant-stat-label {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .merchant-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .status-badge.active {
+            background: #27ae60;
+        }
+        
+        .status-badge.warning {
+            background: #f39c12;
+        }
+        
+        .status-badge.suspended {
+            background: #e74c3c;
+        }
+        
+        .status-badge.trial {
+            background: #3498db;
+        }
+        
+        .financial-overview {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .overview-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .overview-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .overview-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .overview-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        
+        .detail-label {
+            color: #7f8c8d;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            transition: width 1s ease-out;
+        }
+        
+        .controls-panel {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .control-group {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .control-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .notification {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #155724;
+            display: none;
+        }
+        
+        .notification.show {
+            display: block;
+        }
+        
+        .notification.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .notification.warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.1em;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .export-menu {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .export-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .export-dropdown.show {
+            display: block;
+        }
+        
+        .export-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .export-option:hover {
+            background: #f8f9fa;
+        }
+        
+        .export-option:last-child {
+            border-bottom: none;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert.danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="header-title">
+                    👑 Painel do Criador
+                    <div class="creator-badge">
+                        <i class="fas fa-crown"></i> ADMINISTRADOR GLOBAL
+                    </div>
+                </div>
+                <div class="header-subtitle">Controle total do sistema Cardápio Digital Universal</div>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Voltar ao Início
+            </a>
+            <button class="btn btn-success" onclick="openCardapioDigital()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; margin-left: 10px;">
+                <i class="fas fa-utensils"></i> Cardápio Digital
+            </button>
+            <button class="btn btn-primary" onclick="openMerchantAdmin()" style="background: linear-gradient(135deg, #3498db, #2980b9); border: none; margin-left: 10px;">
+                <i class="fas fa-store"></i> Área Admin Comerciante
+            </button>
+            <button class="btn btn-warning" onclick="openMotoboyPanel()" style="background: linear-gradient(135deg, #f39c12, #e67e22); border: none; margin-left: 10px;">
+                <i class="fas fa-motorcycle"></i> Painel Motoboy
+            </button>
+        </header>
+
+        <!-- Alerta de Segurança -->
+        <div class="alert danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Área Restrita:</strong> Este painel contém acesso total a todos os comerciantes e dados financeiros do sistema. Use com responsabilidade.
+            </div>
+        </div>
+
+        <!-- Estatísticas Globais -->
+        <div class="global-stats">
+            <div class="stat-card premium">
+                <div class="stat-change">+25.3%</div>
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalSystemRevenue">R$ 0</div>
+                <div class="stat-label">Receita Total do Sistema</div>
+            </div>
+            
+            <div class="stat-card success">
+                <div class="stat-change">+18.7%</div>
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="totalMerchants">0</div>
+                <div class="stat-label">Comerciantes Ativos</div>
+            </div>
+            
+            <div class="stat-card warning">
+                <div class="stat-change">+12.4%</div>
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">Pedidos Processados</div>
+            </div>
+            
+            <div class="stat-card danger">
+                <div class="stat-change">-8.2%</div>
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value" id="problematicMerchants">0</div>
+                <div class="stat-label">Comerciantes com Problemas</div>
+            </div>
+            
+            <div class="stat-card premium">
+                <div class="stat-change">+31.5%</div>
+                <div class="stat-icon">💳</div>
+                <div class="stat-value" id="totalCustomerBalances">R$ 0</div>
+                <div class="stat-label">Saldos Totais dos Clientes</div>
+            </div>
+            
+            <div class="stat-card success">
+                <div class="stat-change">+15.8%</div>
+                <div class="stat-icon">🏦</div>
+                <div class="stat-value" id="totalWithdrawals">R$ 0</div>
+                <div class="stat-label">Total Pago aos Clientes</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-grid">
+            <!-- SEÇÃO DE MOTOBOYS (NOVA) -->
+            <div class="section-card" style="grid-column: 1 / -1;">
+                <div class="section-title">
+                    🏍️ Motoboys Cadastrados
+                    <span class="badge" id="totalMotoboys" style="background: #27ae60; margin-left: 10px;">0</span>
+                </div>
+                
+                <!-- CONFIGURAÇÕES DE PAGAMENTO DO MOTOBOY (NOVO) -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px; color: white;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.3em;">
+                        💰 Configuração de Pagamento para Motoboys
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Tipo de Pagamento -->
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+                                📋 Tipo de Pagamento:
+                            </label>
+                            <select id="paymentType" style="width: 100%; padding: 10px; border-radius: 5px; border: none; font-size: 1em;">
+                                <option value="por_entrega">💵 Por Entrega (Valor Fixo)</option>
+                                <option value="por_km">📏 Por Kilômetro</option>
+                                <option value="misto">🎯 Misto (Fixo + Km)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Valor por Entrega -->
+                        <div id="fixedPaymentDiv">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+                                💵 Valor por Entrega (R$):
+                            </label>
+                            <input type="number" id="fixedPaymentValue" step="0.01" placeholder="R$ 5,00" 
+                                   style="width: 100%; padding: 10px; border-radius: 5px; border: none; font-size: 1em;">
+                        </div>
+                        
+                        <!-- Valor por KM -->
+                        <div id="kmPaymentDiv" style="display: none;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+                                📏 Valor por KM (R$):
+                            </label>
+                            <input type="number" id="kmPaymentValue" step="0.01" placeholder="R$ 1,50" 
+                                   style="width: 100%; padding: 10px; border-radius: 5px; border: none; font-size: 1em;">
+                        </div>
+                        
+                        <!-- Taxa Mínima -->
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+                                ⚡ Taxa Mínima (R$):
+                            </label>
+                            <input type="number" id="minimumRate" step="0.01" placeholder="R$ 3,00" 
+                                   style="width: 100%; padding: 10px; border-radius: 5px; border: none; font-size: 1em;">
+                        </div>
+                    </div>
+                    
+                    <button onclick="saveMotoboyPaymentConfig()" 
+                            style="margin-top: 20px; padding: 12px 30px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 1em; font-weight: bold; cursor: pointer; width: 100%;">
+                        💾 Salvar Configuração de Pagamento
+                    </button>
+                    
+                    <div id="currentConfig" style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <strong>⚙️ Configuração Atual:</strong>
+                        <p id="currentConfigText" style="margin: 10px 0 0 0; font-size: 0.95em;">Carregando...</p>
+                    </div>
+                </div>
+                
+                <!-- Barra de Pesquisa de Motoboys -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="motoboySearch" placeholder="🔍 Buscar motoboy por nome, CPF ou placa...">
+                    <button class="btn btn-primary" onclick="searchMotoboys()">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+                
+                <!-- Lista de Motoboys -->
+                <div id="motoboyList" style="margin-top: 20px;">
+                    <!-- Preenchido via JavaScript -->
+                    <p style="text-align: center; color: #7f8c8d; padding: 40px;">
+                        🏍️ Nenhum motoboy cadastrado ainda
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Lista de Comerciantes -->
+            <div class="section-card">
+                <div class="section-title">
+                    🏪 Comerciantes Cadastrados
+                    <div class="export-menu">
+                        <button class="btn btn-primary" onclick="toggleExportMenu()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                        <div class="export-dropdown" id="exportDropdown">
+                            <div class="export-option" onclick="exportMerchantsData('active')">📊 Comerciantes Ativos</div>
+                            <div class="export-option" onclick="exportMerchantsData('problematic')">⚠️ Comerciantes com Problemas</div>
+                            <div class="export-option" onclick="exportMerchantsData('financial')">💰 Relatório Financeiro</div>
+                            <div class="export-option" onclick="exportMerchantsData('complete')">📋 Relatório Completo</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Barra de Pesquisa -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="merchantSearch" placeholder="🔍 Buscar comerciante por nome, CNPJ ou estabelecimento..." onkeyup="searchMerchants()">
+                    <button class="btn btn-primary" onclick="searchMerchants()">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+                
+                <!-- Filtros -->
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="statusFilter" onchange="filterMerchants()">
+                            <option value="">Todos</option>
+                            <option value="active">Ativos</option>
+                            <option value="trial">Trial</option>
+                            <option value="warning">Aviso</option>
+                            <option value="suspended">Suspenso</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Performance:</label>
+                        <select id="performanceFilter" onchange="filterMerchants()">
+                            <option value="">Todos</option>
+                            <option value="excellent">Excelente</option>
+                            <option value="good">Bom</option>
+                            <option value="regular">Regular</option>
+                            <option value="poor">Ruim</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Ordenar por:</label>
+                        <select id="sortBy" onchange="sortMerchants()">
+                            <option value="revenue">Receita</option>
+                            <option value="orders">Pedidos</option>
+                            <option value="date">Cadastro</option>
+                            <option value="name">Nome</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Lista de Comerciantes -->
+                <div class="merchant-list" id="merchantList">
+                    <!-- Comerciantes serão carregados por JavaScript -->
+                </div>
+            </div>
+
+            <!-- Seção Motoboy -->
+            <div class="section-card">
+                <div class="section-title">
+                    🏍️ Painel Motoboy
+                    <div class="export-menu">
+                        <button class="btn btn-success" onclick="refreshMotoboys()">
+                            <i class="fas fa-sync"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Estatísticas dos Motoboys -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold;" id="activeMotoboys">0</div>
+                        <div>Motoboys Ativos</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold;" id="deliveriesToday">0</div>
+                        <div>Entregas Hoje</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold;" id="pendingDeliveries">0</div>
+                        <div>Entregas Pendentes</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold;" id="completedDeliveries">0</div>
+                        <div>Entregas Concluídas</div>
+                    </div>
+                </div>
+                
+                <!-- Controles do Motoboy -->
+                <div style="margin: 20px 0;">
+                    <h3 style="margin-bottom: 15px;">Gerenciamento de Motoboys</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                        <button class="btn btn-success" onclick="showAddMotoboyModal()">
+                            <i class="fas fa-plus"></i> Adicionar Motoboy
+                        </button>
+                        <button class="btn btn-primary" onclick="showMotoboyList()">
+                            <i class="fas fa-list"></i> Lista de Motoboys
+                        </button>
+                        <button class="btn btn-warning" onclick="assignPendingDeliveries()">
+                            <i class="fas fa-truck"></i> Atribuir Entregas
+                        </button>
+                        <button class="btn btn-danger" onclick="emergencyDispatch()">
+                            <i class="fas fa-exclamation-triangle"></i> Despacho Emergencial
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lista de Motoboys -->
+                <div class="merchant-list" id="motoboyList" style="max-height: 400px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 20px; color: #7f8c8d;">
+                        <i class="fas fa-motorcycle" style="font-size: 3em; margin-bottom: 10px;"></i>
+                        <p>Carregando motoboys...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel Lateral -->
+            <div>
+                <!-- Visão Financeira Global -->
+                <div class="section-card">
+                    <div class="section-title">
+                        🌍 Visão Financeira Global
+                    </div>
+                    
+                    <div class="financial-overview">
+                        <div class="overview-item">
+                            <div class="overview-title">💰 Receita Total do Sistema</div>
+                            <div class="overview-value" id="globalRevenue">R$ 0</div>
+                            <div class="overview-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Este Mês:</span>
+                                    <span class="detail-value" id="monthlyRevenue">R$ 0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Hoje:</span>
+                                    <span class="detail-value" id="dailyRevenue">R$ 0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Média/Mês:</span>
+                                    <span class="detail-value" id="avgMonthlyRevenue">R$ 0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Crescimento:</span>
+                                    <span class="detail-value" id="revenueGrowth">+0%</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="revenueProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-item">
+                            <div class="overview-title">👥 Saldos dos Clientes</div>
+                            <div class="overview-value" id="globalCustomerBalances">R$ 0</div>
+                            <div class="overview-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Total Clientes:</span>
+                                    <span class="detail-value" id="totalCustomers">0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Média/Cliente:</span>
+                                    <span class="detail-value" id="avgCustomerBalance">R$ 0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Sacado Hoje:</span>
+                                    <span class="detail-value" id="dailyWithdrawals">R$ 0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Pendente:</span>
+                                    <span class="detail-value" id="pendingWithdrawals">R$ 0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-item">
+                            <div class="overview-title">📊 Performance do Sistema</div>
+                            <div class="overview-value" id="systemPerformance">98.5%</div>
+                            <div class="overview-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Pedidos/Hora:</span>
+                                    <span class="detail-value" id="ordersPerHour">0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Taxa Conversão:</span>
+                                    <span class="detail-value" id="conversionRate">0%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Uptime:</span>
+                                    <span class="detail-value" id="uptime">99.9%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Servidores:</span>
+                                    <span class="detail-value" id="serverCount">12</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações de Controle -->
+                <div class="section-card">
+                    <div class="section-title">
+                        ⚡ Ações de Controle Global
+                    </div>
+                    
+                    <div class="controls-panel">
+                        <div class="control-group">
+                            <div class="control-title">
+                                <i class="fas fa-dollar-sign"></i>
+                                Configurações de Taxa por Produto
+                            </div>
+                            <div class="control-buttons">
+                                <div class="taxa-config">
+                                    <label for="taxaPorProduto">Taxa por Produto (R$):</label>
+                                    <input type="number" id="taxaPorProduto" value="0.10" step="0.01" min="0" max="5.00" style="width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <button class="btn btn-primary" onclick="salvarTaxaPorProduto()" style="margin-left: 10px;">
+                                        <i class="fas fa-save"></i> Salvar
+                                    </button>
+                                </div>
+                                <div class="taxa-info">
+                                    <small><i class="fas fa-info-circle"></i> Esta taxa será incluída automaticamente no preço de cada produto. Os usuários verão apenas o preço final com taxa já aplicada.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-title">
+                                <i class="fas fa-users"></i>
+                                Gerenciamento de Comerciantes
+                            </div>
+                            <div class="control-buttons">
+                                <button class="btn btn-success" onclick="showAddMerchantModal()">
+                                    <i class="fas fa-plus"></i> Adicionar Comerciante
+                                </button>
+                                <button class="btn btn-warning" onclick="suspendProblematicMerchants()">
+                                    <i class="fas fa-ban"></i> Suspender Problemáticos
+                                </button>
+                                <button class="btn btn-primary" onclick="sendGlobalNotification()">
+                                    <i class="fas fa-broadcast-tower"></i> Notificação Global
+                                </button>
+                                <button class="btn btn-danger" onclick="showMassDeleteModal()">
+                                    <i class="fas fa-trash"></i> Exclusão em Massa
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-title">
+                                <i class="fas fa-cog"></i>
+                                Configurações do Sistema
+                            </div>
+                            <div class="control-buttons">
+                                <button class="btn btn-primary" onclick="toggleMaintenanceMode()">
+                                    <i class="fas fa-tools"></i> Modo Manutenção
+                                </button>
+                                <button class="btn btn-success" onclick="backupAllData()">
+                                    <i class="fas fa-database"></i> Backup Completo
+                                </button>
+                                <button class="btn btn-warning" onclick="updateSystemVersion()">
+                                    <i class="fas fa-sync"></i> Atualizar Sistema
+                                </button>
+                                <button class="btn btn-danger" onclick="emergencyShutdown()">
+                                    <i class="fas fa-power-off"></i> Desligamento Emergencial
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-title">
+                                <i class="fas fa-chart-line"></i>
+                                Relatórios e Análises
+                            </div>
+                            <div class="control-buttons">
+                                <button class="btn btn-primary" onclick="generateGlobalReport()">
+                                    <i class="fas fa-file-alt"></i> Relatório Global
+                                </button>
+                                <button class="btn btn-success" onclick="exportAllData()">
+                                    <i class="fas fa-download"></i> Exportar Tudo
+                                </button>
+                                <button class="btn btn-warning" onclick="analyzeTrends()">
+                                    <i class="fas fa-chart-pie"></i> Analisar Tendências
+                                </button>
+                                <button class="btn btn-danger" onclick="resetSystemStats()">
+                                    <i class="fas fa-redo"></i> Resetar Estatísticas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-title">📈 Crescimento do Sistema</div>
+                <div class="chart-placeholder">
+                    Gráfico de crescimento mensal de comerciantes e receita
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">💸 Distribuição de Receita</div>
+                <div class="chart-placeholder">
+                    Gráfico pizza: Top 10 comerciantes vs resto
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Adicionar Comerciante -->
+        <div class="modal" id="addMerchantModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">➕ Adicionar Novo Comerciante</div>
+                    <button class="modal-close" onclick="closeModal('addMerchantModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nome do Comerciante</label>
+                        <input type="text" id="newMerchantName" placeholder="Nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label>CNPJ</label>
+                        <input type="text" id="newMerchantCNPJ" placeholder="00.000.000/0000-00">
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Estabelecimento</label>
+                        <input type="text" id="newMerchantEstablishment" placeholder="Nome do restaurante/bar">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="newMerchantEmail" placeholder="email@exemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="tel" id="newMerchantPhone" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label>Plano</label>
+                        <select id="newMerchantPlan">
+                            <option value="trial">Trial (30 dias)</option>
+                            <option value="basic">Básico</option>
+                            <option value="premium">Premium</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea id="newMerchantNotes" placeholder="Informações adicionais..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('addMerchantModal')">Cancelar</button>
+                    <button class="btn btn-success" onclick="addNewMerchant()">
+                        <i class="fas fa-plus"></i> Adicionar Comerciante
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Exclusão em Massa -->
+        <div class="modal" id="massDeleteModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">⚠️ Exclusão em Massa de Comerciantes</div>
+                    <button class="modal-close" onclick="closeModal('massDeleteModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>ATENÇÃO:</strong> Esta ação é irreversível e excluirá permanentemente todos os dados dos comerciantes selecionados, incluindo pedidos, saldos de clientes e configurações.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Motivo da Exclusão</label>
+                        <select id="deleteReason">
+                            <option value="">Selecione o motivo</option>
+                            <option value="fraud">Fraude detectada</option>
+                            <option value="violation">Violação dos termos</option>
+                            <option value="inactivity">Inatividade prolongada</option>
+                            <option value="bankruptcy">Falência</option>
+                            <option value="request">Solicitação do comerciante</option>
+                            <option value="other">Outro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Descrição Detalhada</label>
+                        <textarea id="deleteDescription" placeholder="Descreva detalhadamente o motivo da exclusão..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Comerciantes Selecionados</label>
+                        <div id="selectedMerchantsList" style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                            <!-- Lista será preenchida dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('massDeleteModal')">Cancelar</button>
+                    <button class="btn btn-danger" onclick="executeMassDeletion()">
+                        <i class="fas fa-trash"></i> Excluir Permanentemente
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalhes do Comerciante -->
+        <div class="modal" id="merchantDetailsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">📊 Detalhes do Comerciante</div>
+                    <button class="modal-close" onclick="closeModal('merchantDetailsModal')">&times;</button>
+                </div>
+                <div class="modal-body" id="merchantDetailsContent">
+                    <!-- Conteúdo será preenchido dinamicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('merchantDetailsModal')">Fechar</button>
+                    <button class="btn btn-warning" onclick="suspendMerchant()">
+                        <i class="fas fa-ban"></i> Suspender
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteMerchant()">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notificação -->
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let merchants = [];
+        let selectedMerchants = [];
+        let currentMerchant = null;
+        let globalStats = {
+            totalRevenue: 0,
+            totalOrders: 0,
+            totalCustomerBalances: 0,
+            totalWithdrawals: 0,
+            totalMerchants: 0,
+            problematicMerchants: 0
+        };
+
+        // Carregar dados
+        function loadData() {
+            try {
+                // ✅ DADOS REAIS - Sem simulação
+                // Em produção, carregar do backend/banco de dados
+                merchants = [];
+                
+                console.log('[CREATOR] 📊 Carregando estatísticas reais...');
+                
+                // Carregar estatísticas globais
+                calculateGlobalStats();
+                
+                // Atualizar interface
+                updateUI();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // ✅ REMOVIDO - Não gerar dados mockados
+        // function generateMockMerchants() { ... }
+        // Agora usa dados reais do backend
+
+        // Calcular estatísticas globais
+        function calculateGlobalStats() {
+            globalStats.totalRevenue = merchants.reduce((sum, m) => sum + m.revenue, 0);
+            globalStats.totalOrders = merchants.reduce((sum, m) => sum + m.orders, 0);
+            globalStats.totalCustomerBalances = merchants.reduce((sum, m) => sum + m.customerBalances, 0);
+            globalStats.totalWithdrawals = merchants.reduce((sum, m) => sum + m.withdrawals, 0);
+            globalStats.totalMerchants = merchants.filter(m => m.status === 'active').length;
+            globalStats.problematicMerchants = merchants.filter(m => m.status === 'warning' || m.status === 'suspended').length;
+        }
+
+        // Atualizar interface
+        function updateUI() {
+            updateGlobalStats();
+            renderMerchants();
+            updateFinancialOverview();
+            renderMotoboys(); // ✅ NOVO: Renderizar motoboys
+        }
+
+        // Atualizar estatísticas globais
+        function updateGlobalStats() {
+            document.getElementById('totalSystemRevenue').textContent = `R$ ${globalStats.totalRevenue.toFixed(2)}`;
+            document.getElementById('totalMerchants').textContent = globalStats.totalMerchants;
+            document.getElementById('totalOrders').textContent = globalStats.totalOrders.toLocaleString();
+            document.getElementById('problematicMerchants').textContent = globalStats.problematicMerchants;
+            document.getElementById('totalCustomerBalances').textContent = `R$ ${globalStats.totalCustomerBalances.toFixed(2)}`;
+            document.getElementById('totalWithdrawals').textContent = `R$ ${globalStats.totalWithdrawals.toFixed(2)}`;
+        }
+
+        // ✅ NOVO: Carregar motoboys reais do localStorage
+        function loadMotoboys() {
+            try {
+                const motoboys = JSON.parse(localStorage.getItem('motoboys') || '[]');
+                console.log('[CREATOR] 🏍️ Motoboys carregados:', motoboys.length);
+                return motoboys;
+            } catch (error) {
+                console.error('[CREATOR] Erro ao carregar motoboys:', error);
+                return [];
+            }
+        }
+
+        // ✅ NOVO: Carregar configuração de pagamento dos motoboys
+        function loadMotoboyPaymentConfig() {
+            try {
+                const config = JSON.parse(localStorage.getItem('motoboyPaymentConfig') || '{}');
+                
+                // Preencher campos
+                if (config.paymentType) {
+                    document.getElementById('paymentType').value = config.paymentType;
+                }
+                if (config.fixedPaymentValue) {
+                    document.getElementById('fixedPaymentValue').value = config.fixedPaymentValue;
+                }
+                if (config.kmPaymentValue) {
+                    document.getElementById('kmPaymentValue').value = config.kmPaymentValue;
+                }
+                if (config.minimumRate) {
+                    document.getElementById('minimumRate').value = config.minimumRate;
+                }
+                
+                // Mostrar/ocultar campos conforme tipo
+                updatePaymentFields();
+                
+                // Exibir configuração atual
+                displayCurrentConfig(config);
+                
+                console.log('[CREATOR] 💰 Configuração de pagamento carregada');
+            } catch (error) {
+                console.error('[CREATOR] Erro ao carregar configuração de pagamento:', error);
+            }
+        }
+
+        // ✅ NOVO: Atualizar campos conforme tipo de pagamento
+        function updatePaymentFields() {
+            const paymentType = document.getElementById('paymentType').value;
+            const fixedDiv = document.getElementById('fixedPaymentDiv');
+            const kmDiv = document.getElementById('kmPaymentDiv');
+            
+            if (paymentType === 'por_entrega') {
+                fixedDiv.style.display = 'block';
+                kmDiv.style.display = 'none';
+            } else if (paymentType === 'por_km') {
+                fixedDiv.style.display = 'none';
+                kmDiv.style.display = 'block';
+            } else if (paymentType === 'misto') {
+                fixedDiv.style.display = 'block';
+                kmDiv.style.display = 'block';
+            }
+        }
+        
+        // Adicionar event listener para mudança de tipo de pagamento
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentTypeSelect = document.getElementById('paymentType');
+            if (paymentTypeSelect) {
+                paymentTypeSelect.addEventListener('change', updatePaymentFields);
+            }
+            
+            // Carregar configuração salva ao iniciar
+            loadMotoboyPaymentConfig();
+        });
+
+        // ✅ NOVO: Salvar configuração de pagamento
+        window.saveMotoboyPaymentConfig = function() {
+            try {
+                const config = {
+                    paymentType: document.getElementById('paymentType').value,
+                    fixedPaymentValue: parseFloat(document.getElementById('fixedPaymentValue').value) || 0,
+                    kmPaymentValue: parseFloat(document.getElementById('kmPaymentValue').value) || 0,
+                    minimumRate: parseFloat(document.getElementById('minimumRate').value) || 0,
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: 'CRIADOR'
+                };
+                
+                // Validar
+                if (config.fixedPaymentValue <= 0 && config.kmPaymentValue <= 0) {
+                    alert('⚠️ Informe pelo menos um valor de pagamento!');
+                    return;
+                }
+                
+                // Salvar no localStorage
+                localStorage.setItem('motoboyPaymentConfig', JSON.stringify(config));
+                
+                console.log('[CREATOR] 💰 Configuração salva:', config);
+                
+                // Exibir nova configuração
+                displayCurrentConfig(config);
+                
+                alert('✅ Configuração de pagamento salva com sucesso!\n\n' +
+                      '🏍️ Os motoboys receberão conforme esta configuração.');
+            } catch (error) {
+                console.error('[CREATOR] Erro ao salvar configuração:', error);
+                alert('❌ Erro ao salvar configuração');
+            }
+        };
+
+        // ✅ NOVO: Exibir configuração atual
+        function displayCurrentConfig(config) {
+            const text = document.getElementById('currentConfigText');
+            
+            let description = '';
+            
+            if (config.paymentType === 'por_entrega') {
+                description = `💵 Por Entrega: R$ ${config.fixedPaymentValue.toFixed(2)} por entrega`;
+            } else if (config.paymentType === 'por_km') {
+                description = `📏 Por KM: R$ ${config.kmPaymentValue.toFixed(2)} por km rodado`;
+            } else if (config.paymentType === 'misto') {
+                description = `🎯 Misto: R$ ${config.fixedPaymentValue.toFixed(2)} fixo + R$ ${config.kmPaymentValue.toFixed(2)} por km`;
+            }
+            
+            if (config.minimumRate > 0) {
+                description += `\n⚡ Taxa mínima: R$ ${config.minimumRate.toFixed(2)}`;
+            }
+            
+            if (config.updatedAt) {
+                const date = new Date(config.updatedAt).toLocaleString('pt-BR');
+                description += `\n🕐 Atualizado em: ${date}`;
+            }
+            
+            text.textContent = description || 'Nenhuma configuração salva ainda';
+        }
+
+        // ✅ NOVO: Renderizar lista de motoboys
+        function renderMotoboys() {
+            const motoboys = loadMotoboys();
+            const container = document.getElementById('motoboyList');
+            
+            // Atualizar contador
+            document.getElementById('totalMotoboys').textContent = motoboys.length;
+            
+            if (motoboys.length === 0) {
+                container.innerHTML = `
+                    <p style="text-align: center; color: #7f8c8d; padding: 40px;">
+                        🏍️ Nenhum motoboy cadastrado ainda
+                    </p>
+                `;
+                return;
+            }
+            
+            container.innerHTML = motoboys.map((motoboy, index) => `
+                <div class="merchant-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">
+                            🏍️ ${motoboy.name}
+                            <span class="badge" style="background: ${motoboy.status === 'online' ? '#27ae60' : '#95a5a6'}; margin-left: 10px;">
+                                ${motoboy.status === 'online' ? '🟢 Online' : '⚪ Offline'}
+                            </span>
+                        </div>
+                        <div style="font-size: 0.9em; color: #7f8c8d;">
+                            📱 ${motoboy.phone} | 📧 ${motoboy.email}
+                        </div>
+                        <div style="font-size: 0.9em; color: #7f8c8d;">
+                            🆔 CPF: ${motoboy.cpf} | 🏍️ Veículo: ${motoboy.vehicle?.model} - Placa: ${motoboy.vehicle?.plate}
+                        </div>
+                        <div style="font-size: 0.9em; color: #7f8c8d; margin-top: 5px;">
+                            📊 Entregas: ${motoboy.stats?.totalDeliveries || 0} | ⭐ Avaliação: ${motoboy.stats?.rating || 'N/A'}
+                        </div>
+                        ${motoboy.bankAccount ? `
+                            <div style="font-size: 0.85em; color: #27ae60; margin-top: 5px;">
+                                💳 Dados bancários: ✅ Cadastrados
+                            </div>
+                        ` : `
+                            <div style="font-size: 0.85em; color: #e74c3c; margin-top: 5px;">
+                                💳 Dados bancários: ⚠️ Pendentes
+                            </div>
+                        `}
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-warning" onclick="registerMotoboyInfraction(${index})" title="Registrar infração">
+                            ⚠️ Infrações
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteMotoboy(${index})" title="Excluir motoboy">
+                            🗑️ Excluir
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ✅ NOVO: Buscar motoboys
+        function searchMotoboys() {
+            const searchTerm = document.getElementById('motoboySearch').value.toLowerCase();
+            const motoboys = loadMotoboys();
+            const container = document.getElementById('motoboyList');
+            
+            const filtered = motoboys.filter(m => 
+                m.name.toLowerCase().includes(searchTerm) ||
+                m.cpf.includes(searchTerm) ||
+                m.vehicle?.plate.toLowerCase().includes(searchTerm)
+            );
+            
+            container.innerHTML = filtered.map((motoboy, index) => `
+                <div class="merchant-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">
+                            🏍️ ${motoboy.name}
+                            <span class="badge" style="background: ${motoboy.status === 'online' ? '#27ae60' : '#95a5a6'}; margin-left: 10px;">
+                                ${motoboy.status === 'online' ? '🟢 Online' : '⚪ Offline'}
+                            </span>
+                        </div>
+                        <div style="font-size: 0.9em; color: #7f8c8d;">
+                            📱 ${motoboy.phone} | 📧 ${motoboy.email}
+                        </div>
+                        <div style="font-size: 0.9em; color: #7f8c8d;">
+                            🆔 CPF: ${motoboy.cpf} | 🏍️ Veículo: ${motoboy.vehicle?.model} - Placa: ${motoboy.vehicle?.plate}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ✅ NOVO: Excluir motoboy
+        window.deleteMotoboy = function(index) {
+            if (!confirm('⚠️ Tem certeza que deseja excluir este motoboy? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+            
+            try {
+                const motoboys = loadMotoboys();
+                const deletedMotoboy = motoboys[index];
+                
+                // Remover motoboy
+                motoboys.splice(index, 1);
+                localStorage.setItem('motoboys', JSON.stringify(motoboys));
+                
+                // Registrar log de exclusão
+                console.log('[CREATOR] 🗑️ Motoboy excluído:', deletedMotoboy);
+                
+                // Recarregar lista
+                renderMotoboys();
+                
+                alert(`✅ Motoboy ${deletedMotoboy.name} excluído com sucesso!`);
+            } catch (error) {
+                console.error('[CREATOR] Erro ao excluir motoboy:', error);
+                alert('❌ Erro ao excluir motoboy');
+            }
+        };
+
+        // ✅ NOVO: Registrar infração de motoboy
+        window.registerMotoboyInfraction = function(index) {
+            const motoboys = loadMotoboys();
+            const motoboy = motoboys[index];
+            
+            const reason = prompt(
+                `⚠️ REGISTRAR INFRAÇÃO PARA: ${motoboy.name}\n\n` +
+                `Digite o motivo da infração:\n` +
+                `- Atraso na entrega\n` +
+                `- Má conduta com cliente\n` +
+                `- Problemas com pagamento\n` +
+                `- Outro (descrever)\n\n` +
+                `Motivo:`
+            );
+            
+            if (!reason || reason.trim() === '') {
+                return;
+            }
+            
+            try {
+                // Criar registro de infração
+                const infraction = {
+                    id: Date.now(),
+                    motoboyId: motoboy.cpf,
+                    motoboyName: motoboy.name,
+                    reason: reason.trim(),
+                    timestamp: new Date().toISOString(),
+                    registeredBy: 'CRIADOR'
+                };
+                
+                // Salvar infrações no localStorage
+                const infractions = JSON.parse(localStorage.getItem('motoboyInfractions') || '[]');
+                infractions.push(infraction);
+                localStorage.setItem('motoboyInfractions', JSON.stringify(infractions));
+                
+                console.log('[CREATOR] ⚠️ Infração registrada:', infraction);
+                
+                alert(`✅ Infração registrada para ${motoboy.name}!\n\nMotivo: ${reason}`);
+                
+                // Recarregar lista
+                renderMotoboys();
+            } catch (error) {
+                console.error('[CREATOR] Erro ao registrar infração:', error);
+                alert('❌ Erro ao registrar infração');
+            }
+        };
+
+        // Renderizar lista de comerciantes
+        function renderMerchants() {
+            const container = document.getElementById('merchantList');
+            const searchTerm = document.getElementById('merchantSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const performanceFilter = document.getElementById('performanceFilter').value;
+            
+            // Filtrar comerciantes
+            let filteredMerchants = merchants.filter(merchant => {
+                const matchesSearch = merchant.name.toLowerCase().includes(searchTerm) ||
+                                    merchant.establishment.toLowerCase().includes(searchTerm) ||
+                                    merchant.cnpj.includes(searchTerm);
+                
+                const matchesStatus = !statusFilter || merchant.status === statusFilter;
+                const matchesPerformance = !performanceFilter || merchant.performance === performanceFilter;
+                
+                return matchesSearch && matchesStatus && matchesPerformance;
+            });
+            
+            if (filteredMerchants.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">Nenhum comerciante encontrado</p>';
+                return;
+            }
+            
+            container.innerHTML = filteredMerchants.map(merchant => {
+                const statusClass = merchant.status === 'active' ? 'success' : 
+                                  merchant.status === 'warning' ? 'warning' : 'danger';
+                
+                const statusText = {
+                    'active': 'Ativo',
+                    'trial': 'Trial',
+                    'warning': 'Aviso',
+                    'suspended': 'Suspenso'
+                }[merchant.status];
+                
+                const performanceText = {
+                    'excellent': 'Excelente',
+                    'good': 'Bom',
+                    'regular': 'Regular',
+                    'poor': 'Ruim'
+                }[merchant.performance];
+                
+                return `
+                    <div class="merchant-item ${merchant.status}">
+                        <div class="merchant-header">
+                            <div class="merchant-info">
+                                <div class="merchant-name">${merchant.name}</div>
+                                <div class="merchant-establishment">${merchant.establishment}</div>
+                                <div class="merchant-date">Cadastrado em ${new Date(merchant.registrationDate).toLocaleDateString('pt-BR')}</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                                <span style="font-size: 0.8em; color: #7f8c8d;">${performanceText}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="merchant-stats">
+                            <div class="merchant-stat">
+                                <div class="merchant-stat-value">R$ ${merchant.revenue.toFixed(2)}</div>
+                                <div class="merchant-stat-label">Receita</div>
+                            </div>
+                            <div class="merchant-stat">
+                                <div class="merchant-stat-value">${merchant.orders.toLocaleString()}</div>
+                                <div class="merchant-stat-label">Pedidos</div>
+                            </div>
+                            <div class="merchant-stat">
+                                <div class="merchant-stat-value">R$ ${merchant.customerBalances.toFixed(2)}</div>
+                                <div class="merchant-stat-label">Saldos</div>
+                            </div>
+                            <div class="merchant-stat">
+                                <div class="merchant-stat-value">R$ ${merchant.withdrawals.toFixed(2)}</div>
+                                <div class="merchant-stat-label">Sacado</div>
+                            </div>
+                        </div>
+                        
+                        ${merchant.issues.length > 0 ? `
+                            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 10px; margin: 10px 0;">
+                                <div style="font-weight: bold; color: #856404; margin-bottom: 5px;">⚠️ Problemas Detectados:</div>
+                                ${merchant.issues.map(issue => `<div style="font-size: 0.9em; color: #856404;">• ${issue}</div>`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="merchant-actions">
+                            <button class="btn btn-primary btn-sm" onclick="viewMerchantDetails('${merchant.id}')">
+                                <i class="fas fa-eye"></i> Detalhes
+                            </button>
+                            <button class="btn btn-success btn-sm" onclick="contactMerchant('${merchant.id}')">
+                                <i class="fas fa-envelope"></i> Contato
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="toggleMerchantStatus('${merchant.id}')">
+                                <i class="fas fa-ban"></i> Suspender
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteMerchant('${merchant.id}')">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Atualizar visão financeira
+        function updateFinancialOverview() {
+            const today = new Date();
+            const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            // Calcular estatísticas
+            const monthlyRevenue = merchants.reduce((sum, m) => sum + m.revenue, 0);
+            const dailyRevenue = monthlyRevenue / 30; // Simplificado
+            const avgMonthlyRevenue = globalStats.totalRevenue / Math.max(merchants.length, 1);
+            const revenueGrowth = 25.3; // Simulado
+            
+            const totalCustomers = merchants.reduce((sum, m) => sum + Math.floor(m.customerBalances / 50), 0); // Estimativa
+            const avgCustomerBalance = totalCustomers > 0 ? globalStats.totalCustomerBalances / totalCustomers : 0;
+            const dailyWithdrawals = globalStats.totalWithdrawals / 30; // Simplificado
+            const pendingWithdrawals = globalStats.totalCustomerBalances * 0.1; // 10% pendente
+            
+            // Atualizar UI
+            document.getElementById('globalRevenue').textContent = `R$ ${globalStats.totalRevenue.toFixed(2)}`;
+            document.getElementById('monthlyRevenue').textContent = `R$ ${monthlyRevenue.toFixed(2)}`;
+            document.getElementById('dailyRevenue').textContent = `R$ ${dailyRevenue.toFixed(2)}`;
+            document.getElementById('avgMonthlyRevenue').textContent = `R$ ${avgMonthlyRevenue.toFixed(2)}`;
+            document.getElementById('revenueGrowth').textContent = `+${revenueGrowth}%`;
+            
+            document.getElementById('globalCustomerBalances').textContent = `R$ ${globalStats.totalCustomerBalances.toFixed(2)}`;
+            document.getElementById('totalCustomers').textContent = totalCustomers.toLocaleString();
+            document.getElementById('avgCustomerBalance').textContent = `R$ ${avgCustomerBalance.toFixed(2)}`;
+            document.getElementById('dailyWithdrawals').textContent = `R$ ${dailyWithdrawals.toFixed(2)}`;
+            document.getElementById('pendingWithdrawals').textContent = `R$ ${pendingWithdrawals.toFixed(2)}`;
+            
+            // Atualizar progresso
+            const targetRevenue = 50000; // Meta mensal
+            const progressPercentage = Math.min((monthlyRevenue / targetRevenue) * 100, 100);
+            document.getElementById('revenueProgress').style.width = `${progressPercentage}%`;
+        }
+
+        // Ver detalhes do comerciante
+        function viewMerchantDetails(merchantId) {
+            const merchant = merchants.find(m => m.id === merchantId);
+            if (!merchant) return;
+            
+            currentMerchant = merchant;
+            
+            const content = document.getElementById('merchantDetailsContent');
+            content.innerHTML = `
+                <div style="display: grid; gap: 20px;">
+                    <div>
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">📋 Informações Básicas</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div><strong>Nome:</strong> ${merchant.name}</div>
+                            <div><strong>CNPJ:</strong> ${merchant.cnpj}</div>
+                            <div><strong>Estabelecimento:</strong> ${merchant.establishment}</div>
+                            <div><strong>Email:</strong> ${merchant.email}</div>
+                            <div><strong>Telefone:</strong> ${merchant.phone}</div>
+                            <div><strong>Plano:</strong> ${merchant.plan}</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">💰 Financeiro</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div><strong>Receita Total:</strong> R$ ${merchant.revenue.toFixed(2)}</div>
+                            <div><strong>Total Pedidos:</strong> ${merchant.orders.toLocaleString()}</div>
+                            <div><strong>Saldos Clientes:</strong> R$ ${merchant.customerBalances.toFixed(2)}</div>
+                            <div><strong>Total Sacado:</strong> R$ ${merchant.withdrawals.toFixed(2)}</div>
+                            <div><strong>Ticket Médio:</strong> R$ ${(merchant.revenue / merchant.orders).toFixed(2)}</div>
+                            <div><strong>Performance:</strong> ${merchant.performance}</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">📊 Status e Atividade</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div><strong>Status:</strong> ${merchant.status}</div>
+                            <div><strong>Última Atividade:</strong> ${new Date(merchant.lastActivity).toLocaleString('pt-BR')}</div>
+                            <div><strong>Data Cadastro:</strong> ${new Date(merchant.registrationDate).toLocaleDateString('pt-BR')}</div>
+                            <div><strong>Tempo no Sistema:</strong> ${calculateDaysSince(merchant.registrationDate)} dias</div>
+                        </div>
+                    </div>
+                    
+                    ${merchant.issues.length > 0 ? `
+                        <div>
+                            <h3 style="color: #e74c3c; margin-bottom: 15px;">⚠️ Problemas Detectados</h3>
+                            ${merchant.issues.map(issue => `<div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 5px;">• ${issue}</div>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            showModal('merchantDetailsModal');
+        }
+
+        // Calcular dias desde
+        function calculateDaysSince(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const diffTime = Math.abs(today - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        // Adicionar novo comerciante
+        function addNewMerchant() {
+            const name = document.getElementById('newMerchantName').value;
+            const cnpj = document.getElementById('newMerchantCNPJ').value;
+            const establishment = document.getElementById('newMerchantEstablishment').value;
+            const email = document.getElementById('newMerchantEmail').value;
+            const phone = document.getElementById('newMerchantPhone').value;
+            const plan = document.getElementById('newMerchantPlan').value;
+            const notes = document.getElementById('newMerchantNotes').value;
+            
+            if (!name || !cnpj || !establishment || !email) {
+                showNotification('Preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+            
+            const newMerchant = {
+                id: Date.now().toString(),
+                name,
+                cnpj,
+                establishment,
+                email,
+                phone,
+                status: plan === 'trial' ? 'trial' : 'active',
+                plan,
+                registrationDate: new Date().toISOString().split('T')[0],
+                revenue: 0,
+                orders: 0,
+                customerBalances: 0,
+                withdrawals: 0,
+                performance: 'good',
+                lastActivity: new Date().toISOString(),
+                issues: [],
+                notes
+            };
+            
+            merchants.push(newMerchant);
+            calculateGlobalStats();
+            updateUI();
+            
+            closeModal('addMerchantModal');
+            showNotification('Comerciante adicionado com sucesso!', 'success');
+            
+            // Limpar formulário
+            document.getElementById('newMerchantName').value = '';
+            document.getElementById('newMerchantCNPJ').value = '';
+            document.getElementById('newMerchantEstablishment').value = '';
+            document.getElementById('newMerchantEmail').value = '';
+            document.getElementById('newMerchantPhone').value = '';
+            document.getElementById('newMerchantNotes').value = '';
+        }
+
+        // Suspender comerciante
+        function suspendMerchant() {
+            if (!currentMerchant) return;
+            
+            if (confirm(`Deseja suspender o comerciante ${currentMerchant.name}?`)) {
+                currentMerchant.status = 'suspended';
+                currentMerchant.issues.push('Suspenso pelo administrador');
+                
+                updateUI();
+                closeModal('merchantDetailsModal');
+                showNotification('Comerciante suspenso com sucesso!', 'success');
+            }
+        }
+
+        // Excluir comerciante
+        function deleteMerchant() {
+            if (!currentMerchant) return;
+            
+            if (confirm(`Deseja EXCLUIR PERMANENTEMENTE o comerciante ${currentMerchant.name}?\n\nEsta ação é irreversível e excluirá todos os dados associados!`)) {
+                merchants = merchants.filter(m => m.id !== currentMerchant.id);
+                calculateGlobalStats();
+                updateUI();
+                
+                closeModal('merchantDetailsModal');
+                showNotification('Comerciante excluído permanentemente!', 'success');
+            }
+        }
+
+        // Confirmar exclusão de comerciante
+        function confirmDeleteMerchant(merchantId) {
+            const merchant = merchants.find(m => m.id === merchantId);
+            if (!merchant) return;
+            
+            if (confirm(`Deseja EXCLUIR PERMANENTEMENTE o comerciante ${merchant.name}?\n\nEsta ação é irreversível!`)) {
+                merchants = merchants.filter(m => m.id !== merchantId);
+                calculateGlobalStats();
+                updateUI();
+                showNotification('Comerciante excluído permanentemente!', 'success');
+            }
+        }
+
+        // Suspender comerciantes problemáticos
+        function suspendProblematicMerchants() {
+            const problematic = merchants.filter(m => m.status === 'warning' || m.issues.length > 0);
+            
+            if (problematic.length === 0) {
+                showNotification('Nenhum comerciante problemático encontrado!', 'warning');
+                return;
+            }
+            
+            if (confirm(`Suspender ${problematic.length} comerciantes problemáticos?`)) {
+                problematic.forEach(merchant => {
+                    merchant.status = 'suspended';
+                    if (!merchant.issues.includes('Suspenso automaticamente')) {
+                        merchant.issues.push('Suspenso automaticamente');
+                    }
+                });
+                
+                calculateGlobalStats();
+                updateUI();
+                showNotification(`${problematic.length} comerciantes suspensos!`, 'success');
+            }
+        }
+
+        // Enviar notificação global
+        function sendGlobalNotification() {
+            const message = prompt('Digite a mensagem para enviar a todos os comerciantes:');
+            if (!message) return;
+            
+            // Simular envio
+            showNotification(`Notificação global enviada: "${message}"`, 'success');
+        }
+
+        // Modo manutenção
+        function toggleMaintenanceMode() {
+            const isMaintenance = confirm('Ativar modo de manutenção do sistema?\n\nIsso afetará todos os comerciantes!');
+            
+            if (isMaintenance) {
+                showNotification('Sistema em modo de manutenção!', 'warning');
+            } else {
+                showNotification('Sistema operando normalmente!', 'success');
+            }
+        }
+
+        // Backup de dados
+        function backupAllData() {
+            showNotification('Iniciando backup completo do sistema...', 'success');
+            
+            setTimeout(() => {
+                const backupData = {
+                    merchants,
+                    globalStats,
+                    timestamp: new Date().toISOString()
+                };
+                
+                downloadText(JSON.stringify(backupData, null, 2), `backup_system_${Date.now()}.json`);
+                showNotification('Backup completo realizado com sucesso!', 'success');
+            }, 2000);
+        }
+
+        // Atualizar sistema
+        function updateSystemVersion() {
+            if (confirm('Atualizar sistema para a versão mais recente?\n\nIsso pode levar alguns minutos.')) {
+                showNotification('Sistema sendo atualizado...', 'warning');
+                
+                setTimeout(() => {
+                    showNotification('Sistema atualizado com sucesso!', 'success');
+                }, 3000);
+            }
+        }
+
+        // Desligamento emergencial
+        function emergencyShutdown() {
+            const confirmation = prompt('Digite "EMERGENCY" para confirmar desligamento emergencial:');
+            
+            if (confirmation === 'EMERGENCY') {
+                showNotification('⚠️ DESLIGAMENTO EMERENCIAL INICIADO!', 'error');
+                // Em produção, isso desligaria o sistema
+            } else {
+                showNotification('Cancelado!', 'warning');
+            }
+        }
+
+        // Gerar relatório global
+        function generateGlobalReport() {
+            let report = `RELATÓRIO GLOBAL DO SISTEMA\n`;
+            report += `Gerado em: ${new Date().toLocaleString('pt-BR')}\n`;
+            report += `==========================================\n\n`;
+            
+            report += `📊 ESTATÍSTICAS GLOBAIS\n`;
+            report += `Receita Total: R$ ${globalStats.totalRevenue.toFixed(2)}\n`;
+            report += `Comerciantes Ativos: ${globalStats.totalMerchants}\n`;
+            report += `Total Pedidos: ${globalStats.totalOrders.toLocaleString()}\n`;
+            report += `Saldos Clientes: R$ ${globalStats.totalCustomerBalances.toFixed(2)}\n`;
+            report += `Total Pago: R$ ${globalStats.totalWithdrawals.toFixed(2)}\n`;
+            report += `Problemáticos: ${globalStats.problematicMerchants}\n\n`;
+            
+            report += `🏪 COMERCIANTES DETALHADOS\n`;
+            merchants.forEach(merchant => {
+                report += `\n${merchant.name} (${merchant.establishment})\n`;
+                report += `Status: ${merchant.status} | Plano: ${merchant.plan}\n`;
+                report += `Receita: R$ ${merchant.revenue.toFixed(2)} | Pedidos: ${merchant.orders}\n`;
+                report += `Saldos: R$ ${merchant.customerBalances.toFixed(2)} | Sacado: R$ ${merchant.withdrawals.toFixed(2)}\n`;
+                if (merchant.issues.length > 0) {
+                    report += `Problemas: ${merchant.issues.join(', ')}\n`;
+                }
+            });
+            
+            downloadText(report, `relatorio_global_${Date.now()}.txt`);
+            showNotification('Relatório global gerado!', 'success');
+        }
+
+        // Exportar todos os dados
+        function exportAllData() {
+            const allData = {
+                merchants,
+                globalStats,
+                exportDate: new Date().toISOString()
+            };
+            
+            downloadText(JSON.stringify(allData, null, 2), `complete_export_${Date.now()}.json`);
+            showNotification('Todos os dados exportados!', 'success');
+        }
+
+        // Analisar tendências
+        function analyzeTrends() {
+            showNotification('Analisando tendências do sistema...', 'success');
+            
+            setTimeout(() => {
+                showNotification('Análise concluída! Crescimento de 25.3% detectado.', 'success');
+            }, 2000);
+        }
+
+        // Resetar estatísticas
+        function resetSystemStats() {
+            if (confirm('Resetar todas as estatísticas do sistema?\n\nEsta ação não pode ser desfeita!')) {
+                // Resetar estatísticas (simulado)
+                merchants.forEach(merchant => {
+                    merchant.revenue = 0;
+                    merchant.orders = 0;
+                    merchant.customerBalances = 0;
+                    merchant.withdrawals = 0;
+                });
+                
+                calculateGlobalStats();
+                updateUI();
+                showNotification('Estatísticas resetadas!', 'success');
+            }
+        }
+
+        // Contatar comerciante
+        function contactMerchant(merchantId) {
+            const merchant = merchants.find(m => m.id === merchantId);
+            if (!merchant) return;
+            
+            showNotification(`Enviando email para ${merchant.email}...`, 'success');
+        }
+
+        // Alternar status do comerciante
+        function toggleMerchantStatus(merchantId) {
+            const merchant = merchants.find(m => m.id === merchantId);
+            if (!merchant) return;
+            
+            if (merchant.status === 'active') {
+                merchant.status = 'suspended';
+                merchant.issues.push('Suspenso pelo administrador');
+            } else {
+                merchant.status = 'active';
+                merchant.issues = merchant.issues.filter(issue => !issue.includes('Suspenso'));
+            }
+            
+            updateUI();
+            showNotification(`Status de ${merchant.name} atualizado!`, 'success');
+        }
+
+        // Funções de exportação
+        function exportMerchantsData(type) {
+            let data = '';
+            let filename = '';
+            
+            switch (type) {
+                case 'active':
+                    data = merchants.filter(m => m.status === 'active');
+                    filename = `comerciantes_ativos_${Date.now()}.json`;
+                    break;
+                case 'problematic':
+                    data = merchants.filter(m => m.status === 'warning' || m.status === 'suspended');
+                    filename = `comerciantes_problematicos_${Date.now()}.json`;
+                    break;
+                case 'financial':
+                    data = merchants.map(m => ({
+                        name: m.name,
+                        establishment: m.establishment,
+                        revenue: m.revenue,
+                        orders: m.orders,
+                        customerBalances: m.customerBalances,
+                        withdrawals: m.withdrawals
+                    }));
+                    filename = `relatorio_financeiro_${Date.now()}.json`;
+                    break;
+                case 'complete':
+                    data = merchants;
+                    filename = `comerciantes_completo_${Date.now()}.json`;
+                    break;
+            }
+            
+            downloadText(JSON.stringify(data, null, 2), filename);
+            showNotification(`Dados exportados: ${filename}`, 'success');
+            toggleExportMenu();
+        }
+
+        // Funções de UI
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showAddMerchantModal() {
+            showModal('addMerchantModal');
+        }
+
+        function showMassDeleteModal() {
+            if (selectedMerchants.length === 0) {
+                showNotification('Selecione comerciantes para excluir!', 'warning');
+                return;
+            }
+            
+            const list = document.getElementById('selectedMerchantsList');
+            list.innerHTML = selectedMerchants.map(id => {
+                const merchant = merchants.find(m => m.id === id);
+                return `<div style="padding: 5px 0;">• ${merchant.name} - ${merchant.establishment}</div>`;
+            }).join('');
+            
+            showModal('massDeleteModal');
+        }
+
+        function toggleExportMenu() {
+            const dropdown = document.getElementById('exportDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Funções de busca e filtro
+        function searchMerchants() {
+            renderMerchants();
+        }
+
+        function filterMerchants() {
+            renderMerchants();
+        }
+
+        function sortMerchants() {
+            const sortBy = document.getElementById('sortBy').value;
+            
+            merchants.sort((a, b) => {
+                switch (sortBy) {
+                    case 'revenue':
+                        return b.revenue - a.revenue;
+                    case 'orders':
+                        return b.orders - a.orders;
+                    case 'date':
+                        return new Date(b.registrationDate) - new Date(a.registrationDate);
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    default:
+                        return 0;
+                }
+            });
+            
+            renderMerchants();
+        }
+
+        // Salvar taxa por produto
+        function salvarTaxaPorProduto() {
+            const taxaInput = document.getElementById('taxaPorProduto');
+            const novaTaxa = parseFloat(taxaInput.value);
+            
+            if (isNaN(novaTaxa) || novaTaxa < 0) {
+                alert('Por favor, digite um valor válido para a taxa por produto.');
+                return;
+            }
+            
+            // Salvar no localStorage
+            localStorage.setItem('taxaPorProdutoGlobal', novaTaxa.toFixed(2));
+            
+            // Atualizar taxa nos módulos delivery e totem
+            if (window.updateTaxaPorProduto) {
+                window.updateTaxaPorProduto(novaTaxa);
+            }
+            
+            alert(`Taxa por produto atualizada para R$ ${novaTaxa.toFixed(2)} com sucesso!\n\nEsta taxa será aplicada por cada produto em todos os pedidos de delivery e totem.`);
+            console.log('[CREATOR] Taxa por produto atualizada:', novaTaxa);
+        }
+
+        // Carregar taxa por produto salva
+        function carregarTaxaPorProduto() {
+            const taxaSalva = localStorage.getItem('taxaPorProdutoGlobal');
+            if (taxaSalva) {
+                document.getElementById('taxaPorProduto').value = parseFloat(taxaSalva).toFixed(2);
+            }
+        }
+
+        // Download de texto/arquivo
+        function downloadText(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // Mostrar notificação
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fechar menus ao clicar fora
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('exportDropdown');
+            const button = event.target.closest('.export-menu');
+            
+            if (!button && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Verificação de login - acesso direto do criador
+        function checkCreatorAuth() {
+            // Acesso direto sem precisar de credenciais
+            const isCreatorAuthenticated = sessionStorage.getItem('isCreatorAuthenticated') === 'true';
+            if (isCreatorAuthenticated) {
+                return true;
+            }
+            
+            // Acesso automático direto - não pede credenciais
+            sessionStorage.setItem('isCreatorAuthenticated', 'true');
+            sessionStorage.setItem('creatorEmail', 'creator@cardapiodigital.com');
+            console.log('[CREATOR] Acesso direto concedido ao criador do sistema');
+            return true;
+        }
+
+        // Inicializar
+        window.onload = function() {
+            // Verificar autenticação antes de carregar
+            if (!checkCreatorAuth()) {
+                return;
+            }
+            
+            loadData();
+            carregarTaxaPorProduto();
+            loadMotoboys(); // Carregar dados do Motoboy
+            
+            // Atualizar dados a cada 30 segundos
+            setInterval(() => {
+                loadData();
+                loadMotoboys(); // Atualizar motoboys também
+            }, 30000);
+        };
+
+        // Função para abrir o cardápio digital
+        function openCardapioDigital() {
+            // Abrir cardápio digital em nova janela
+            const cardapioUrl = 'usuario.html';
+            window.open(cardapioUrl, '_blank', 'width=400,height=700,scrollbars=yes,resizable=yes');
+        }
+
+        // Função para acessar área admin como comerciante
+        function openMerchantAdmin() {
+            // Criar dados de comerciante de teste
+            const merchantData = {
+                name: 'Criador do Sistema',
+                establishment: 'Estabelecimento Teste',
+                email: 'creator@test.com',
+                phone: '(11) 99999-9999',
+                cnpj: '00.000.000/0000-00',
+                adminPassword: 'admin123',
+                isAuthenticated: true,
+                role: 'creator'
+            };
+            
+            // Criar dados do estabelecimento
+            const establishmentData = {
+                name: 'Estabelecimento Teste',
+                tagline: 'Testando o sistema como comerciante',
+                logo: 'logo-garcon.svg',
+                address: 'Rua Teste, 123',
+                phone: '(11) 99999-9999',
+                email: 'creator@test.com'
+            };
+            
+            // Salvar no localStorage para acesso automático
+            localStorage.setItem('currentUser', JSON.stringify(merchantData));
+            localStorage.setItem('adminAccess', 'true');
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('establishmentData', JSON.stringify(establishmentData));
+            
+            // Abrir painel admin em nova janela
+            const adminUrl = 'admin.html';
+            window.open(adminUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        // Função para acessar painel do Motoboy
+        function openMotoboyPanel() {
+            console.log('[CREATOR] Abrindo painel do Motoboy...');
+            
+            // Criar dados de motoboy de teste
+            const motoboyData = {
+                name: 'Motoboy Teste',
+                phone: '(11) 99999-5555',
+                email: 'motoboy@test.com',
+                vehicle: 'Moto XYZ',
+                plate: 'ABC-1234',
+                status: 'active',
+                role: 'motoboy'
+            };
+            
+            // Salvar no localStorage para acesso automático
+            localStorage.setItem('currentUser', JSON.stringify(motoboyData));
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('motoboyAccess', 'true');
+            
+            // Abrir painel do motoboy em nova janela
+            const motoboyUrl = 'motoboy.html';
+            window.open(motoboyUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+            
+            showNotification('Painel Motoboy aberto com sucesso!', 'success');
+        }
+
+        // Funções do Painel Motoboy
+        function refreshMotoboys() {
+            console.log('[MOTOBOY] Atualizando lista de motoboys...');
+            showNotification('Lista de motoboys atualizada!', 'success');
+            loadMotoboys();
+        }
+
+        function showAddMotoboyModal() {
+            console.log('[MOTOBOY] Abrindo modal para adicionar motoboy...');
+            showNotification('Funcionalidade em desenvolvimento', 'warning');
+        }
+
+        function showMotoboyList() {
+            console.log('[MOTOBOY] Mostrando lista completa de motoboys...');
+            showNotification('Carregando lista completa...', 'info');
+        }
+
+        function assignPendingDeliveries() {
+            console.log('[MOTOBOY] Atribuindo entregas pendentes...');
+            showNotification('Entregas pendentes atribuídas!', 'success');
+        }
+
+        function emergencyDispatch() {
+            console.log('[MOTOBOY] Iniciando despacho emergencial...');
+            const confirmed = confirm('Iniciar despacho emergencial para todas as entregas pendentes?\n\nIsso irá notificar todos os motoboys ativos.');
+            if (confirmed) {
+                showNotification('Despacho emergencial iniciado!', 'danger');
+            }
+        }
+
+        function loadMotoboys() {
+            // Simular carregamento de motoboys
+            const motoboys = [
+                { id: 1, name: 'João Silva', phone: '(11) 99999-8888', status: 'active', deliveries: 5 },
+                { id: 2, name: 'Maria Santos', phone: '(11) 99999-7777', status: 'active', deliveries: 3 },
+                { id: 3, name: 'Pedro Costa', phone: '(11) 99999-6666', status: 'busy', deliveries: 8 }
+            ];
+
+            const motoboyList = document.getElementById('motoboyList');
+            motoboyList.innerHTML = motoboys.map(motoboy => `
+                <div class="merchant-item ${motoboy.status === 'busy' ? 'warning' : 'success'}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0; color: #2c3e50;">${motoboy.name}</h4>
+                            <p style="margin: 5px 0; color: #7f8c8d; font-size: 0.9em;">
+                                <i class="fas fa-phone"></i> ${motoboy.phone}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="background: ${motoboy.status === 'active' ? '#27ae60' : '#f39c12'}; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">
+                                ${motoboy.status === 'active' ? '🏍️ Disponível' : '⏳ Ocupado'}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #7f8c8d; font-size: 0.9em;">
+                                <i class="fas fa-truck"></i> Entregas hoje: <strong>${motoboy.deliveries}</strong>
+                            </span>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-primary" onclick="contactMotoboy('${motoboy.id}')" style="padding: 5px 10px; font-size: 0.8em;">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                                <button class="btn btn-warning" onclick="assignDelivery('${motoboy.id}')" style="padding: 5px 10px; font-size: 0.8em;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Atualizar estatísticas
+            document.getElementById('activeMotoboys').textContent = motoboys.filter(m => m.status === 'active').length;
+            document.getElementById('deliveriesToday').textContent = motoboys.reduce((sum, m) => sum + m.deliveries, 0);
+            document.getElementById('pendingDeliveries').textContent = 12; // Simulado
+            document.getElementById('completedDeliveries').textContent = 45; // Simulado
+        }
+
+        function contactMotoboy(motoboyId) {
+            console.log('[MOTOBOY] Contatando motoboy:', motoboyId);
+            showNotification('Abrindo chat com motoboy...', 'info');
+        }
+
+        function assignDelivery(motoboyId) {
+            console.log('[MOTOBOY] Atribuindo entrega para motoboy:', motoboyId);
+            showNotification('Entrega atribuída com sucesso!', 'success');
+        }
+    </script>
+</body>
+</html>

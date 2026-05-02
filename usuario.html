@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurante Sabores - Cardápio Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet CSS para Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- MyGateway Integration -->
+    <script src="mygateway-integration.js"></script>
+    
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
         .header-banner {
             width: 100%;
@@ -501,6 +512,78 @@
             font-weight: bold;
             text-align: center;
         }
+        
+        /* Estilos para Rastreamento */
+        .tracking-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tracking-info {
+            margin: 20px 0;
+        }
+        
+        .motoboy-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .motoboy-avatar {
+            font-size: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .motoboy-info {
+            flex: 1;
+        }
+        
+        .motoboy-info strong {
+            font-size: 18px;
+            display: block;
+        }
+        
+        .motoboy-info p {
+            font-size: 14px;
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+        
+        .status-text {
+            font-weight: bold;
+            color: #90EE90;
+        }
+        
+        .distance-info {
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        
+        .distance-info span {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .distance-info small {
+            font-size: 12px;
+            opacity: 0.9;
+        }
         .margin-top-30 {
             margin-top: 30px;
         }
@@ -757,6 +840,9 @@
         <!-- Menu Section -->
         <section id="menu" class="content-section">
             <h2>Cardápio</h2>
+            <div class="taxa-aviso" style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center;">
+                <small><i class="fas fa-info-circle"></i> A plataforma cobra uma taxa de serviço por produto. Valores já incluem esta taxa.</small>
+            </div>
             <p>Escolha os itens que deseja pedir</p>
             
             <div class="menu-categories">
@@ -904,6 +990,37 @@
             </div>
             
             <div id="deliverySection" class="delivery-section">
+                <!-- MAPA DE RASTREAMENTO EM TEMPO REAL -->
+                <div id="trackingSection" class="tracking-section" style="display: none;">
+                    <h3>📍 Rastreamento em Tempo Real</h3>
+                    <p>Acompanhe a localização do motoboy</p>
+                    
+                    <div class="tracking-info">
+                        <div class="motoboy-card">
+                            <div class="motoboy-avatar">🏍️</div>
+                            <div class="motoboy-info">
+                                <strong id="motoboyName">Motoboy</strong>
+                                <p id="motoboyPhone">(00) 00000-0000</p>
+                                <p id="motoboyStatus" class="status-text">A caminho</p>
+                            </div>
+                            <div class="distance-info">
+                                <span id="distanceValue">-- km</span>
+                                <small>Distância</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mapa Leaflet -->
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 15px; margin-top: 20px;"></div>
+                    
+                    <!-- Botão para autorizar localização -->
+                    <button id="btnAuthorizeLocation" class="btn btn-primary" onclick="authorizeLocationTracking()" style="margin-top: 15px;">
+                        🔓 Autorizar Localização
+                    </button>
+                    
+                    <p id="locationMessage" style="text-align: center; color: #667eea; margin-top: 10px; font-size: 14px;"></p>
+                </div>
+                
                 <h3>Avalie seu Pedido</h3>
                 <p>Como você avalia sua experiência hoje?</p>
                 
@@ -1019,7 +1136,7 @@
                     <div class="item-details">
                         <div class="item-header">
                             <div class="item-name">${item.name}</div>
-                            <div class="item-price">R$ ${parseFloat(item.price).toFixed(2).replace('.', ',')}</div>
+                            <div class="item-price">R$ ${(parseFloat(item.price) + parseFloat(localStorage.getItem('taxaPorProdutoGlobal') || '0.10')).toFixed(2).replace('.', ',')}</div>
                         </div>
                         <p>${item.description}</p>
                         <div class="quantity-control">
@@ -1125,13 +1242,27 @@
                 // Obter o setor do item do localStorage
                 const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
                 const menuItem = menuItems.find(mi => mi.name === name);
-                const sector = menuItem && menuItem.sector ? menuItem.sector : 'kitchen'; // padrão para cozinha
+                let sector = 'kitchen'; // padrão para cozinha
+                
+                if (menuItem && menuItem.sector) {
+                    sector = menuItem.sector;
+                } else {
+                    // Fallback automático baseado na categoria
+                    if (category === 'drink' || category === 'dessert') {
+                        sector = 'counter'; // Bebidas e sobremesas vão para balcão
+                    } else if (category === 'appetizer') {
+                        sector = 'counter'; // Porções podem ir para balcão
+                    } else {
+                        sector = 'kitchen'; // Pratos principais e outros vão para cozinha
+                    }
+                }
                 
                 subtotal += price * quantity;
                 cartItems.push({ name, quantity, price, category, sector });
                 console.log('[DEBUG] Item adicionado:', { name, quantity, price, category, sector });
             }
         });
+        // Preços já incluem taxa, não calcular separado
         const serviceFee = 0;
         const total = subtotal;
         console.log('[DEBUG] Subtotal:', subtotal, 'Total:', total, 'Itens:', cartItems);
@@ -1190,12 +1321,16 @@
         if (method === 'pix') {
             document.getElementById('pixPayment').style.display = 'block';
             updatePixAmount();
-            // Check if automatic PIX payment is configured
-            checkAutomaticPayment();
+            // Processar PIX com MyGateway
+            processarPixMyGateway();
         } else if (method === 'card') {
             document.getElementById('cardPayment').style.display = 'block';
+            // Processar Cartão com MyGateway
+            processarCartaoMyGateway();
         } else if (method === 'cash') {
             document.getElementById('cashPayment').style.display = 'block';
+            // Processar Dinheiro com MyGateway
+            processarDinheiroMyGateway();
         }
     }
     
@@ -1881,6 +2016,495 @@
         loadUserOrders();
         connectWebSocket();
     });
+    
+    // ============================================
+    // RASTREAMENTO EM TEMPO REAL - LEAFLET MAP
+    // ============================================
+    
+    let map = null;
+    let motoboyMarker = null;
+    let customerMarker = null;
+    let locationWatchId = null;
+    let trackingEnabled = false;
+    
+    // Mostrar seção de rastreamento quando pedido estiver em entrega
+    function showTrackingSection() {
+        const trackingSection = document.getElementById('trackingSection');
+        if (trackingSection) {
+            trackingSection.style.display = 'block';
+            console.log('[CLIENTE] Seção de rastreamento exibida');
+        }
+    }
+    
+    // Autorizar rastreamento de localização
+    function authorizeLocationTracking() {
+        console.log('[CLIENTE] Solicitando autorização de localização...');
+        
+        const btnAuthorize = document.getElementById('btnAuthorizeLocation');
+        const locationMessage = document.getElementById('locationMessage');
+        
+        if (!navigator.geolocation) {
+            locationMessage.textContent = '❌ Seu navegador não suporta geolocalização';
+            locationMessage.style.color = '#e74c3c';
+            return;
+        }
+        
+        btnAuthorize.disabled = true;
+        btnAuthorize.textContent = '⏳ Autorizando...';
+        locationMessage.textContent = '📍 Por favor, autorize o acesso à sua localização';
+        locationMessage.style.color = '#667eea';
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                console.log('[CLIENTE] Localização autorizada!', position);
+                trackingEnabled = true;
+                btnAuthorize.style.display = 'none';
+                locationMessage.textContent = '✅ Localização autorizada com sucesso!';
+                locationMessage.style.color = '#27ae60';
+                
+                // Inicializar mapa
+                initializeMap(position.coords.latitude, position.coords.longitude);
+                
+                // Atualizar localização do cliente em tempo real
+                startLocationTracking();
+                
+                // Pedir localização do motoboy
+                requestMotoboyLocation();
+            },
+            (error) => {
+                console.error('[CLIENTE] Erro ao obter localização:', error);
+                btnAuthorize.disabled = false;
+                btnAuthorize.textContent = '🔓 Autorizar Localização';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        locationMessage.textContent = '❌ Localização negada. Clique no cadeado no navegador para permitir.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        locationMessage.textContent = '❌ Informação de localização indisponível.';
+                        break;
+                    case error.TIMEOUT:
+                        locationMessage.textContent = '⏰ Tempo esgotado para obter localização.';
+                        break;
+                    default:
+                        locationMessage.textContent = '❌ Erro desconhecido ao obter localização.';
+                }
+                locationMessage.style.color = '#e74c3c';
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    }
+    
+    // Iniciar rastreamento contínuo
+    function startLocationTracking() {
+        if (!trackingEnabled) return;
+        
+        locationWatchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                console.log('[CLIENTE] Nova localização:', lat, lng);
+                
+                // Atualizar marcador do cliente no mapa
+                if (customerMarker && map) {
+                    customerMarker.setLatLng([lat, lng]);
+                    map.panTo([lat, lng]);
+                }
+                
+                // Calcular distância até o motoboy
+                if (motoboyMarker) {
+                    updateDistance(motoboyMarker.getLatLng());
+                }
+            },
+            (error) => {
+                console.error('[CLIENTE] Erro no rastreamento:', error);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    }
+    
+    // Inicializar mapa Leaflet
+    function initializeMap(lat, lng) {
+        if (map) return; // Já inicializado
+        
+        console.log('[CLIENTE] Inicializando mapa em:', lat, lng);
+        
+        // Criar mapa centrado na localização do cliente
+        map = L.map('map').setView([lat, lng], 13);
+        
+        // Adicionar camada do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Marcador do cliente
+        customerMarker = L.marker([lat, lng]).addTo(map)
+            .bindPopup('📍 Sua localização')
+            .openPopup();
+        
+        // Ajustar zoom
+        map.setZoom(12);
+    }
+    
+    // Atualizar localização do motoboy no mapa
+    function updateMotoboyLocation(lat, lng, motoboyData) {
+        if (!map) {
+            console.warn('[CLIENTE] Mapa não inicializado, ignorando atualização do motoboy');
+            return;
+        }
+        
+        console.log('[CLIENTE] Atualizando motoboy:', lat, lng);
+        
+        // Atualizar ou criar marcador do motoboy
+        if (motoboyMarker) {
+            motoboyMarker.setLatLng([lat, lng]);
+        } else {
+            motoboyMarker = L.marker([lat, lng]).addTo(map)
+                .bindPopup('🏍️ Motoboy a caminho');
+        }
+        
+        // Atualizar informações do motoboy
+        if (motoboyData) {
+            document.getElementById('motoboyName').textContent = motoboyData.name || 'Motoboy';
+            document.getElementById('motoboyPhone').textContent = motoboyData.phone || '(00) 00000-0000';
+            document.getElementById('motoboyStatus').textContent = motoboyData.status || 'A caminho';
+        }
+        
+        // Calcular distância
+        if (customerMarker) {
+            updateDistance(new L.LatLng(lat, lng));
+        }
+    }
+    
+    // Calcular distância entre cliente e motoboy
+    function updateDistance(motoboyLatLng) {
+        if (!customerMarker || !map) return;
+        
+        const customerLatLng = customerMarker.getLatLng();
+        const distanceMeters = motoboyLatLng.distanceTo(customerLatLng);
+        const distanceKm = (distanceMeters / 1000).toFixed(2);
+        
+        const distanceElement = document.getElementById('distanceValue');
+        if (distanceElement) {
+            distanceElement.textContent = `${distanceKm} km`;
+        }
+        
+        console.log('[CLIENTE] Distância até motoboy:', distanceKm, 'km');
+    }
+    
+    // Solicitar localização do motoboy via WebSocket
+    function requestMotoboyLocation() {
+        const orderId = document.getElementById('orderIdDisplay')?.textContent;
+        if (!orderId) return;
+        
+        console.log('[CLIENTE] Solicitando localização do motoboy para pedido:', orderId);
+        
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify({
+                type: 'requestMotoboyLocation',
+                orderId: orderId
+            }));
+        }
+    }
+    
+    // Receber atualização de localização do motoboy
+    function handleMotoboyLocationUpdate(data) {
+        console.log('[CLIENTE] Recebida localização do motoboy:', data);
+        
+        if (data.latitude && data.longitude) {
+            updateMotoboyLocation(
+                data.latitude,
+                data.longitude,
+                {
+                    name: data.motoboyName,
+                    phone: data.motoboyPhone,
+                    status: data.status
+                }
+            );
+            
+            // Mostrar seção de rastreamento se ainda não estiver visível
+            showTrackingSection();
+        }
+    }
+    
+    // Sistema de Pagamentos MyGateway
+    let myGateway = null;
+    
+    // Inicializar MyGateway
+    function initMyGateway() {
+        try {
+            myGateway = new MyGatewayIntegration();
+            console.log('[USUARIO] MyGateway inicializado com sucesso!');
+        } catch (error) {
+            console.error('[USUARIO] Erro ao inicializar MyGateway:', error);
+        }
+    }
+    
+    // Processar PIX MyGateway
+    async function processarPixMyGateway() {
+        console.log('[USUARIO] Processando PIX com MyGateway...');
+        
+        try {
+            if (!myGateway) {
+                initMyGateway();
+            }
+            
+            // Obter dados do cliente
+            const customerData = JSON.parse(localStorage.getItem('customerData') || '{}');
+            const orderId = document.getElementById('orderIdDisplay').textContent;
+            const total = parseFloat(document.getElementById('pixAmount').textContent.replace('R$', '').replace(',', '.'));
+            
+            if (!total || total <= 0) {
+                alert('Valor total inválido!');
+                return;
+            }
+            
+            // Dados do pedido
+            const pedido = {
+                cliente: {
+                    nome: customerData.name || 'Cliente',
+                    telefone: customerData.phone || ''
+                },
+                total: total,
+                metodoPagamento: 'pix',
+                numero: orderId,
+                mesa: customerData.tableNumber || 'Não informada'
+            };
+            
+            // Gerar QR Code PIX
+            const pixData = await myGateway.gerarQRCode(pedido);
+            
+            // Mostrar QR Code
+            mostrarQRCodePix(pixData, pedido);
+            
+        } catch (error) {
+            console.error('[USUARIO] Erro ao processar PIX:', error);
+            alert('Erro ao processar PIX: ' + error.message);
+        }
+    }
+    
+    // Mostrar QR Code PIX
+    function mostrarQRCodePix(pixData, pedido) {
+        const qrContainer = document.getElementById('pixQrContainer');
+        if (!qrContainer) return;
+        
+        qrContainer.innerHTML = `
+            <div style="background: #e8f4fc; padding: 20px; border-radius: 10px; text-align: center;">
+                <h4>📱 Escaneie o QR Code para pagar</h4>
+                <div style="margin: 20px 0;">
+                    <img src="${pixData.qrCodeImage}" alt="QR Code PIX" style="max-width: 200px; border: 3px solid #fff; border-radius: 10px;">
+                </div>
+                <div style="background: #fff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p style="font-size: 0.9rem; margin: 0; word-break: break-all;">
+                        <strong>Código PIX:</strong><br>
+                        <span style="font-family: monospace; font-size: 0.8rem;">${pixData.qrCode}</span>
+                    </p>
+                </div>
+                <div style="background: #fff3cd; padding: 10px; border-radius: 8px;">
+                    <p style="font-size: 0.8rem; margin: 0; color: #856404;">
+                        <strong>Validade:</strong> ${new Date(pixData.expirationTime).toLocaleString()}<br>
+                        <strong>Transação:</strong> #${pixData.transactionId}
+                    </p>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button onclick="copiarCodigoPix('${pixData.qrCode}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">
+                        📋 Copiar Código
+                    </button>
+                    <button onclick="verificarPagamentoPix('${pixData.transactionId}')" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">
+                        ✅ Verificar Pagamento
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Iniciar verificação automática
+        verificarPagamentoAutomatico(pixData.transactionId);
+    }
+    
+    // Copiar Código PIX
+    function copiarCodigoPix(codigo) {
+        navigator.clipboard.writeText(codigo).then(() => {
+            alert('✅ Código PIX copiado com sucesso!');
+        }).catch(() => {
+            prompt('Copie o código PIX manualmente:', codigo);
+        });
+    }
+    
+    // Verificar Pagamento PIX
+    async function verificarPagamentoPix(transactionId) {
+        try {
+            if (!myGateway) {
+                initMyGateway();
+            }
+            
+            const status = await myGateway.verificarPagamento(transactionId);
+            console.log('[USUARIO] Status pagamento:', status);
+            
+            if (status.status === 'approved') {
+                alert('✅ Pagamento aprovado! Obrigado!');
+                confirmarPagamentoCliente();
+            } else if (status.status === 'rejected') {
+                alert('❌ Pagamento rejeitado. Tente novamente.');
+            } else {
+                alert('⏳ Pagamento ainda pendente. Aguarde...');
+            }
+        } catch (error) {
+            console.error('[USUARIO] Erro ao verificar pagamento:', error);
+            alert('Erro ao verificar pagamento');
+        }
+    }
+    
+    // Verificar Pagamento Automático
+    function verificarPagamentoAutomatico(transactionId) {
+        const interval = setInterval(async () => {
+            try {
+                if (!myGateway) {
+                    initMyGateway();
+                }
+                
+                const status = await myGateway.verificarPagamento(transactionId);
+                
+                if (status.status === 'approved') {
+                    clearInterval(interval);
+                    alert('✅ Pagamento aprovado automaticamente! Obrigado!');
+                    confirmarPagamentoCliente();
+                } else if (status.status === 'rejected') {
+                    clearInterval(interval);
+                    alert('❌ Pagamento rejeitado. Tente novamente.');
+                }
+            } catch (error) {
+                console.error('[USUARIO] Erro na verificação automática:', error);
+            }
+        }, 5000); // Verificar a cada 5 segundos
+    }
+    
+    // Processar Cartão MyGateway
+    async function processarCartaoMyGateway() {
+        console.log('[USUARIO] Processando Cartão com MyGateway...');
+        
+        try {
+            if (!myGateway) {
+                initMyGateway();
+            }
+            
+            // Obter dados do cliente
+            const customerData = JSON.parse(localStorage.getItem('customerData') || '{}');
+            const orderId = document.getElementById('orderIdDisplay').textContent;
+            const total = parseFloat(document.getElementById('pixAmount').textContent.replace('R$', '').replace(',', '.'));
+            
+            if (!total || total <= 0) {
+                alert('Valor total inválido!');
+                return;
+            }
+            
+            // Dados do pedido
+            const pedido = {
+                cliente: {
+                    nome: customerData.name || 'Cliente',
+                    telefone: customerData.phone || ''
+                },
+                total: total,
+                metodoPagamento: 'card',
+                numero: orderId,
+                mesa: customerData.tableNumber || 'Não informada'
+            };
+            
+            // Processar pagamento com cartão
+            const result = await myGateway.processarPagamento(pedido);
+            
+            if (result.success) {
+                alert('✅ Pagamento com cartão processado!');
+                confirmarPagamentoCliente();
+            } else {
+                alert('❌ Erro no pagamento: ' + result.error);
+            }
+            
+        } catch (error) {
+            console.error('[USUARIO] Erro ao processar cartão:', error);
+            alert('Erro ao processar cartão: ' + error.message);
+        }
+    }
+    
+    // Processar Dinheiro MyGateway
+    async function processarDinheiroMyGateway() {
+        console.log('[USUARIO] Processando Dinheiro com MyGateway...');
+        
+        try {
+            // Obter dados do cliente
+            const customerData = JSON.parse(localStorage.getItem('customerData') || '{}');
+            const orderId = document.getElementById('orderIdDisplay').textContent;
+            const total = parseFloat(document.getElementById('pixAmount').textContent.replace('R$', '').replace(',', '.'));
+            
+            if (!total || total <= 0) {
+                alert('Valor total inválido!');
+                return;
+            }
+            
+            // Para dinheiro, apenas registrar o pagamento
+            const pedido = {
+                cliente: {
+                    nome: customerData.name || 'Cliente',
+                    telefone: customerData.phone || ''
+                },
+                total: total,
+                metodoPagamento: 'money',
+                numero: orderId,
+                mesa: customerData.tableNumber || 'Não informada'
+            };
+            
+            // Confirmar pagamento em dinheiro
+            if (confirm(`Confirmar pagamento de R$${total.toFixed(2)} em dinheiro?`)) {
+                alert('✅ Pagamento em dinheiro confirmado!');
+                confirmarPagamentoCliente();
+            }
+            
+        } catch (error) {
+            console.error('[USUARIO] Erro ao processar dinheiro:', error);
+            alert('Erro ao processar dinheiro: ' + error.message);
+        }
+    }
+    
+    // Confirmar Pagamento do Cliente
+    function confirmarPagamentoCliente() {
+        // Enviar confirmação para o garçom/cozinha
+        const customerData = JSON.parse(localStorage.getItem('customerData') || '{}');
+        const orderId = document.getElementById('orderIdDisplay').textContent;
+        
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify({
+                type: 'paymentConfirmed',
+                orderId: orderId,
+                table: customerData.tableNumber,
+                message: 'Cliente confirmou pagamento'
+            }));
+        }
+        
+        // Mostrar mensagem de sucesso
+        alert('✅ Pagamento confirmado! Obrigado pela preferência!');
+        
+        // Opcional: Redirecionar para tela inicial
+        setTimeout(() => {
+            location.reload();
+        }, 3000);
+    }
+    
+    // Inicializar MyGateway ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            initMyGateway();
+        }, 2000);
+    });
 </script>
+<!-- Leaflet JS para Mapa -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>

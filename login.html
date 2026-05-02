@@ -290,10 +290,10 @@
             const adminAccess = localStorage.getItem('adminAccess');
             const establishmentData = localStorage.getItem('establishmentData');
             
-            if (adminAccess && establishmentData) {
-                // User is already logged in, redirect to admin panel
-                window.location.href = 'admin.html';
-            }
+            // 🔒 SEMPRE EXIGIR LOGIN - NÃO ENTRAR DIRETO
+            // Removido o redirecionamento automático para forçar login
+            
+            console.log('🔒 Sistema de login carregado - Exigindo credenciais');
         });
         
         // Handle form submission

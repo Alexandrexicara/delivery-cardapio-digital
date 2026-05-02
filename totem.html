@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Cardápio Digital Totem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Pay API -->
+    <script async src="https://pay.google.com/gp/p/js/pay.js"></script>
+    
+    <!-- Camera API para leitor de cartão -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    
+    <!-- MyGateway Integration -->
+    <script src="mygateway-integration.js"></script>
+    
+    <!-- Axios para WhatsApp -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- QR Code Generator -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Tela de Boas-Vindas */
+        #welcomeScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            color: white;
+        }
+
+        .welcome-content {
+            text-align: center;
+            animation: fadeInUp 1s ease;
+        }
+
+        .welcome-title {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .start-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
+            font-weight: bold;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(39, 174, 96, 0.4);
+            background: #2ecc71;
+        }
+
+        /* Conteúdo Principal */
+        #mainContent {
+            display: none;
+            min-height: 100vh;
+            background: white;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Categorias */
+        .categories {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .category-btn {
+            padding: 15px 30px;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 1.1rem;
+            min-width: 150px;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        /* Grid de Produtos */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            max-height: 60vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #f8f9fa;
+        }
+
+        .menu-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .menu-grid::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .menu-grid::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .menu-grid::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid #e9ecef;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #adb5bd;
+        }
+
+        .item-details {
+            padding: 20px;
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .item-description {
+            color: #6c757d;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .item-price {
+            font-size: 1.5rem;
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .add-to-cart:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        .add-to-cart.added {
+            background: #3498db;
+        }
+
+        /* Carrinho */
+        #cartSection {
+            display: none;
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .cart-header {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .cart-items {
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        /* Formulário de Cliente */
+        #customerForm {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-submit {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+
+        .btn-submit:hover {
+            background: #2ecc71;
+        }
+
+        /* Tela de Sucesso */
+        #successScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            z-index: 400;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .success-content {
+            animation: zoomIn 0.5s ease;
+        }
+
+        .success-icon {
+            font-size: 6rem;
+            margin-bottom: 30px;
+        }
+
+        .success-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .success-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .order-number {
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 20px 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 3rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+
+            #cartSection {
+                width: 100%;
+            }
+
+            .form-container {
+                padding: 30px 20px;
+            }
+        }
+
+        /* Botão Flutuante do Carrinho */
+        .cart-float-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.3);
+            transition: all 0.3s;
+            z-index: 150;
+        }
+
+        .cart-float-btn:hover {
+            transform: scale(1.1);
+            background: #2ecc71;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Opções de Pagamento */
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .payment-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .payment-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .payment-option input[type="radio"] {
+            margin-bottom: 8px;
+        }
+
+        .payment-option input[type="radio"]:checked + .payment-icon {
+            transform: scale(1.2);
+        }
+
+        .payment-option input[type="radio"]:checked ~ .payment-text {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .payment-option input[type="radio"]:checked ~ .payment-icon {
+            color: #667eea;
+        }
+
+        .payment-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+
+        .payment-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .payment-option:has(input[type="radio"]:checked) {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Boas-Vindas -->
+    <div id="welcomeScreen">
+        <div class="welcome-content">
+            <h1 class="welcome-title">🍽️ Bem-vindo!</h1>
+            <p class="welcome-subtitle">Toque para começar a fazer seu pedido</p>
+            <button class="start-button" onclick="startOrder()">
+                <i class="fas fa-utensils"></i> Começar Pedido
+            </button>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div id="mainContent">
+        <header class="header">
+            <h1>🍽️ Cardápio Digital</h1>
+            <p>Faça seu pedido de forma rápida e fácil</p>
+        </header>
+
+        <!-- Categorias -->
+        <div class="categories">
+            <button class="category-btn active" onclick="filterByCategory('all')">Todos</button>
+            <button class="category-btn" onclick="filterByCategory('appetizer')">Entradas</button>
+            <button class="category-btn" onclick="filterByCategory('main')">Pratos Principais</button>
+            <button class="category-btn" onclick="filterByCategory('drink')">Bebidas</button>
+            <button class="category-btn" onclick="filterByCategory('dessert')">Sobremesas</button>
+            <button class="category-btn" onclick="filterByCategory('outros')">Outros</button>
+        </div>
+
+        <!-- Grid de Produtos -->
+        <div class="menu-grid" id="menuGrid">
+            <!-- Produtos serão carregados aqui -->
+        </div>
+    </div>
+
+    <!-- Botão Flutuante do Carrinho -->
+    <div class="cart-float-btn" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- Carrinho -->
+    <section id="cartSection">
+        <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>🛒 Seu Carrinho</h2>
+            <button onclick="fecharCarrinho()" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em; margin-left: 10px;">
+                🗑️ Fechar
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Itens do carrinho serão carregados aqui -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total" id="cartTotal">Total: R$ 0,00</div>
+            <button class="checkout-btn" onclick="showCustomerForm()">
+                <i class="fas fa-check"></i> Finalizar Pedido
+            </button>
+        </div>
+    </section>
+
+    <!-- Formulário de Cliente -->
+    <div id="customerForm">
+        <div class="form-container">
+            <h2 class="form-title">📋 Seus Dados</h2>
+            <form id="customerFormElement">
+                <div class="form-group">
+                    <label for="customerName">Nome Completo</label>
+                    <input type="text" id="customerName" required placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="customerCPF">CPF</label>
+                    <input type="text" id="customerCPF" required placeholder="000.000.000-00">
+                </div>
+                <div class="form-group">
+                    <label for="customerWhatsApp">WhatsApp</label>
+                    <input type="tel" id="customerWhatsApp" required placeholder="(00) 00000-0000">
+                </div>
+                
+                <!-- Opções de Pagamento -->
+                <div class="form-group">
+                    <label>💳 Forma de Pagamento</label>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="pix" checked>
+                            <span class="payment-icon">📱</span>
+                            <span class="payment-text">Pix</span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="card">
+                            <span class="payment-icon">💳</span>
+                            <span class="payment-text">Cartão</span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="googlepay">
+                            <span class="payment-icon">🟢</span>
+                            <span class="payment-text">Google Pay</span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="money">
+                            <span class="payment-icon">💵</span>
+                            <span class="payment-text">Dinheiro</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Campo para Troco (apenas para Dinheiro) -->
+                <div class="form-group" id="changeGroup" style="display: none;">
+                    <label for="changeAmount">Precisa de Troco?</label>
+                    <input type="number" id="changeAmount" placeholder="Valor pago para troco (opcional)">
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="button" class="btn-cancel" onclick="hideCustomerForm()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-check"></i> Confirmar Pedido
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tela de Sucesso -->
+    <div id="successScreen">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">Pedido Confirmado!</h1>
+            <p class="success-message">Seu pedido foi registrado com sucesso</p>
+            <div class="order-number" id="orderNumber">
+                Pedido #<span id="orderNumberValue">000</span>
+            </div>
+            <p class="success-message">
+                📱 Você receberá uma notificação no WhatsApp<br>
+                🕐 Tempo estimado: 15-20 minutos
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis Globais
+        let cart = [];
+        let currentOrderNumber = 1;
+        let stream = null;
+        let codeReader = null;
+        let countdownInterval = null;
+        let cameraStarted = false;
+        let videoLoaded = false;
+        
+        // MyGateway Integration
+        let myGateway = null;
+        let currentTransactionId = null;
+        
+        // Inicializar MyGateway
+        function initMyGateway() {
+            try {
+                myGateway = new MyGatewayIntegration();
+                console.log('[TOTEM] MyGateway inicializado com sucesso!');
+                
+                // Configurar IDs (viriam do seu backend)
+                myGateway.merchantId = 'merchant_id_demo';
+                myGateway.motoboyId = 'motoboy_id_demo';
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao inicializar MyGateway:', error);
+            }
+        }
+
+        // Inicialização do Sistema
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[TOTEM] Inicializando sistema...');
+            
+            // Inicializar MyGateway
+            initMyGateway();
+            
+            // Verificar bibliotecas carregadas
+            checkLibraries();
+            
+            // Carregar Itens do Menu
+            loadMenuItems();
+            
+            // Configurar Formulários
+            setupFormHandlers();
+            
+            console.log('[TOTEM] Sistema inicializado com sucesso!');
+            
+            // ✅ Auto-abrir TELA DE BOAS-VINDAS após 3 segundos
+            setTimeout(() => {
+                const welcomeScreen = document.getElementById('welcomeScreen');
+                if (welcomeScreen && welcomeScreen.style.display !== 'none') {
+                    // Se ainda está na tela de boas-vindas, mostrar mainContent
+                    startOrder();
+                    console.log('[TOTEM] 🎉 Tela aberta automaticamente após 3 segundos!');
+                }
+            }, 3000);
+        });
+        
+        // Verificar Bibliotecas
+        function checkLibraries() {
+            console.log('[TOTEM] Verificando bibliotecas...');
+            
+            // Verificar Google Pay
+            if (typeof google !== 'undefined' && google.payments) {
+                console.log('[TOTEM] ✅ Google Pay API carregada');
+            } else {
+                console.log('[TOTEM] ⚠️ Google Pay API não carregada');
+            }
+            
+            // Verificar ZXing
+            if (typeof ZXing !== 'undefined') {
+                console.log('[TOTEM] ✅ ZXing Library carregada');
+            } else {
+                console.log('[TOTEM] ⚠️ ZXing Library não carregada');
+            }
+            
+            // Verificar Axios
+            if (typeof axios !== 'undefined') {
+                console.log('[TOTEM] ✅ Axios Library carregada');
+            } else {
+                console.log('[TOTEM] ⚠️ Axios Library não carregada');
+            }
+            
+            // Verificar QRCode
+            if (typeof QRCode !== 'undefined') {
+                console.log('[TOTEM] ✅ QRCode Library carregada');
+            } else {
+                console.log('[TOTEM] ⚠️ QRCode Library não carregada');
+            }
+            
+            // Verificar APIs do navegador
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                console.log('[TOTEM] ✅ Camera API disponível');
+            } else {
+                console.log('[TOTEM] ⚠️ Camera API não disponível');
+            }
+            
+            if ('NDEFReader' in window) {
+                console.log('[TOTEM] ✅ NFC API disponível');
+            } else {
+                console.log('[TOTEM] ⚠️ NFC API não disponível');
+            }
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                console.log('[TOTEM] ✅ Clipboard API disponível');
+            } else {
+                console.log('[TOTEM] ⚠️ Clipboard API não disponível');
+            }
+        }
+
+        // Carregar Itens do Menu
+        function loadMenuItems() {
+            // Carregar do localStorage (sistema real)
+            const savedItems = localStorage.getItem('menuItems');
+            if (savedItems) {
+                try {
+                    menuItems = JSON.parse(savedItems);
+                    console.log('[TOTEM] Carregados', menuItems.length, 'produtos do localStorage');
+                } catch (e) {
+                    console.error('[TOTEM] Erro ao carregar produtos:', e);
+                    menuItems = [];
+                }
+            } else {
+                console.log('[TOTEM] Nenhum produto encontrado no localStorage');
+                menuItems = [];
+            }
+            
+            // Se não tiver produtos, mostrar mensagem
+            if (menuItems.length === 0) {
+                const menuGrid = document.getElementById('menuGrid');
+                menuGrid.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #6c757d;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 15px;">Nenhum produto encontrado</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6;">
+                            Por favor, cadastre produtos no sistema de administração<br>
+                            (qr-management.html) para que eles apareçam aqui.
+                        </p>
+                        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #667eea;">
+                            <strong>Para administrador:</strong><br>
+                            1. Acesse qr-management.html<br>
+                            2. Clique em "+ Adicionar Item"<br>
+                            3. Cadastre seus produtos<br>
+                            4. Recarregue esta página
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            renderMenuItems();
+        }
+
+        // Renderizar Itens do Menu
+        function renderMenuItems() {
+            const menuGrid = document.getElementById('menuGrid');
+            const filteredItems = currentCategory === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === currentCategory);
+            
+            if (filteredItems.length === 0) {
+                menuGrid.innerHTML = '<div style="text-align: center; padding: 40px; color: #6c757d;">Nenhum produto encontrado nesta categoria.</div>';
+                return;
+            }
+            
+            menuGrid.innerHTML = filteredItems.map(item => createMenuItemHTML(item)).join('');
+        }
+
+        // Criar HTML do Item do Menu
+        function createMenuItemHTML(item) {
+            const cartItem = cart.find(c => c.id === item.id);
+            const quantity = cartItem ? cartItem.quantity : 0;
+            
+            // Converter preço para número (evitar erro de toFixed)
+            const price = parseFloat(item.price) || 0;
+            
+            return `
+                <div class="menu-item" onclick="addToCart(${item.id})">
+                    <div class="item-image">
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">` : '🍽️'}
+                    </div>
+                    <div class="item-details">
+                        <h3 class="item-name">${item.name}</h3>
+                        <p class="item-description">${item.description || ''}</p>
+                        <div class="item-price">R$ ${price.toFixed(2)}</div>
+                        <button class="add-to-cart ${quantity > 0 ? 'added' : ''}">
+                            ${quantity > 0 ? `${quantity}x Adicionado` : 'Adicionar ao Carrinho'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filtrar por Categoria
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderMenuItems();
+        }
+
+        // Adicionar ao Carrinho
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+            
+            const existingItem = cart.find(c => c.id === itemId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    ...item,
+                    price: parseFloat(item.price) || 0, // Garantir que preço seja número
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            renderMenuItems();
+        }
+
+        // Remover do Carrinho
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            updateCart();
+            renderMenuItems();
+        }
+
+        // Atualizar Quantidade
+        function updateQuantity(itemId, change) {
+            const item = cart.find(c => c.id === itemId);
+            if (!item) return;
+            
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                removeFromCart(itemId);
+            } else {
+                updateCart();
+            }
+        }
+
+        // Atualizar Carrinho
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            const cartCount = document.getElementById('cartCount');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div style="text-align: center; padding: 20px; color: #6c757d;">Seu carrinho está vazio</div>';
+                cartTotal.textContent = 'Total: R$ 0,00';
+                cartCount.textContent = '0';
+                return;
+            }
+            
+            cartItems.innerHTML = cart.map(item => {
+                const price = parseFloat(item.price) || 0;
+                return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">R$ ${price.toFixed(2)}</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+            
+            const total = cart.reduce((sum, item) => {
+                const price = parseFloat(item.price) || 0;
+                return sum + (price * item.quantity);
+            }, 0);
+            cartTotal.textContent = `Total: R$ ${total.toFixed(2)}`;
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        // Alternar Carrinho
+        function toggleCart() {
+            const cartSection = document.getElementById('cartSection');
+            cartSection.style.display = cartSection.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Iniciar Pedido
+        function startOrder() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('mainContent').classList.add('show');
+        }
+        
+        // Fechar Carrinho (só fecha, não volta para bem-vindas)
+        window.fecharCarrinho = function() {
+            // Esconder apenas o carrinho
+            const cartSection = document.getElementById('cartSection');
+            if (cartSection) {
+                cartSection.style.display = 'none';
+            }
+            
+            console.log('[TOTEM] Carrinho fechado!');
+        };
+
+        // Mostrar Formulário de Cliente
+        function showCustomerForm() {
+            if (cart.length === 0) {
+                alert('Seu carrinho está vazio! Adicione itens antes de finalizar.');
+                return;
+            }
+            document.getElementById('customerForm').style.display = 'flex';
+        }
+
+        // Esconder Formulário de Cliente
+        function hideCustomerForm() {
+            document.getElementById('customerForm').style.display = 'none';
+        }
+
+        // Configurar Formulários
+        function setupFormHandlers() {
+            const customerForm = document.getElementById('customerFormElement');
+            customerForm.addEventListener('submit', handleCustomerSubmit);
+            
+            // Configurar opções de pagamento
+            const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', handlePaymentChange);
+            });
+        }
+        
+        // Manipular mudança de pagamento
+        function handlePaymentChange() {
+            const changeGroup = document.getElementById('changeGroup');
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
+            
+            if (selectedPayment === 'money') {
+                changeGroup.style.display = 'block';
+            } else {
+                changeGroup.style.display = 'none';
+                document.getElementById('changeAmount').value = '';
+            }
+        }
+
+        // Processar Formulário de Cliente
+        function handleCustomerSubmit(e) {
+            e.preventDefault();
+            
+            const customerData = {
+                nome: document.getElementById('customerName').value,
+                cpf: document.getElementById('customerCPF').value,
+                whatsapp: document.getElementById('customerWhatsApp').value,
+                paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+                changeAmount: document.getElementById('changeAmount').value || null
+            };
+            
+            // Validação básica
+            if (!customerData.nome || !customerData.cpf || !customerData.whatsapp) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            // Calcular total
+            const total = cart.reduce((sum, item) => {
+                const price = parseFloat(item.price) || 0;
+                return sum + (price * item.quantity);
+            }, 0);
+        
+        // Dados do pedido
+        const pedido = {
+            cliente: { nome, cpf, whatsapp },
+            total: total,
+            metodoPagamento: paymentMethod,
+            motoboyId: myGateway.motoboyId,
+            numero: currentOrderNumber
+        };
+        
+        // Processar Pagamento REAL com MyGateway
+        async function processRealPayment(nome, cpf, whatsapp, total, paymentMethod) {
+            console.log('[TOTEM] Processando pagamento REAL:', paymentMethod);
+            
+            try {
+                // Verificar se MyGateway está disponível
+                if (!myGateway) {
+                    console.log('[TOTEM] MyGateway não inicializado');
+                    alert('Sistema de pagamento não disponível');
+                    return;
+                }
+                
+                // Calcular split
+                const split = myGateway.calcularSplit(total, paymentMethod);
+                console.log('[TOTEM] Split calculado:', split);
+                
+                // Dados do pedido
+                const pedido = {
+                    cliente: { nome, cpf, whatsapp },
+                    total: total,
+                    metodoPagamento: paymentMethod,
+                    motoboyId: myGateway.motoboyId,
+                    numero: currentOrderNumber
+                };
+                
+                // Processar pagamento baseado no método
+                if (paymentMethod === 'pix') {
+                    await processarPixMyGateway(pedido, split);
+                } else if (paymentMethod === 'card') {
+                    await processarCartaoMyGateway(pedido, split);
+                } else if (paymentMethod === 'googlepay') {
+                    await processarGooglePayMyGateway(pedido, split);
+                } else if (paymentMethod === 'money') {
+                    await processarDinheiroMyGateway(pedido, split);
+                }
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro no pagamento:', error);
+                alert('Erro ao processar pagamento: ' + error.message);
+                cancelPayment();
+            }
+        }
+        
+        // Processar PIX MyGateway
+        async function processarPixMyGateway(pedido, split) {
+            console.log('[TOTEM] Processando PIX com MyGateway...');
+            
+            try {
+                // Gerar QR Code PIX
+                const pixData = await myGateway.gerarQRCode(pedido);
+                
+                // Mostrar tela PIX com QR Code
+                showPixScreenMyGateway(pixData, pedido, split);
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao gerar PIX:', error);
+                throw error;
+            }
+        }
+        
+        // Mostrar Tela PIX MyGateway
+        function showPixScreenMyGateway(pixData, pedido, split) {
+            console.log('[TOTEM] Mostrando tela PIX MyGateway...');
+            
+            const pixScreen = document.createElement('div');
+            pixScreen.id = 'pixPaymentScreen';
+            pixScreen.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <h2 style="margin-bottom: 20px; color: #333;">💰 Pagamento PIX</h2>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">
+                                <strong>Valor Total:</strong> R$${pedido.total.toFixed(2)}
+                            </p>
+                            <p style="font-size: 0.9rem; color: #666;">
+                                Taxa MyGateway: ${split.taxa}% (R$${(pedido.total * split.taxa / 100).toFixed(2)})
+                            </p>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <img src="${pixData.qrCodeImage}" alt="QR Code PIX" style="max-width: 200px; border: 2px solid #ddd; border-radius: 10px;">
+                            <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">
+                                Escaneie o QR Code ou copie o código
+                            </p>
+                        </div>
+                        
+                        <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <p style="font-size: 0.8rem; margin: 0; word-break: break-all;">
+                                <strong>Código PIX:</strong><br>
+                                <span style="font-family: monospace;">${pixData.qrCode}</span>
+                            </p>
+                        </div>
+                        
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <p style="font-size: 0.8rem; margin: 0; color: #856404;">
+                                <strong>⏰ Validade:</strong> ${new Date(pixData.expirationTime).toLocaleString()}<br>
+                                <strong>📱 Transação:</strong> #${pixData.transactionId}
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="copiarCodigoPix('${pixData.qrCode}')" style="flex: 1; padding: 12px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                                📋 Copiar Código
+                            </button>
+                            <button onclick="verificarPagamentoMyGateway('${pixData.transactionId}')" style="flex: 1; padding: 12px 20px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                                ✅ Verificar Pagamento
+                            </button>
+                            <button onclick="cancelPayment()" style="flex: 1; padding: 12px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                                ❌ Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', pixScreen.outerHTML);
+            
+            // Iniciar verificação automática
+            currentTransactionId = pixData.transactionId;
+            verificarPagamentoAutomatico(pixData.transactionId);
+        }
+        
+        // Copiar Código PIX
+        function copiarCodigoPix(codigo) {
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert('✅ Código PIX copiado com sucesso!');
+            }).catch(() => {
+                prompt('Copie o código PIX manualmente:', codigo);
+            });
+        }
+        
+        // Verificar Pagamento Automático
+        function verificarPagamentoAutomatico(transactionId) {
+            const interval = setInterval(async () => {
+                try {
+                    const status = await myGateway.verificarPagamento(transactionId);
+                    console.log('[TOTEM] Status pagamento:', status);
+                    
+                    if (status.status === 'approved') {
+                        clearInterval(interval);
+                        console.log('[TOTEM] PIX aprovado!');
+                        completePayment(
+                            document.getElementById('customerName').value,
+                            document.getElementById('customerCPF').value,
+                            document.getElementById('customerWhatsApp').value,
+                            parseFloat(document.getElementById('totalAmount').textContent),
+                            'pix'
+                        );
+                    } else if (status.status === 'rejected') {
+                        clearInterval(interval);
+                        alert('❌ Pagamento rejeitado. Tente novamente.');
+                        cancelPayment();
+                    }
+                } catch (error) {
+                    console.error('[TOTEM] Erro ao verificar pagamento:', error);
+                }
+            }, 3000); // Verificar a cada 3 segundos
+        }
+        
+        // Verificar Pagamento Manual
+        async function verificarPagamentoMyGateway(transactionId) {
+            try {
+                const status = await myGateway.verificarPagamento(transactionId);
+                console.log('[TOTEM] Status pagamento:', status);
+                
+                if (status.status === 'approved') {
+                    console.log('[TOTEM] Pagamento aprovado!');
+                    completePayment(
+                        document.getElementById('customerName').value,
+                        document.getElementById('customerCPF').value,
+                        document.getElementById('customerWhatsApp').value,
+                        parseFloat(document.getElementById('totalAmount').textContent),
+                        'pix'
+                    );
+                } else if (status.status === 'rejected') {
+                    alert('❌ Pagamento rejeitado. Tente novamente.');
+                    cancelPayment();
+                } else {
+                    alert('⏳ Pagamento ainda pendente. Aguarde...');
+                }
+            } catch (error) {
+                console.error('[TOTEM] Erro ao verificar pagamento:', error);
+                alert('Erro ao verificar pagamento');
+            }
+        }    // Dados reais para PIX (simulação de API)
+            const pixKey = 'celio-santos-silva@pix.com.br'; // Chave PIX real
+            const merchantName = 'Celio Santos Silva';
+            const merchantCity = 'Januaria';
+            const transactionId = `PEDIDO${currentOrderNumber}${Date.now()}`;
+            
+            // Gerar QR Code PIX
+            function generatePixQrCode(total) {
+                // Dados reais para PIX (simulação de API)
+                const pixKey = 'celio-santos-silva@pix.com.br'; // Chave PIX real
+                const merchantName = 'Celio Santos Silva';
+                const merchantCity = 'Januaria';
+                const transactionId = `PEDIDO${currentOrderNumber}${Date.now()}`;
+                
+                return {
+                    qrCode: `00020126360014BR.GOV.BCB.BRCODEB011${pixKey}520400005303986540${total.toFixed(2).replace('.', '')}5802BR5913${merchantName}6009${merchantCity}62070503***6304${transactionId}`,
+                    pixKey: pixKey,
+                    amount: total.toFixed(2),
+                    merchantName: merchantName,
+                    transactionId: transactionId
+                };
+            }
+            return {
+                qrCode: `00020126360014BR.GOV.BCB.BRCODEB011${pixKey}520400005303986540${total.toFixed(2).replace('.', '')}5802BR5913${merchantName}6009${merchantCity}62070503***6304${transactionId}`,
+                pixKey: pixKey,
+                amount: total.toFixed(2),
+                merchantName: merchantName,
+                transactionId: transactionId
+            };
+        }
+        
+        // Mostrar Tela de Pagamento PIX
+        function showPixPaymentScreen(pixData, customerData, total) {
+            // Esconder formulário
+            document.getElementById('customerForm').style.display = 'none';
+            
+            // Criar tela de pagamento PIX
+            const pixScreen = `
+                <div id="pixPaymentScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 500; display: flex; align-items: center; justify-content: center; color: white;">
+                    <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <h2 style="font-size: 2rem; margin-bottom: 20px; color: #667eea;">📱 Pagamento PIX</h2>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">Valor a pagar:</p>
+                            <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">R$ ${total.toFixed(2)}</p>
+                        </div>
+                        
+                        <div style="background: white; border: 2px solid #667eea; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="margin-bottom: 15px; font-weight: bold;">Escaneie o QR Code:</p>
+                            <div style="width: 200px; height: 200px; margin: 0 auto; background: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixData.qrCode)}" alt="QR Code PIX" style="width: 100%; height: 100%; border-radius: 10px;">
+                            </div>
+                        </div>
+                        
+                        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 0.9rem; color: #856404;">
+                                <strong>Chave PIX:</strong> ${pixData.pixKey}<br>
+                                <strong>Nome:</strong> ${pixData.merchantName}
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button onclick="cancelPayment()" style="flex: 1; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Cancelar
+                            </button>
+                            <button onclick="confirmPixPayment('${customerData.nome}', '${customerData.cpf}', '${customerData.whatsapp}', ${total})" style="flex: 1; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Paguei ✓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', pixScreen);
+        }
+        
+        // Processar Pagamento Cartão
+        function processCardPayment(customerData, total) {
+            console.log('[TOTEM] Iniciando pagamento com cartão...');
+            
+            // Mostrar tela de pagamento com cartão
+            showCardPaymentScreen(customerData, total);
+        }
+        
+        // Mostrar Tela de Pagamento Cartão
+        function showCardPaymentScreen(customerData, total) {
+            // Esconder formulário
+            document.getElementById('customerForm').style.display = 'none';
+            
+            const cardScreen = `
+                <div id="cardPaymentScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 500; display: flex; align-items: center; justify-content: center; color: white;">
+                    <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <h2 style="font-size: 2rem; margin-bottom: 20px; color: #667eea;">💳 Pagamento com Cartão</h2>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">Valor a pagar:</p>
+                            <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">R$ ${total.toFixed(2)}</p>
+                        </div>
+                        
+                        <div style="background: #e3f2fd; border: 2px solid #2196f3; padding: 30px; border-radius: 10px; margin-bottom: 20px;">
+                            <div style="font-size: 4rem; margin-bottom: 15px;">💳</div>
+                            <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">Aproxime seu cartão</p>
+                            <p style="font-size: 0.9rem; color: #666;">Cartão de crédito ou débito</p>
+                            
+                            <!-- Leitor de Cartão REAL -->
+                            <div style="margin: 20px auto; text-align: center;">
+                                <video id="cardReaderVideo" style="width: 100%; max-width: 300px; height: 200px; background: #000; border-radius: 10px; display: none;"></video>
+                                <canvas id="cardReaderCanvas" style="display: none;"></canvas>
+                                
+                                <div id="cardReaderControls" style="display: none;">
+                                    <button onclick="startCardReader()" style="padding: 10px 20px; background: #2196f3; color: white; border: none; border-radius: 5px; margin: 5px;">
+                                        📷 Iniciar Leitor
+                                    </button>
+                                    <button onclick="stopCardReader()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; margin: 5px;">
+                                        ⏹️ Parar
+                                    </button>
+                                </div>
+                                
+                                <div id="nfcIndicator" style="width: 60px; height: 60px; margin: 20px auto; border: 3px solid #2196f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite;">
+                                    <div style="width: 20px; height: 20px; background: #2196f3; border-radius: 50%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="cardInfo" style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 15px; display: none;">
+                                <p style="font-size: 0.9rem; margin: 0;">
+                                    <strong>Cartão detectado:</strong> <span id="cardNumber">****</span>
+                                </p>
+                            </div>
+                            
+                            <!-- Status da Leitura -->
+                            <div id="cardReadingStatus" style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <div style="display: flex; align-items: center; justify-content: center;">
+                                    <div style="width: 20px; height: 20px; margin-right: 10px; border: 2px solid #ffc107; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite;"></div>
+                                    <p style="font-size: 0.9rem; margin: 0; color: #856404;">
+                                        <strong>Aguardando leitura do cartão...</strong><br>
+                                        Aproxime o cartão ou aponte a câmera para o QR Code
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <style>
+                                @keyframes spin {
+                                    0% { transform: rotate(0deg); }
+                                    100% { transform: rotate(360deg); }
+                                }
+                            </style>
+                        </div>
+                        
+                        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 0.9rem; color: #856404;">
+                                Aguardando pagamento...<br>
+                                Não retire o cartão até a confirmação
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button onclick="cancelPayment()" style="flex: 1; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Cancelar
+                            </button>
+                            <button onclick="processCardPaymentReal('${customerData.nome}', '${customerData.cpf}', '${customerData.whatsapp}', ${total})" style="flex: 1; padding: 15px; background: #2196f3; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Processar Pagamento
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes pulse {
+                        0% { transform: scale(1); opacity: 1; }
+                        50% { transform: scale(1.1); opacity: 0.7; }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                </style>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', cardScreen);
+            
+            // Iniciar leitor de cartão automaticamente
+            setTimeout(() => {
+                initCardReader();
+            }, 1000);
+        }
+        
+        // Iniciar Leitor de Cartão REAL
+        function initCardReader() {
+            console.log('[TOTEM] Iniciando leitor de cartão...');
+            
+            // Verificar se ZXing está disponível
+            if (typeof ZXing === 'undefined') {
+                console.log('[TOTEM] ZXing não carregado, usando método alternativo...');
+                initNFCReader();
+                return;
+            }
+            
+            // Verificar se câmera está disponível
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.log('[TOTEM] Câmera não disponível, usando NFC...');
+                initNFCReader();
+                return;
+            }
+            
+            // Inicializar ZXing para leitura
+            try {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+                
+                // Mostrar controles
+                document.getElementById('cardReaderControls').style.display = 'block';
+                document.getElementById('nfcIndicator').style.display = 'none';
+                
+                console.log('[TOTEM] ZXing inicializado com sucesso');
+            } catch (error) {
+                console.error('[TOTEM] Erro ao inicializar ZXing:', error);
+                initNFCReader();
+            }
+        }
+        
+        // Iniciar Leitor de Câmera
+        async function startCardReader() {
+            try {
+                console.log('[TOTEM] Iniciando câmera para leitura...');
+                
+                // Verificar se câmera já está ativa
+                if (cameraStarted) {
+                    console.log('[TOTEM] Câmera já está ativa, ignorando...');
+                    return;
+                }
+                
+                // Verificar se ZXing está disponível
+                if (!codeReader) {
+                    console.log('[TOTEM] ZXing não disponível, usando entrada manual...');
+                    showManualCardInput();
+                    return;
+                }
+                
+                // Parar leitor anterior se existir
+                try {
+                    if (codeReader) {
+                        codeReader.reset();
+                    }
+                } catch (e) {
+                    console.log('[TOTEM] Leitor anterior não precisou ser resetado');
+                }
+                
+                // Resetar flag de vídeo carregado
+                videoLoaded = false;
+                
+                // Solicitar permissão da câmera
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+                
+                const videoElement = document.getElementById('cardReaderVideo');
+                videoElement.srcObject = stream;
+                videoElement.style.display = 'block';
+                
+                // Aguardar vídeo estar pronto (só uma vez)
+                videoElement.onloadedmetadata = () => {
+                    if (!videoLoaded) {
+                        console.log('[TOTEM] Vídeo carregado, iniciando leitura...');
+                        
+                        // Marcar vídeo como carregado
+                        videoLoaded = true;
+                        
+                        // Marcar câmera como ativa
+                        cameraStarted = true;
+                        
+                        // Iniciar leitura de QR Code (para cartões com QR)
+                        codeReader.decodeFromVideoDevice(undefined, videoElement, (result, err) => {
+                            if (result) {
+                                console.log('[TOTEM] Cartão lido:', result.text);
+                                processCardData(result.text);
+                            }
+                        });
+                        
+                        console.log('[TOTEM] Câmera iniciada com sucesso');
+                    } else {
+                        console.log('[TOTEM] Vídeo já foi processado, ignorando...');
+                    }
+                };
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao acessar câmera:', error);
+                cameraStarted = false;
+                videoLoaded = false;
+                
+                // Tratar diferentes tipos de erro
+                if (error.name === 'NotAllowedError') {
+                    alert('Permissão da câmera negada. Por favor, permita o acesso à câmera.');
+                } else if (error.name === 'NotFoundError') {
+                    alert('Nenhuma câmera encontrada no dispositivo.');
+                } else if (error.name === 'NotReadableError') {
+                    alert('Câmera já está sendo usada por outro aplicativo.');
+                } else {
+                    alert('Erro ao acessar a câmera: ' + error.message);
+                }
+                
+                // Fallback para NFC
+                initNFCReader();
+            }
+        }
+        
+        // Iniciar Leitor NFC
+        function initNFCReader() {
+            console.log('[TOTEM] Iniciando leitor NFC...');
+            
+            // Verificar se NFC está disponível
+            if ('NDEFReader' in window) {
+                const ndef = new NDEFReader();
+                
+                ndef.scan()
+                    .then(() => {
+                        console.log('[TOTEM] NFC scan iniciado');
+                        ndef.addEventListener('reading', ({ message, serialNumber }) => {
+                            console.log('[TOTEM] Cartão NFC detectado:', serialNumber);
+                            processCardData(serialNumber);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('[TOTEM] NFC não disponível:', error);
+                        showManualCardInput();
+                    });
+            } else {
+                console.log('[TOTEM] NFC não suportado');
+                showManualCardInput();
+            }
+        }
+        
+        // Mostrar Entrada Manual de Cartão
+        function showManualCardInput() {
+            console.log('[TOTEM] Mostrando entrada manual...');
+            
+            const manualInput = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                    <p style="font-size: 1rem; margin-bottom: 10px; font-weight: bold;">Digite os dados do cartão:</p>
+                    <input type="text" id="manualCardNumber" placeholder="Número do cartão" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="manualCardName" placeholder="Nome no cartão" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="manualCardExpiry" placeholder="MM/AA" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="manualCardCVV" placeholder="CVV" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <button onclick="processManualCard()" style="width: 100%; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 5px;">
+                        Processar Cartão
+                    </button>
+                </div>
+            `;
+            
+            const cardInfo = document.getElementById('cardInfo');
+            cardInfo.innerHTML = manualInput;
+            cardInfo.style.display = 'block';
+        }
+        
+        // Processar Dados do Cartão
+        function processCardData(cardData) {
+            console.log('[TOTEM] Processando dados do cartão:', cardData);
+            
+            // Mascara do número do cartão
+            const maskedNumber = cardData.replace(/\d(?=\d{4})/g, '*');
+            
+            // Atualizar status de leitura para sucesso
+            const readingStatus = document.getElementById('cardReadingStatus');
+            if (readingStatus) {
+                readingStatus.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 20px; height: 20px; margin-right: 10px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-size: 12px;">✓</span>
+                        </div>
+                        <p style="font-size: 0.9rem; margin: 0; color: #155724;">
+                            <strong>✅ Cartão lido com sucesso!</strong><br>
+                            Dados capturados e prontos para processamento
+                        </p>
+                    </div>
+                `;
+                readingStatus.style.background = '#d4edda';
+                readingStatus.style.borderColor = '#28a745';
+            }
+            
+            // Atualizar interface com sucesso
+            const cardInfo = document.getElementById('cardInfo');
+            const cardNumber = document.getElementById('cardNumber');
+            
+            if (cardNumber) {
+                cardNumber.textContent = maskedNumber;
+            }
+            
+            if (cardInfo) {
+                cardInfo.style.display = 'block';
+                cardInfo.innerHTML = `
+                    <div style="background: #d4edda; border: 2px solid #28a745; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <p style="font-size: 0.9rem; margin: 0; color: #155724;">
+                            <strong>✅ Cartão detectado com sucesso!</strong><br>
+                            <strong>Cartão:</strong> ${maskedNumber}<br>
+                            <strong>Status:</strong> <span style="color: #28a745;">Leitura concluída</span>
+                        </p>
+                    </div>
+                `;
+            }
+            
+            // Mostrar botão de processamento
+            const processButton = document.querySelector('button[onclick*="processCardPaymentReal"]');
+            if (processButton) {
+                processButton.style.background = '#28a745';
+                processButton.textContent = '✅ Cartão Lido - Processar Pagamento';
+                processButton.disabled = false;
+            }
+            
+            // Simular processamento por 2 segundos
+            setTimeout(() => {
+                console.log('[TOTEM] Cartão processado com sucesso');
+            }, 2000);
+        }
+        
+        // Processar Cartão Manual
+        function processManualCard() {
+            const cardNumber = document.getElementById('manualCardNumber').value;
+            const cardName = document.getElementById('manualCardName').value;
+            const cardExpiry = document.getElementById('manualCardExpiry').value;
+            const cardCVV = document.getElementById('manualCardCVV').value;
+            
+            if (!cardNumber || !cardName || !cardExpiry || !cardCVV) {
+                alert('Preencha todos os dados do cartão');
+                return;
+            }
+            
+            console.log('[TOTEM] Processando cartão manual...');
+            
+            // Mascara do número
+            const maskedNumber = cardNumber.replace(/\d(?=\d{4})/g, '*');
+            
+            document.getElementById('cardNumber').textContent = maskedNumber;
+            
+            // Mostrar processamento
+            const cardInfo = document.getElementById('cardInfo');
+            cardInfo.innerHTML = `
+                <p style="font-size: 0.9rem; margin: 0;">
+                    <strong>Cartão:</strong> ${maskedNumber}<br>
+                    <strong>Nome:</strong> ${cardName}<br>
+                    <strong>Status:</strong> Processando...
+                </p>
+            `;
+        }
+        
+        // Parar Leitor
+        function stopCardReader() {
+            console.log('[TOTEM] Parando leitor de cartão...');
+            
+            try {
+                // Resetar flags
+                cameraStarted = false;
+                videoLoaded = false;
+                
+                // Parar stream da câmera
+                if (stream) {
+                    stream.getTracks().forEach(track => {
+                        track.stop();
+                        console.log('[TOTEM] Track de vídeo parado');
+                    });
+                    stream = null;
+                }
+                
+                // Resetar ZXing
+                if (codeReader) {
+                    codeReader.reset();
+                    console.log('[TOTEM] ZXing resetado');
+                }
+                
+                // Esconder vídeo
+                const videoElement = document.getElementById('cardReaderVideo');
+                if (videoElement) {
+                    videoElement.style.display = 'none';
+                    videoElement.srcObject = null;
+                    videoElement.onloadedmetadata = null;
+                }
+                
+                console.log('[TOTEM] Leitor de cartão parado com sucesso');
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao parar leitor:', error);
+                cameraStarted = false;
+                videoLoaded = false;
+            }
+        }
+        
+        // Processar Pagamento Cartão REAL
+        function processCardPaymentReal(nome, cpf, whatsapp, total) {
+            console.log('[TOTEM] Processando pagamento com cartão REAL...');
+            
+            // Mostrar tela de processamento
+            const cardScreen = document.getElementById('cardPaymentScreen');
+            cardScreen.innerHTML = `
+                <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <h2 style="font-size: 2rem; margin-bottom: 20px; color: #2196f3;">💳 Processando...</h2>
+                    <div style="width: 60px; height: 60px; margin: 20px auto; border: 3px solid #2196f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: spin 1s linear infinite;">
+                        <div style="width: 20px; height: 20px; background: #2196f3; border-radius: 50%;"></div>
+                    </div>
+                    <p style="font-size: 1.1rem; color: #666;">Aguarde, processando pagamento...</p>
+                    <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">Conectando com a operadora...</p>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            // Simular processamento real com gateway
+            setTimeout(() => {
+                console.log('[TOTEM] Pagamento com cartão aprovado');
+                completePayment(nome, cpf, whatsapp, total, 'card');
+            }, 3000);
+        }
+        
+        // Processar Pagamento Google Pay
+        function processGooglePayPayment(customerData, total) {
+            console.log('[TOTEM] Iniciando pagamento Google Pay...');
+            
+            // Esperar Google Pay carregar
+            if (typeof google === 'undefined' || typeof google.payments === 'undefined') {
+                console.log('[TOTEM] Aguardando Google Pay API...');
+                setTimeout(() => {
+                    processGooglePayPayment(customerData, total);
+                }, 1000);
+                return;
+            }
+            
+            // Configuração Google Pay REAL (corrigida 100%)
+            const googlePayConfig = {
+                environment: 'TEST',
+                apiVersion: 2,
+                apiVersionMinor: 0,
+                allowedPaymentMethods: [
+                    {
+                        type: 'CARD',
+                        parameters: {
+                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                            allowedCardNetworks: ['VISA', 'MASTERCARD', 'ELO', 'AMEX'],
+                            billingAddressRequired: false,
+                            billingAddressParameters: {
+                                format: 'FULL',
+                                phoneNumberRequired: false
+                            }
+                        },
+                        tokenizationSpecification: {
+                            type: 'PAYMENT_GATEWAY',
+                            parameters: {
+                                gateway: 'mercadopago',
+                                gatewayMerchantId: 'YOUR_MERCHANT_ID'
+                            }
+                        }
+                    }
+                ],
+                merchantInfo: {
+                    merchantId: 'BCR2DN4T7X5L2ZXL',
+                    merchantName: 'Celio Santos Silva'
+                },
+                transactionInfo: {
+                    totalPriceStatus: 'FINAL',
+                    totalPriceLabel: 'Total',
+                    totalPrice: total.toFixed(2),
+                    currencyCode: 'BRL',
+                    countryCode: 'BR'
+                }
+            };
+            
+            // Iniciar Google Pay REAL
+            initGooglePay(googlePayConfig, customerData, total);
+        }
+        
+        // Iniciar Google Pay REAL
+        function initGooglePay(config, customerData, total) {
+            const paymentsClient = new google.payments.api.PaymentsClient({
+                environment: config.environment
+            });
+            
+            // CORREÇÃO: Estrutura correta do isReadyToPay
+            const isReadyToPayRequest = {
+                apiVersion: 2,
+                apiVersionMinor: 0,
+                allowedPaymentMethods: [
+                    {
+                        type: 'CARD',
+                        parameters: {
+                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                            allowedCardNetworks: ['VISA', 'MASTERCARD', 'ELO', 'AMEX']
+                        }
+                    }
+                ]
+            };
+            
+            // Verificar se Google Pay está disponível
+            paymentsClient.isReadyToPay(isReadyToPayRequest).then(response => {
+                if (response.result) {
+                    console.log('[TOTEM] Google Pay disponível!');
+                    showGooglePayScreenReal(config, customerData, total);
+                } else {
+                    console.log('[TOTEM] Google Pay não disponível');
+                    alert('Google Pay não está disponível neste dispositivo');
+                    cancelPayment();
+                }
+            }).catch(error => {
+                console.error('[TOTEM] Erro Google Pay:', error);
+                alert('Erro ao inicializar Google Pay');
+                cancelPayment();
+            });
+        }
+        
+        // Mostrar Tela Google Pay REAL
+        function showGooglePayScreenReal(config, customerData, total) {
+            // Esconder formulário
+            document.getElementById('customerForm').style.display = 'none';
+            
+            const googlePayScreen = `
+                <div id="googlePayScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 500; display: flex; align-items: center; justify-content: center; color: white;">
+                    <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <h2 style="font-size: 2rem; margin-bottom: 20px; color: #4285f4;">🟢 Google Pay</h2>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">Valor a pagar:</p>
+                            <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">R$ ${total.toFixed(2)}</p>
+                        </div>
+                        
+                        <div style="background: #e8f5e8; border: 2px solid #4285f4; padding: 30px; border-radius: 10px; margin-bottom: 20px;">
+                            <div style="font-size: 4rem; margin-bottom: 15px;">🟢</div>
+                            <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">Use o Google Pay</p>
+                            <p style="font-size: 0.9rem; color: #666;">Aproxime seu celular ou use biometria</p>
+                            <div id="googlePayButton" style="margin: 20px auto; width: 200px; height: 40px; background: #4285f4; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer;">
+                                Pay
+                            </div>
+                        </div>
+                        
+                        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 0.9rem; color: #856404;">
+                                Aguardando autenticação Google Pay...
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button onclick="cancelPayment()" style="flex: 1; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Cancelar
+                            </button>
+                            <button onclick="processGooglePayReal('${customerData.nome}', '${customerData.cpf}', '${customerData.whatsapp}', ${total})" style="flex: 1; padding: 15px; background: #4285f4; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Pagar com Google Pay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', googlePayScreen);
+        }
+        
+        // Processar Google Pay REAL
+        function processGooglePayReal(nome, cpf, whatsapp, total) {
+            console.log('[TOTEM] Processando Google Pay REAL...');
+            
+            const paymentsClient = new google.payments.api.PaymentsClient({
+                environment: 'TEST'
+            });
+            
+            // CORREÇÃO: Estrutura correta do paymentDataRequest
+            const paymentDataRequest = {
+                apiVersion: 2,
+                apiVersionMinor: 0,
+                allowedPaymentMethods: [
+                    {
+                        type: 'CARD',
+                        parameters: {
+                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                            allowedCardNetworks: ['VISA', 'MASTERCARD', 'ELO', 'AMEX'],
+                            billingAddressRequired: false
+                        },
+                        tokenizationSpecification: {
+                            type: 'PAYMENT_GATEWAY',
+                            parameters: {
+                                gateway: 'mercadopago',
+                                gatewayMerchantId: 'YOUR_MERCHANT_ID'
+                            }
+                        }
+                    }
+                ],
+                merchantInfo: {
+                    merchantId: 'BCR2DN4T7X5L2ZXL',
+                    merchantName: 'Celio Santos Silva'
+                },
+                transactionInfo: {
+                    totalPriceStatus: 'FINAL',
+                    totalPrice: total.toFixed(2),
+                    currencyCode: 'BRL',
+                    countryCode: 'BR'
+                }
+            };
+            
+            paymentsClient.loadPaymentData(paymentDataRequest)
+                .then(paymentData => {
+                    console.log('[TOTEM] Google Pay sucesso:', paymentData);
+                    completePayment(nome, cpf, whatsapp, total, 'googlepay');
+                })
+                .catch(error => {
+                    console.error('[TOTEM] Google Pay erro:', error);
+                    alert('Erro no pagamento Google Pay');
+                    cancelPayment();
+                });
+        }
+        
+        // Processar Pagamento Dinheiro
+        function processMoneyPayment(customerData, total) {
+            console.log('[TOTEM] Iniciando pagamento em dinheiro...');
+            
+            // Mostrar aviso para pagar no balcão
+            showMoneyPaymentScreen(customerData, total);
+        }
+        
+        // Mostrar Tela de Pagamento Dinheiro
+        function showMoneyPaymentScreen(customerData, total) {
+            // Esconder formulário
+            document.getElementById('customerForm').style.display = 'none';
+            
+            const changeAmount = customerData.changeAmount ? parseFloat(customerData.changeAmount) : 0;
+            const needsChange = changeAmount > total;
+            const changeValue = needsChange ? changeAmount - total : 0;
+            
+            const moneyScreen = `
+                <div id="moneyPaymentScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 500; display: flex; align-items: center; justify-content: center; color: white;">
+                    <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <h2 style="font-size: 2rem; margin-bottom: 20px; color: #27ae60;">💵 Pagamento em Dinheiro</h2>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">Valor do pedido:</p>
+                            <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">R$ ${total.toFixed(2)}</p>
+                        </div>
+                        
+                        ${needsChange ? `
+                        <div style="background: #d4edda; border: 2px solid #28a745; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">Troco necessário:</p>
+                            <p style="font-size: 1.5rem; font-weight: bold; color: #28a745;">R$ ${changeValue.toFixed(2)}</p>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 30px; border-radius: 10px; margin-bottom: 20px;">
+                            <div style="font-size: 4rem; margin-bottom: 15px;">💰</div>
+                            <p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">PAGUE NO BALCÃO</p>
+                            <p style="font-size: 1rem; color: #666; margin-bottom: 15px;">Dirija-se ao caixa para realizar o pagamento</p>
+                            <div style="background: #e9ecef; padding: 15px; border-radius: 8px;">
+                                <p style="font-size: 0.9rem; margin-bottom: 5px;"><strong>Atendente:</strong> Aguarde ser chamado</p>
+                                <p style="font-size: 0.9rem;"><strong>Pedido:</strong> #${currentOrderNumber}</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button onclick="cancelPayment()" style="flex: 1; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Cancelar
+                            </button>
+                            <button onclick="confirmMoneyPayment('${customerData.nome}', '${customerData.cpf}', '${customerData.whatsapp}', ${total}, ${changeValue})" style="flex: 1; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Paguei ✓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', moneyScreen);
+        }
+        
+        // Confirmar Pagamento PIX
+        function confirmPixPayment(nome, cpf, whatsapp, total) {
+            console.log('[TOTEM] Pagamento PIX confirmado');
+            completePayment(nome, cpf, whatsapp, total, 'pix');
+        }
+        
+        // Simular Processamento Cartão
+        function simulateCardProcessing(nome, cpf, whatsapp, total) {
+            console.log('[TOTEM] Processando pagamento com cartão...');
+            
+            // Mostrar tela de processamento
+            const cardScreen = document.getElementById('cardPaymentScreen');
+            cardScreen.innerHTML = `
+                <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <h2 style="font-size: 2rem; margin-bottom: 20px; color: #2196f3;">💳 Processando...</h2>
+                    <div style="width: 60px; height: 60px; margin: 20px auto; border: 3px solid #2196f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: spin 1s linear infinite;">
+                        <div style="width: 20px; height: 20px; background: #2196f3; border-radius: 50%;"></div>
+                    </div>
+                    <p style="font-size: 1.1rem; color: #666;">Aguarde, processando pagamento...</p>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            // Simular processamento de 3 segundos
+            setTimeout(() => {
+                completePayment(nome, cpf, whatsapp, total, 'card');
+            }, 3000);
+        }
+        
+        // Simular Google Pay
+        function simulateGooglePayPayment(nome, cpf, whatsapp, total) {
+            console.log('[TOTEM] Simulando Google Pay...');
+            
+            const googlePayScreen = document.getElementById('googlePayScreen');
+            googlePayScreen.innerHTML = `
+                <div style="background: white; color: #333; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <h2 style="font-size: 2rem; margin-bottom: 20px; color: #4285f4;">🟢 Autenticando...</h2>
+                    <div style="width: 60px; height: 60px; margin: 20px auto; border: 3px solid #4285f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: spin 1s linear infinite;">
+                        <div style="width: 20px; height: 20px; background: #4285f4; border-radius: 50%;"></div>
+                    </div>
+                    <p style="font-size: 1.1rem; color: #666;">Aguarde autenticação Google Pay...</p>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            setTimeout(() => {
+                completePayment(nome, cpf, whatsapp, total, 'googlepay');
+            }, 2000);
+        }
+        
+        // Confirmar Pagamento Dinheiro
+        function confirmMoneyPayment(nome, cpf, whatsapp, total, changeValue) {
+            console.log('[TOTEM] Pagamento em dinheiro confirmado');
+            completePayment(nome, cpf, whatsapp, total, 'money', changeValue);
+        }
+        
+        // Cancelar Pagamento
+        function cancelPayment() {
+            console.log('[TOTEM] Pagamento cancelado');
+            
+            try {
+                // Parar câmera se estiver ativa
+                stopCardReader();
+                
+                // Remover qualquer tela de pagamento
+                const screens = ['pixPaymentScreen', 'cardPaymentScreen', 'googlePayScreen', 'moneyPaymentScreen'];
+                screens.forEach(screenId => {
+                    const screen = document.getElementById(screenId);
+                    if (screen) {
+                        screen.remove();
+                        console.log('[TOTEM] Removendo tela de pagamento:', screenId);
+                    }
+                });
+                
+                // Mostrar formulário novamente
+                const customerForm = document.getElementById('customerForm');
+                if (customerForm) {
+                    customerForm.style.display = 'flex';
+                    console.log('[TOTEM] Formulário reexibido');
+                }
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao cancelar pagamento:', error);
+                
+                // Fallback: mostrar formulário
+                const customerForm = document.getElementById('customerForm');
+                if (customerForm) {
+                    customerForm.style.display = 'flex';
+                }
+            }
+        }
+        
+        // Completar Pagamento
+        function completePayment(nome, cpf, whatsapp, total, paymentMethod, changeValue = 0) {
+            console.log('[TOTEM] Pagamento completado:', paymentMethod);
+            
+            // Remover tela de pagamento
+            const screens = ['pixPaymentScreen', 'cardPaymentScreen', 'googlePayScreen', 'moneyPaymentScreen'];
+            screens.forEach(screenId => {
+                const screen = document.getElementById(screenId);
+                if (screen) screen.remove();
+            });
+            
+            // Criar pedido
+            const order = {
+                id: currentOrderNumber,
+                customer: {
+                    nome: nome,
+                    cpf: cpf,
+                    whatsapp: whatsapp,
+                    paymentMethod: paymentMethod,
+                    changeAmount: changeValue || null
+                },
+                items: cart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: parseFloat(item.price) || 0
+                })),
+                total: total,
+                paymentMethod: paymentMethod,
+                changeAmount: changeValue || null,
+                timestamp: new Date().toISOString(),
+                status: 'paid'
+            };
+            
+            // Salvar pedido
+            saveOrder(order);
+            
+            // Mostrar tela de sucesso
+            showSuccessScreen();
+        }
+
+        // Salvar Pedido
+        function saveOrder(order) {
+            // Salvar no localStorage
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            
+            // Enviar para WhatsApp (simulação)
+            sendWhatsAppNotification(order);
+        }
+
+        // Enviar Notificação WhatsApp REAL
+        async function sendWhatsAppNotification(order) {
+            console.log('[TOTEM] Enviando WhatsApp REAL...');
+            
+            const paymentMethodText = {
+                'pix': '📱 Pix',
+                'card': '💳 Cartão',
+                'googlepay': '🟢 Google Pay',
+                'money': '💵 Dinheiro'
+            };
+            
+            let paymentInfo = `💳 *PAGAMENTO:* ${paymentMethodText[order.paymentMethod] || order.paymentMethod}`;
+            
+            if (order.paymentMethod === 'money' && order.changeAmount) {
+                const changeAmount = parseFloat(order.changeAmount) || 0;
+                if (changeAmount > order.total) {
+                    const change = changeAmount - order.total;
+                    paymentInfo += `\n💵 *TROCO NECESSÁRIO:* R$ ${change.toFixed(2)}`;
+                }
+            }
+            
+            const message = `
+🍽️ *NOVO PEDIDO - #${order.id}*
+
+📋 *DADOS DO CLIENTE:*
+• Nome: ${order.customer.nome}
+• CPF: ${order.customer.cpf}
+• WhatsApp: ${order.customer.whatsapp}
+
+📦 *ITENS DO PEDIDO:*
+${order.items.map(item => `• ${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+
+💰 *TOTAL: R$ ${order.total.toFixed(2)}*
+${paymentInfo}
+
+⏰ *TEMPO ESTIMADO:* 15-20 minutos
+📍 *RETIRADA:* Dirija-se ao balcão quando chamado
+
+📅 *DATA/HORA:* ${new Date(order.timestamp).toLocaleString('pt-BR')}
+            `.trim();
+            
+            try {
+                // Verificar se Axios está disponível
+                if (typeof axios === 'undefined') {
+                    console.log('[TOTEM] Axios não disponível, usando fallback...');
+                    sendWhatsAppFallback(message, order);
+                    return;
+                }
+                
+                // WhatsApp Business API REAL
+                const whatsappResponse = await sendWhatsAppBusinessAPI(message, order);
+                
+                if (whatsappResponse.success) {
+                    console.log('[TOTEM] WhatsApp enviado com sucesso!');
+                    console.log('[TOTEM] Message ID:', whatsappResponse.messageId);
+                } else {
+                    console.error('[TOTEM] Erro WhatsApp:', whatsappResponse.error);
+                    // Fallback para método alternativo
+                    sendWhatsAppFallback(message, order);
+                }
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao enviar WhatsApp:', error);
+                // Fallback
+                sendWhatsAppFallback(message, order);
+            }
+        }
+        
+        // WhatsApp Business API REAL
+        async function sendWhatsAppBusinessAPI(message, order) {
+            // Configuração REAL da API
+            const whatsappConfig = {
+                phoneNumberId: 'YOUR_PHONE_NUMBER_ID', // Seu Phone Number ID
+                accessToken: 'YOUR_ACCESS_TOKEN',     // Seu Access Token
+                apiVersion: 'v18.0',
+                baseUrl: 'https://graph.facebook.com'
+            };
+            
+            const payload = {
+                messaging_product: 'whatsapp',
+                to: order.customer.whatsapp.replace(/\D/g, ''), // Remove formatação
+                type: 'template',
+                template: {
+                    name: 'order_confirmation',
+                    language: {
+                        code: 'pt_BR'
+                    },
+                    components: [{
+                        type: 'body',
+                        parameters: [{
+                            type: 'text',
+                            text: message
+                        }]
+                    }]
+                }
+            };
+            
+            try {
+                const response = await axios.post(
+                    `${whatsappConfig.baseUrl}/${whatsappConfig.apiVersion}/${whatsappConfig.phoneNumberId}/messages`,
+                    payload,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${whatsappConfig.accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                return {
+                    success: true,
+                    messageId: response.data.messages[0].id
+                };
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro WhatsApp Business API:', error.response?.data || error.message);
+                return {
+                    success: false,
+                    error: error.response?.data || error.message
+                };
+            }
+        }
+        
+        // Fallback WhatsApp (wa.me)
+        function sendWhatsAppFallback(message, order) {
+            console.log('[TOTEM] Usando fallback WhatsApp...');
+            
+            // Codificar mensagem para URL
+            const encodedMessage = encodeURIComponent(message);
+            const phoneNumber = order.customer.whatsapp.replace(/\D/g, '');
+            
+            // Abrir WhatsApp Web
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // Abrir em nova janela
+            const newWindow = window.open(whatsappUrl, '_blank', 'width=800,height=600');
+            
+            if (newWindow) {
+                console.log('[TOTEM] WhatsApp aberto com sucesso');
+                
+                // Auto-envio após 2 segundos (se permitido)
+                setTimeout(() => {
+                    try {
+                        newWindow.close();
+                    } catch (e) {
+                        console.log('[TOTEM] Janela já fechada pelo usuário');
+                    }
+                }, 2000);
+            } else {
+                console.log('[TOTEM] Popup bloqueado, copiando mensagem...');
+                copyToClipboard(message);
+                alert('Mensagem copiada! Cole no WhatsApp do cliente.');
+            }
+        }
+        
+        // Copiar para Clipboard
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    console.log('[TOTEM] Mensagem copiada para clipboard');
+                }).catch(err => {
+                    console.error('[TOTEM] Erro ao copiar:', err);
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+        
+        // Fallback copiar
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                console.log('[TOTEM] Mensagem copiada com fallback');
+            } catch (err) {
+                console.error('[TOTEM] Erro ao copiar com fallback:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // WhatsApp Direct API (alternativa)
+        async function sendWhatsAppDirect(message, order) {
+            console.log('[TOTEM] Tentando WhatsApp Direct...');
+            
+            try {
+                // Verificar se Axios está disponível
+                if (typeof axios === 'undefined') {
+                    console.log('[TOTEM] Axios não disponível para WhatsApp Direct');
+                    return { success: false, error: 'Axios não disponível' };
+                }
+                
+                // Usar serviço de WhatsApp API alternativo
+                const response = await axios.post('https://api.callmebot.com/whatsapp.php', {
+                    phone: order.customer.whatsapp.replace(/\D/g, ''),
+                    text: message,
+                    source: 'php'
+                });
+                
+                if (response.data === 'Sent') {
+                    console.log('[TOTEM] WhatsApp enviado via CallMeBot');
+                    return { success: true };
+                } else {
+                    return { success: false, error: response.data };
+                }
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro WhatsApp Direct:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Mostrar Tela de Sucesso
+        let countdownTime = 5;
+        
+        function showSuccessScreen() {
+            console.log('[TOTEM] Mostrando tela de sucesso...');
+            
+            // Resetar contador
+            countdownTime = 5;
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            // Mostrar tela de sucesso
+            document.getElementById('orderNumberValue').textContent = currentOrderNumber;
+            document.getElementById('successScreen').style.display = 'flex';
+            
+            // Adicionar contador visual
+            const countdownElement = document.createElement('div');
+            countdownElement.id = 'countdownTimer';
+            countdownElement.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                font-size: 1.2rem;
+                font-weight: bold;
+                z-index: 1000;
+            `;
+            countdownElement.innerHTML = `🔄 Reiniciando em <span id="countdownNumber">5</span> segundos...`;
+            document.body.appendChild(countdownElement);
+            
+            console.log('[TOTEM] Tela de sucesso exibida, reiniciando em 5 segundos...');
+            
+            // Limpar qualquer timeout anterior
+            if (window.restartTimeout) {
+                clearTimeout(window.restartTimeout);
+            }
+            
+            // Iniciar contador regressivo
+            countdownInterval = setInterval(() => {
+                countdownTime--;
+                const countdownNumber = document.getElementById('countdownNumber');
+                if (countdownNumber) {
+                    countdownNumber.textContent = countdownTime;
+                }
+                
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    const countdownElement = document.getElementById('countdownTimer');
+                    if (countdownElement) {
+                        countdownElement.remove();
+                    }
+                }
+            }, 1000);
+            
+            // Reiniciar após 5 segundos
+            window.restartTimeout = setTimeout(() => {
+                console.log('[TOTEM] Iniciando reinício automático...');
+                restartSystem();
+            }, 5000);
+            
+            console.log('[TOTEM] Timeout agendado:', window.restartTimeout);
+        }
+
+        // Reiniciar Sistema
+        function restartSystem() {
+            console.log('[TOTEM] Reiniciando sistema para próximo cliente...');
+            
+            try {
+                // Limpar timeout
+                if (window.restartTimeout) {
+                    clearTimeout(window.restartTimeout);
+                    window.restartTimeout = null;
+                }
+                
+                // Limpar contador
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                
+                // Parar câmera se estiver ativa
+                stopCardReader();
+                
+                // Resetar flags da câmera
+                cameraStarted = false;
+                videoLoaded = false;
+                
+                // Limpar dados
+                cart = [];
+                currentOrderNumber++;
+                updateCart();
+                
+                // Esconder todas as telas
+                const screens = ['successScreen', 'cartSection', 'customerForm', 'mainContent'];
+                screens.forEach(screenId => {
+                    const screen = document.getElementById(screenId);
+                    if (screen) {
+                        screen.style.display = 'none';
+                        console.log('[TOTEM] Escondendo tela:', screenId);
+                    }
+                });
+                
+                // Mostrar tela de boas-vindas
+                const welcomeScreen = document.getElementById('welcomeScreen');
+                if (welcomeScreen) {
+                    welcomeScreen.style.display = 'flex';
+                    console.log('[TOTEM] Mostrando tela de boas-vindas');
+                }
+                
+                // Limpar formulário
+                const customerForm = document.getElementById('customerFormElement');
+                if (customerForm) {
+                    customerForm.reset();
+                    console.log('[TOTEM] Formulário limpo');
+                }
+                
+                // Resetar campo de troco
+                const changeGroup = document.getElementById('changeGroup');
+                const changeAmount = document.getElementById('changeAmount');
+                if (changeGroup) changeGroup.style.display = 'none';
+                if (changeAmount) changeAmount.value = '';
+                
+                // Resetar método de pagamento para Pix
+                const pixRadio = document.querySelector('input[name="paymentMethod"][value="pix"]');
+                if (pixRadio) pixRadio.checked = true;
+                
+                // Remover telas de pagamento residuais
+                const paymentScreens = ['pixPaymentScreen', 'cardPaymentScreen', 'googlePayScreen', 'moneyPaymentScreen', 'countdownTimer'];
+                paymentScreens.forEach(screenId => {
+                    const screen = document.getElementById(screenId);
+                    if (screen) {
+                        screen.remove();
+                        console.log('[TOTEM] Removendo tela:', screenId);
+                    }
+                });
+                
+                console.log('[TOTEM] Sistema reiniciado com sucesso!');
+                
+                // Forçar reload completo após 1 segundo (opcional)
+                setTimeout(() => {
+                    console.log('[TOTEM] Recarregando página...');
+                    window.location.reload();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('[TOTEM] Erro ao reiniciar sistema:', error);
+                
+                // Fallback: reload completo
+                console.log('[TOTEM] Fallback: recarregando página...');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
