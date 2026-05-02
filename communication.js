@@ -197,7 +197,49 @@ const DeliveryCommunication = {
                 console.log('[COMMUNICATION] Motoboy designado:', message.motoboyName);
                 this.handleMotoboyAssigned(message);
                 break;
+            case 'motoboyLocationUpdate':
+                console.log('[COMMUNICATION] Localização do motoboy atualizada:', message.orderId);
+                this.handleMotoboyLocationUpdate(message);
+                break;
+            case 'newDeliveryOrder':
+                console.log('[COMMUNICATION] Novo pedido de delivery:', message.order?.id);
+                if (message.order) {
+                    this.broadcastToMotoboy(message.order);
+                }
+                break;
         }
+    },
+    
+    // Lidar com atualização de localização do motoboy
+    handleMotoboyLocationUpdate(message) {
+        const { orderId, latitude, longitude, motoboyName, motoboyPhone, status } = message;
+        
+        // Salvar localização no localStorage
+        const locationData = {
+            orderId,
+            latitude,
+            longitude,
+            motoboyName,
+            motoboyPhone,
+            status,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(`motoboyLocation_${orderId}`, JSON.stringify(locationData));
+        
+        // Atualizar localização no pedido
+        const deliveryOrders = JSON.parse(localStorage.getItem('deliveryOrders') || '[]');
+        const order = deliveryOrders.find(o => o.id === orderId);
+        if (order) {
+            order.motoboyLocation = { latitude, longitude };
+            order.motoboyName = motoboyName || order.motoboyName;
+            order.motoboyPhone = motoboyPhone || order.motoboyPhone;
+            localStorage.setItem('deliveryOrders', JSON.stringify(deliveryOrders));
+        }
+        
+        // Disparar evento para atualizar mapa em tempo real
+        window.dispatchEvent(new CustomEvent('motoboyLocationUpdated', { detail: locationData }));
+        
+        console.log(`[COMMUNICATION] Localização do motoboy ${motoboyName} atualizada: ${latitude}, ${longitude}`);
     },
     
     // Enviar novo pedido para todos os interessados

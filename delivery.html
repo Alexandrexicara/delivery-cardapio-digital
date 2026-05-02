@@ -1797,14 +1797,37 @@
             }
         }
 
-        // Atualizar posição do motoboy no mapa
+        // Atualizar posição do motoboy no mapa (USANDO DADOS REAIS DO GPS)
         function updateMotoboyPosition(order) {
-            if (!trackingMap || !motoboyMarker) return;
+            if (!trackingMap) return;
             
-            // Simular posição do motoboy (em sistema real, viria do GPS)
-            const motoboyLat = -21.4735 + (Math.random() - 0.5) * 0.01;
-            const motoboyLng = -43.7722 + (Math.random() - 0.5) * 0.01;
+            // Buscar localização real do motoboy no localStorage (atualizada via WebSocket)
+            const locationData = JSON.parse(localStorage.getItem(`motoboyLocation_${order.id}`) || '{}');
             
+            let motoboyLat, motoboyLng;
+            
+            if (locationData.latitude && locationData.longitude) {
+                // Usar localização REAL do GPS do motoboy
+                motoboyLat = locationData.latitude;
+                motoboyLng = locationData.longitude;
+                console.log('[DELIVERY] Usando localização REAL do motoboy:', motoboyLat, motoboyLng);
+            } else if (order.motoboyLocation) {
+                // Fallback: localização salva no pedido
+                motoboyLat = order.motoboyLocation.latitude;
+                motoboyLng = order.motoboyLocation.longitude;
+                console.log('[DELIVERY] Usando localização do pedido:', motoboyLat, motoboyLng);
+            } else {
+                // Último recurso: posição simulada (não deve acontecer em produção)
+                console.warn('[DELIVERY] Localização real não disponível, usando simulação');
+                motoboyLat = -21.4735 + (Math.random() - 0.5) * 0.01;
+                motoboyLng = -43.7722 + (Math.random() - 0.5) * 0.01;
+            }
+            
+            // Coordenadas do cliente (restaurante)
+            const customerLat = -21.4735;
+            const customerLng = -43.7722;
+            
+            // Criar ou atualizar marcador do motoboy
             if (!motoboyMarker) {
                 motoboyMarker = L.marker([motoboyLat, motoboyLng], {
                     icon: L.divIcon({
@@ -1814,32 +1837,20 @@
                     })
                 }).addTo(trackingMap);
                 
-                motoboyMarker.bindPopup(`<strong>🏍️ MOTOBOY</strong><br>${order.motoboyName}`);
+                motoboyMarker.bindPopup(`<strong>🏍️ MOTOBOY</strong><br>${order.motoboyName || 'Motoboy'}`);
             } else {
                 motoboyMarker.setLatLng([motoboyLat, motoboyLng]);
             }
             
-            // Calcular distância e ETA
-            const distance = calculateDistance(motoboyLat, motoboyLng, -21.4735, -43.7722);
+            // Calcular distância e ETA (do motoboy até o cliente)
+            const distance = calculateDistance(motoboyLat, motoboyLng, customerLat, customerLng);
             const eta = Math.round(distance * 2); // 2 minutos por km
             
             document.getElementById('motoboy-distance').textContent = `${distance.toFixed(1)} km`;
             document.getElementById('motoboy-eta').textContent = `${eta} minutos`;
             
-            // Desenhar rota
-            if (routeLine) {
-                trackingMap.removeLayer(routeLine);
-            }
-            
-            routeLine = L.polyline([
-                [motoboyLat, motoboyLng],
-                [-21.4735, -43.7722]
-            ], {
-                color: '#3498db',
-                weight: 4,
-                opacity: 0.7,
-                dashArray: '10, 5'
-            }).addTo(trackingMap);
+            // Atualizar rota no mapa
+            updateRoute(motoboyLat, motoboyLng, customerLat, customerLng);
         }
 
         // Calcular distância entre dois pontos
@@ -1902,7 +1913,125 @@
             setupCEPSearch();
             
             loadMenuItems();
+            
+            // ============================================
+            // EVENTOS DE ATUALIZAÇÃO EM TEMPO REAL
+            // ============================================
+            
+            // Escutar mudanças de status do pedido (quando motoboy aceita, sai para entrega, etc)
+            window.addEventListener('orderStatusChanged', function(event) {
+                const { orderId, status, motoboyName, motoboyPhone, estimatedTime } = event.detail;
+                console.log('[DELIVERY] Status atualizado em tempo real:', orderId, status);
+                
+                // Se for o pedido atual, atualizar UI imediatamente
+                if (currentOrder && currentOrder.id === orderId) {
+                    // Atualizar status no pedido atual
+                    currentOrder.status = status;
+                    currentOrder.motoboyName = motoboyName || currentOrder.motoboyName;
+                    currentOrder.motoboyPhone = motoboyPhone || currentOrder.motoboyPhone;
+                    
+                    // Atualizar timeline
+                    updateStatusTimeline(currentOrder);
+                    
+                    // Mostrar notificação
+                    let message = '';
+                    switch (status) {
+                        case 'accepted':
+                            message = `🎉 Seu pedido foi aceito por ${motoboyName}!`;
+                            showNotification(message, 'success');
+                            playTripleBeep('successSound');
+                            break;
+                        case 'delivering':
+                            message = `🏍️ ${motoboyName} está a caminho! Tempo estimado: ${estimatedTime || '15-20 min'}`;
+                            showNotification(message, 'info');
+                            playTripleBeep('bellSound');
+                            break;
+                        case 'completed':
+                            message = '✅ Pedido entregue com sucesso! Bom apetite!';
+                            showNotification(message, 'success');
+                            playTripleBeep('successSound');
+                            clearInterval(trackingInterval);
+                            break;
+                    }
+                }
+            });
+            
+            // Escutar atualizações de localização do motoboy em tempo real
+            window.addEventListener('motoboyLocationUpdated', function(event) {
+                const { orderId, latitude, longitude, motoboyName, motoboyPhone } = event.detail;
+                console.log('[DELIVERY] Localização atualizada em tempo real:', orderId, latitude, longitude);
+                
+                // Se for o pedido atual e estivermos na tela de rastreamento
+                if (currentOrder && currentOrder.id === orderId && trackingMap && motoboyMarker) {
+                    // Atualizar posição do motoboy no mapa (DADOS REAIS DO GPS)
+                    motoboyMarker.setLatLng([latitude, longitude]);
+                    
+                    // Atualizar informações do motoboy
+                    document.getElementById('motoboy-name').textContent = motoboyName || '--';
+                    document.getElementById('motoboy-phone').textContent = motoboyPhone || '--';
+                    
+                    // Recalcular distância e ETA
+                    // Coordenadas do restaurante (ajustar conforme necessário)
+                    const restaurantLat = -21.4735;
+                    const restaurantLng = -43.7722;
+                    
+                    // Calcular distância do motoboy até o cliente
+                    const distanceToCustomer = calculateDistance(latitude, longitude, restaurantLat, restaurantLng);
+                    const eta = Math.round(distanceToCustomer * 2); // 2 minutos por km
+                    
+                    document.getElementById('motoboy-distance').textContent = `${distanceToCustomer.toFixed(1)} km`;
+                    document.getElementById('motoboy-eta').textContent = `${eta} minutos`;
+                    
+                    // Atualizar rota no mapa
+                    updateRoute(latitude, longitude, restaurantLat, restaurantLng);
+                    
+                    console.log(`[DELIVERY] Mapa atualizado: ${motoboyName} está em ${latitude}, ${longitude}`);
+                }
+            });
+            
+            // Escutar quando motoboy é designado
+            window.addEventListener('motoboyAssigned', function(event) {
+                const { orderId, motoboyName, motoboyPhone, motoboyVehicle } = event.detail;
+                console.log('[DELIVERY] Motoboy designado:', motoboyName);
+                
+                if (currentOrder && currentOrder.id === orderId) {
+                    currentOrder.motoboyName = motoboyName;
+                    currentOrder.motoboyPhone = motoboyPhone;
+                    
+                    showNotification(`🏍️ ${motoboyName} foi designado para seu pedido!`, 'info');
+                    updateStatusTimeline(currentOrder);
+                }
+            });
+            
+            console.log('[DELIVERY] Event listeners de tempo real configurados');
         };
+        
+        // Atualizar rota no mapa
+        function updateRoute(motoboyLat, motoboyLng, customerLat, customerLng) {
+            if (!trackingMap) return;
+            
+            // Remover rota anterior se existir
+            if (routeLine) {
+                trackingMap.removeLayer(routeLine);
+            }
+            
+            // Desenhar nova rota
+            const routePoints = [
+                [motoboyLat, motoboyLng],
+                [customerLat, customerLng]
+            ];
+            
+            routeLine = L.polyline(routePoints, {
+                color: '#3498db',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 10'
+            }).addTo(trackingMap);
+            
+            // Ajustar zoom para mostrar rota completa
+            const bounds = L.latLngBounds(routePoints);
+            trackingMap.fitBounds(bounds, { padding: [50, 50] });
+        }
         
         // ============================================
         // BUSCA AUTOMÁTICA DE CEP VIA VIACEP

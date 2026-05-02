@@ -2360,19 +2360,19 @@
             }
         });
 
-        // Verificação de login - acesso direto do criador
+        // Verificação de login - OBRIGATÓRIO passar pelo login
         function checkCreatorAuth() {
-            // Acesso direto sem precisar de credenciais
             const isCreatorAuthenticated = sessionStorage.getItem('isCreatorAuthenticated') === 'true';
+            
             if (isCreatorAuthenticated) {
+                console.log('[CREATOR] Usuário já autenticado');
                 return true;
             }
             
-            // Acesso automático direto - não pede credenciais
-            sessionStorage.setItem('isCreatorAuthenticated', 'true');
-            sessionStorage.setItem('creatorEmail', 'creator@cardapiodigital.com');
-            console.log('[CREATOR] Acesso direto concedido ao criador do sistema');
-            return true;
+            // NÃO autenticado - redirecionar para login
+            console.log('[CREATOR] Usuário não autenticado, redirecionando para login...');
+            window.location.href = 'creator-login.html';
+            return false;
         }
 
         // Inicializar

@@ -2274,6 +2274,52 @@
             showSuccessScreen();
         }
 
+        // Inicializar WebSocket
+        let ws = null;
+        
+        function initWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                console.log('[TOTEM] WebSocket já conectado');
+                return;
+            }
+            
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.hostname;
+            const port = window.location.port || '3002';
+            const wsUrl = `${protocol}//${host}:${port}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                console.log('[TOTEM] WebSocket conectado');
+                // Enviar login como totem
+                ws.send(JSON.stringify({ type: 'counterLogin' }));
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('[TOTEM] Mensagem recebida:', data.type);
+                    
+                    if (data.type === 'statusUpdate') {
+                        // Atualizar status do pedido no totem
+                        updateOrderStatus(data.orderId, data.status);
+                    }
+                } catch (e) {
+                    console.warn('[TOTEM] Mensagem não-JSON:', event.data);
+                }
+            };
+            
+            ws.onclose = function() {
+                console.log('[TOTEM] WebSocket desconectado');
+                setTimeout(initWebSocket, 5000);
+            };
+            
+            ws.onerror = function(error) {
+                console.error('[TOTEM] Erro WebSocket:', error);
+            };
+        }
+        
         // Salvar Pedido
         function saveOrder(order) {
             // Salvar no localStorage
@@ -2281,8 +2327,50 @@
             orders.push(order);
             localStorage.setItem('orders', JSON.stringify(orders));
             
-            // Enviar para WhatsApp (simulação)
+            // Enviar via WebSocket para todos os setores
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                // Preparar pedido no formato compatível
+                const wsOrder = {
+                    type: 'submitOrder',
+                    order: {
+                        id: order.id,
+                        table: 'Totem-' + order.id.split('-')[1],
+                        items: order.items.map(item => ({
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price,
+                            sector: 'counter'  // Totem vai para balcão
+                        })),
+                        total: order.total,
+                        paymentMethod: order.paymentMethod,
+                        paymentStatus: 'paid',
+                        status: 'pending',
+                        orderType: 'totem',
+                        customer: order.customer,
+                        timestamp: order.timestamp,
+                        clientId: 'totem-' + order.id
+                    }
+                };
+                
+                ws.send(JSON.stringify(wsOrder));
+                console.log('[TOTEM] Pedido enviado via WebSocket');
+            } else {
+                console.warn('[TOTEM] WebSocket não conectado, salvando só no localStorage');
+            }
+            
+            // Enviar para WhatsApp
             sendWhatsAppNotification(order);
+        }
+        
+        // Atualizar status do pedido
+        function updateOrderStatus(orderId, newStatus) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                localStorage.setItem('orders', JSON.stringify(orders));
+                console.log('[TOTEM] Status atualizado:', orderId, newStatus);
+            }
         }
 
         // Enviar Notificação WhatsApp REAL
@@ -2662,6 +2750,11 @@ ${paymentInfo}
                 window.location.reload();
             }
         }
+        // Inicializar WebSocket quando carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[TOTEM] Inicializando WebSocket...');
+            initWebSocket();
+        });
     </script>
 </body>
 </html>
