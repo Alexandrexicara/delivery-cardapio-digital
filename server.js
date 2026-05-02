@@ -1,5 +1,7 @@
-const hostname = '0.0.0.0'; // Aceita conexões de qualquer dispositivo na rede
-const httpPort = 3002; // Changed to 3002 as requested
+require('dotenv').config();
+
+const hostname = '0.0.0.0';
+const httpPort = process.env.PORT || 3002;
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -738,6 +740,8 @@ wss.on('connection', (ws) => {
 
 // Start HTTP server
 server.listen(httpPort, hostname, () => {
+  console.log(`Server running on port ${httpPort}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(` HTTP server running on: http://${hostname}:${httpPort}/`);
   console.log(` Project directory: ${path.resolve(".")}`);
   console.log(`📂 Project directory: ${path.resolve(".")}`);
