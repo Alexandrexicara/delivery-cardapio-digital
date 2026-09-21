@@ -1078,6 +1078,8 @@
                 <div id="tableConfigMessage"></div>
             </div>
         </section>
+
+        <section id="combined" class="content-section">
             <h2>Pedidos Combinados</h2>
             <div class="filters">
                 <div class="filter-group">
@@ -1875,7 +1877,8 @@
                     console.log('Carregados ' + orders.length + ' pedidos existentes');
                     
                     // Load combined orders if the section is active
-                    if (document.getElementById('combined').classList.contains('active')) {
+                    const combinedSection = document.getElementById('combinedOrdersContainer');
+                    if (combinedSection && combinedSection.classList.contains('active')) {
                         displayCombinedOrders(window.ordersData);
                     }
                 } else if (data.type === 'newOrder') {
@@ -1900,7 +1903,7 @@
                         }
                         
                         // Refresh combined orders if the section is active
-                        if (document.getElementById('combined').classList.contains('active')) {
+                        if (document.getElementById('combined')?.classList.contains('active')) {
                             displayCombinedOrders(window.ordersData);
                         }
                         
@@ -1927,7 +1930,7 @@
                             window.ordersData[orderIndex].status = data.status;
                             
                             // Refresh combined orders if the section is active
-                            if (document.getElementById('combined').classList.contains('active')) {
+                            if (document.getElementById('combined')?.classList.contains('active')) {
                                 displayCombinedOrders(window.ordersData);
                             }
                         }
@@ -2015,7 +2018,7 @@
                             window.ordersData[orderIndex].paymentStatus = data.paymentStatus;
                             
                             // Refresh combined orders if the section is active
-                            if (document.getElementById('combined').classList.contains('active')) {
+                            if (document.getElementById('combined')?.classList.contains('active')) {
                                 displayCombinedOrders(window.ordersData);
                             }
                         }
@@ -2367,7 +2370,7 @@
         
         // Filter combined orders (called when filters change)
         function filterCombinedOrders() {
-            if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
+            if (window.ordersData && document.getElementById('combined')?.classList.contains('active')) {
                 displayCombinedOrders(window.ordersData);
             }
         }
@@ -2407,7 +2410,7 @@
             playTripleBeep(); // Som sonoro para comissão salva
             
             // Optionally refresh the display to show the updated commission
-            if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
+            if (window.ordersData && document.getElementById('combined')?.classList.contains('active')) {
                 displayCombinedOrders(window.ordersData);
             }
         }
@@ -2455,7 +2458,7 @@
             });
             
             // Update combined orders display
-            if (document.getElementById('combined').classList.contains('active')) {
+                            if (document.getElementById('combined')?.classList.contains('active')) {
                 displayCombinedOrders(window.ordersData);
             }
             
@@ -2603,7 +2606,7 @@
                 playTripleBeep(); // Som sonoro para pagamento confirmado mesa
                 
                 // Refresh the display
-                if (window.ordersData && document.getElementById('combined').classList.contains('active')) {
+                if (window.ordersData && document.getElementById('combined')?.classList.contains('active')) {
                     displayCombinedOrders(window.ordersData);
                 }
             }

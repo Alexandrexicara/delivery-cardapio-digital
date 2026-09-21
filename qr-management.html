@@ -984,7 +984,7 @@
             
             const data = JSON.parse(establishmentData);
             console.log('[DEBUG] Dados do estabelecimento:', data);
-            if (data && data.isAuthenticated) {
+            if (data && (data.isAuthenticated || adminAccess === 'true')) {
                 const adminNameElement = document.getElementById('adminName');
                 if (adminNameElement) {
                     adminNameElement.textContent = 'Administrador - ' + data.establishmentName;
