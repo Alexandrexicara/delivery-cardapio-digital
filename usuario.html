@@ -225,6 +225,45 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+        .tab-icon {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .tabs {
+                display: grid;
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                width: 100%;
+                margin-bottom: 12px;
+                border-radius: 8px;
+            }
+            .tab {
+                min-width: 0;
+                padding: 8px 1px;
+                font-size: 10px;
+                line-height: 1.15;
+                overflow-wrap: anywhere;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+            }
+            .tab-icon {
+                display: block;
+                font-size: 14px;
+                line-height: 1;
+            }
+        }
+        @media (max-width: 380px) {
+            .tab {
+                padding: 7px 0;
+                font-size: 8px;
+                gap: 3px;
+            }
+            .tab-icon {
+                font-size: 13px;
+            }
+        }
         .tab.active {
             background-color: #e74c3c;
             color: white;
@@ -782,12 +821,12 @@
         </div>
 
         <div class="tabs">
-            <div class="tab active" onclick="showSection('registration')">Cadastro</div>
-            <div class="tab" onclick="showSection('menu')">Cardápio</div>
-            <div class="tab" onclick="showSection('cart')">Carrinho</div>
-            <div class="tab" onclick="showSection('payment')">Pagamento</div>
-            <div class="tab" onclick="showSection('status')">Status</div>
-            <div class="tab" onclick="showSection('orderHistory')">Meus Pedidos</div>
+            <div class="tab active" onclick="showSection('registration')"><i class="tab-icon fas fa-user-plus" aria-hidden="true"></i><span>Cadastro</span></div>
+            <div class="tab" onclick="showSection('menu')"><i class="tab-icon fas fa-utensils" aria-hidden="true"></i><span>Cardápio</span></div>
+            <div class="tab" onclick="showSection('cart')"><i class="tab-icon fas fa-shopping-cart" aria-hidden="true"></i><span>Carrinho</span></div>
+            <div class="tab" onclick="showSection('payment')"><i class="tab-icon fas fa-credit-card" aria-hidden="true"></i><span>Pagamento</span></div>
+            <div class="tab" onclick="showSection('status')"><i class="tab-icon fas fa-clipboard-check" aria-hidden="true"></i><span>Status</span></div>
+            <div class="tab" onclick="showSection('orderHistory')"><i class="tab-icon fas fa-receipt" aria-hidden="true"></i><span>Pedidos</span></div>
         </div>
 
         <!-- Registration Section -->
