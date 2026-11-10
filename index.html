@@ -345,7 +345,7 @@
                 image: '🍕',
                 rating: 4.8,
                 deliveryTime: '30-40 min',
-                deliveryFee: 'R$ 5,99',
+
                 description: 'As melhores pizzas da cidade'
             },
             {
@@ -355,7 +355,7 @@
                 image: '🍔',
                 rating: 4.5,
                 deliveryTime: '20-30 min',
-                deliveryFee: 'R$ 7,99',
+
                 description: 'Hambúrgueres artesanais'
             },
             {
@@ -365,7 +365,7 @@
                 image: '🍣',
                 rating: 4.9,
                 deliveryTime: '40-50 min',
-                deliveryFee: 'R$ 12,99',
+
                 description: 'Comida japonesa autêntica'
             },
             {
@@ -375,7 +375,7 @@
                 image: '🛒',
                 rating: 4.7,
                 deliveryTime: '60-90 min',
-                deliveryFee: 'R$ 9,99',
+
                 description: 'Tudo para sua casa'
             }
         ];
@@ -393,7 +393,6 @@
             html += '<div class="store-meta">';
             html += '<span class="rating">⭐ ' + store.rating + '</span>';
             html += '<span class="delivery-time">⏱️ ' + store.deliveryTime + '</span>';
-            html += '<span class="delivery-fee">🚴 ' + store.deliveryFee + '</span>';
             html += '</div></div></div>';
             return html;
         }
@@ -475,7 +474,6 @@
                     <div class="store-meta">
                         <span class="rating">⭐ 4.8</span>
                         <span class="delivery-time">⏱️ 20-30 min</span>
-                        <span class="delivery-fee">🚴 R$ 5,99</span>
                     </div>
                     <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: #27ae60;">
                         R$ ${parseFloat(product.price).toFixed(2)}
